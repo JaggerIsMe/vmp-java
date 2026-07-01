@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vmp.mappers.UserInfoMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.vmp.entity.po.UserInfo">
+		<!--用户id-->
+		<result column="user_id" property="userId"  />
+		<!--昵称-->
+		<result column="nick_name" property="nickName"  />
+		<!--钉钉开放平台unionId-->
+		<result column="dd_open_unionId" property="ddOpenUnionid"  />
+		<!--钉钉头像-->
+		<result column="dd_avatar" property="ddAvatar"  />
+		<!--密码-->
+		<result column="password" property="password"  />
+		<!--加入时间-->
+		<result column="join_time" property="joinTime"  />
+		<!--最后登录时间-->
+		<result column="last_login_time" property="lastLoginTime"  />
+		<!--0禁用1启用-->
+		<result column="status" property="status"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 user_id,nick_name,dd_open_unionId,dd_avatar,password,
+		 join_time,last_login_time,status
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.userId != null and query.userId!=''">
+			 and  user_id = #{query.userId}
+		</if>
+		<if test="query.nickName != null and query.nickName!=''">
+			 and  nick_name = #{query.nickName}
+		</if>
+		<if test="query.ddOpenUnionid != null and query.ddOpenUnionid!=''">
+			 and  dd_open_unionId = #{query.ddOpenUnionid}
+		</if>
+		<if test="query.ddAvatar != null and query.ddAvatar!=''">
+			 and  dd_avatar = #{query.ddAvatar}
+		</if>
+		<if test="query.password != null and query.password!=''">
+			 and  password = #{query.password}
+		</if>
+		<if test="query.joinTime != null and query.joinTime!=''">
+			 <![CDATA[ and  join_time=str_to_date(#{query.joinTime}, '%Y-%m-%d') ]]>
+		</if>
+		<if test="query.lastLoginTime != null and query.lastLoginTime!=''">
+			 <![CDATA[ and  last_login_time=str_to_date(#{query.lastLoginTime}, '%Y-%m-%d') ]]>
+		</if>
+		<if test="query.status != null">
+			 and  status = #{query.status}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.userIdFuzzy!= null  and query.userIdFuzzy!=''">
+				 and  user_id like concat('%', #{query.userIdFuzzy}, '%')
+			</if>
+			<if test="query.nickNameFuzzy!= null  and query.nickNameFuzzy!=''">
+				 and  nick_name like concat('%', #{query.nickNameFuzzy}, '%')
+			</if>
+			<if test="query.ddOpenUnionidFuzzy!= null  and query.ddOpenUnionidFuzzy!=''">
+				 and  dd_open_unionId like concat('%', #{query.ddOpenUnionidFuzzy}, '%')
+			</if>
+			<if test="query.ddAvatarFuzzy!= null  and query.ddAvatarFuzzy!=''">
+				 and  dd_avatar like concat('%', #{query.ddAvatarFuzzy}, '%')
+			</if>
+			<if test="query.passwordFuzzy!= null  and query.passwordFuzzy!=''">
+				 and  password like concat('%', #{query.passwordFuzzy}, '%')
+			</if>
+			<if test="query.joinTimeStart!= null and query.joinTimeStart!=''">
+				 <![CDATA[ and  join_time>=str_to_date(#{query.joinTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.joinTimeEnd!= null and query.joinTimeEnd!=''">
+				 <![CDATA[ and  join_time< date_sub(str_to_date(#{query.joinTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.lastLoginTimeStart!= null and query.lastLoginTimeStart!=''">
+				 <![CDATA[ and  last_login_time>=str_to_date(#{query.lastLoginTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.lastLoginTimeEnd!= null and query.lastLoginTimeEnd!=''">
+				 <![CDATA[ and  last_login_time< date_sub(str_to_date(#{query.lastLoginTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM user_info <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM user_info <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.vmp.entity.po.UserInfo">
+		 INSERT INTO user_info
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.userId != null">
+				 user_id,
+			</if>
+			<if test="bean.nickName != null">
+				 nick_name,
+			</if>
+			<if test="bean.ddOpenUnionid != null">
+				 dd_open_unionId,
+			</if>
+			<if test="bean.ddAvatar != null">
+				 dd_avatar,
+			</if>
+			<if test="bean.password != null">
+				 password,
+			</if>
+			<if test="bean.joinTime != null">
+				 join_time,
+			</if>
+			<if test="bean.lastLoginTime != null">
+				 last_login_time,
+			</if>
+			<if test="bean.status != null">
+				 status,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.userId!=null">
+				 #{bean.userId},
+			</if>
+			<if test="bean.nickName!=null">
+				 #{bean.nickName},
+			</if>
+			<if test="bean.ddOpenUnionid!=null">
+				 #{bean.ddOpenUnionid},
+			</if>
+			<if test="bean.ddAvatar!=null">
+				 #{bean.ddAvatar},
+			</if>
+			<if test="bean.password!=null">
+				 #{bean.password},
+			</if>
+			<if test="bean.joinTime!=null">
+				 #{bean.joinTime},
+			</if>
+			<if test="bean.lastLoginTime!=null">
+				 #{bean.lastLoginTime},
+			</if>
+			<if test="bean.status!=null">
+				 #{bean.status},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.vmp.entity.po.UserInfo">
+		 INSERT INTO user_info
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.userId != null">
+				 user_id,
+			</if>
+			<if test="bean.nickName != null">
+				 nick_name,
+			</if>
+			<if test="bean.ddOpenUnionid != null">
+				 dd_open_unionId,
+			</if>
+			<if test="bean.ddAvatar != null">
+				 dd_avatar,
+			</if>
+			<if test="bean.password != null">
+				 password,
+			</if>
+			<if test="bean.joinTime != null">
+				 join_time,
+			</if>
+			<if test="bean.lastLoginTime != null">
+				 last_login_time,
+			</if>
+			<if test="bean.status != null">
+				 status,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.userId!=null">
+				 #{bean.userId},
+			</if>
+			<if test="bean.nickName!=null">
+				 #{bean.nickName},
+			</if>
+			<if test="bean.ddOpenUnionid!=null">
+				 #{bean.ddOpenUnionid},
+			</if>
+			<if test="bean.ddAvatar!=null">
+				 #{bean.ddAvatar},
+			</if>
+			<if test="bean.password!=null">
+				 #{bean.password},
+			</if>
+			<if test="bean.joinTime!=null">
+				 #{bean.joinTime},
+			</if>
+			<if test="bean.lastLoginTime!=null">
+				 #{bean.lastLoginTime},
+			</if>
+			<if test="bean.status!=null">
+				 #{bean.status},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.userId!=null">
+				 user_id = VALUES(user_id),
+			</if>
+			<if test="bean.nickName!=null">
+				 nick_name = VALUES(nick_name),
+			</if>
+			<if test="bean.ddOpenUnionid!=null">
+				 dd_open_unionId = VALUES(dd_open_unionId),
+			</if>
+			<if test="bean.ddAvatar!=null">
+				 dd_avatar = VALUES(dd_avatar),
+			</if>
+			<if test="bean.password!=null">
+				 password = VALUES(password),
+			</if>
+			<if test="bean.joinTime!=null">
+				 join_time = VALUES(join_time),
+			</if>
+			<if test="bean.lastLoginTime!=null">
+				 last_login_time = VALUES(last_login_time),
+			</if>
+			<if test="bean.status!=null">
+				 status = VALUES(status),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.vmp.entity.po.UserInfo">
+		 INSERT INTO user_info(
+			 user_id,
+			 nick_name,
+			 dd_open_unionId,
+			 dd_avatar,
+			 password,
+			 join_time,
+			 last_login_time,
+			 status
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.userId},
+				 #{item.nickName},
+				 #{item.ddOpenUnionid},
+				 #{item.ddAvatar},
+				 #{item.password},
+				 #{item.joinTime},
+				 #{item.lastLoginTime},
+				 #{item.status}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.vmp.entity.po.UserInfo">
+		 INSERT INTO user_info(
+			 user_id,
+			 nick_name,
+			 dd_open_unionId,
+			 dd_avatar,
+			 password,
+			 join_time,
+			 last_login_time,
+			 status
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.userId},
+				 #{item.nickName},
+				 #{item.ddOpenUnionid},
+				 #{item.ddAvatar},
+				 #{item.password},
+				 #{item.joinTime},
+				 #{item.lastLoginTime},
+				 #{item.status}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			user_id = VALUES(user_id),
+			nick_name = VALUES(nick_name),
+			dd_open_unionId = VALUES(dd_open_unionId),
+			dd_avatar = VALUES(dd_avatar),
+			password = VALUES(password),
+			join_time = VALUES(join_time),
+			last_login_time = VALUES(last_login_time),
+			status = VALUES(status)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.vmp.entity.query.UserInfoQuery">
+		 UPDATE user_info
+ 		 <set> 
+			<if test="bean.userId != null">
+				 user_id = #{bean.userId},
+			</if>
+			<if test="bean.nickName != null">
+				 nick_name = #{bean.nickName},
+			</if>
+			<if test="bean.ddOpenUnionid != null">
+				 dd_open_unionId = #{bean.ddOpenUnionid},
+			</if>
+			<if test="bean.ddAvatar != null">
+				 dd_avatar = #{bean.ddAvatar},
+			</if>
+			<if test="bean.password != null">
+				 password = #{bean.password},
+			</if>
+			<if test="bean.joinTime != null">
+				 join_time = #{bean.joinTime},
+			</if>
+			<if test="bean.lastLoginTime != null">
+				 last_login_time = #{bean.lastLoginTime},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from user_info
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据UserId修改-->
+	<update id="updateByUserId" parameterType="com.vmp.entity.po.UserInfo">
+		 UPDATE user_info
+ 		 <set> 
+			<if test="bean.nickName != null">
+				 nick_name = #{bean.nickName},
+			</if>
+			<if test="bean.ddOpenUnionid != null">
+				 dd_open_unionId = #{bean.ddOpenUnionid},
+			</if>
+			<if test="bean.ddAvatar != null">
+				 dd_avatar = #{bean.ddAvatar},
+			</if>
+			<if test="bean.password != null">
+				 password = #{bean.password},
+			</if>
+			<if test="bean.joinTime != null">
+				 join_time = #{bean.joinTime},
+			</if>
+			<if test="bean.lastLoginTime != null">
+				 last_login_time = #{bean.lastLoginTime},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+ 		 </set>
+ 		 where user_id=#{userId}
+	</update>
+
+	<!-- 根据UserId删除-->
+	<delete id="deleteByUserId">
+		delete from user_info where user_id=#{userId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByUserId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from user_info where user_id=#{userId}
+	</select>
+
+	<!-- 根据DdOpenUnionid修改-->
+	<update id="updateByDdOpenUnionid" parameterType="com.vmp.entity.po.UserInfo">
+		 UPDATE user_info
+ 		 <set> 
+			<if test="bean.userId != null">
+				 user_id = #{bean.userId},
+			</if>
+			<if test="bean.nickName != null">
+				 nick_name = #{bean.nickName},
+			</if>
+			<if test="bean.ddAvatar != null">
+				 dd_avatar = #{bean.ddAvatar},
+			</if>
+			<if test="bean.password != null">
+				 password = #{bean.password},
+			</if>
+			<if test="bean.joinTime != null">
+				 join_time = #{bean.joinTime},
+			</if>
+			<if test="bean.lastLoginTime != null">
+				 last_login_time = #{bean.lastLoginTime},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+ 		 </set>
+ 		 where dd_open_unionId=#{ddOpenUnionid}
+	</update>
+
+	<!-- 根据DdOpenUnionid删除-->
+	<delete id="deleteByDdOpenUnionid">
+		delete from user_info where dd_open_unionId=#{ddOpenUnionid}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByDdOpenUnionid" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from user_info where dd_open_unionId=#{ddOpenUnionid}
+	</select>
+
+	<!-- 根据NickName修改-->
+	<update id="updateByNickName" parameterType="com.vmp.entity.po.UserInfo">
+		 UPDATE user_info
+ 		 <set> 
+			<if test="bean.userId != null">
+				 user_id = #{bean.userId},
+			</if>
+			<if test="bean.ddOpenUnionid != null">
+				 dd_open_unionId = #{bean.ddOpenUnionid},
+			</if>
+			<if test="bean.ddAvatar != null">
+				 dd_avatar = #{bean.ddAvatar},
+			</if>
+			<if test="bean.password != null">
+				 password = #{bean.password},
+			</if>
+			<if test="bean.joinTime != null">
+				 join_time = #{bean.joinTime},
+			</if>
+			<if test="bean.lastLoginTime != null">
+				 last_login_time = #{bean.lastLoginTime},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+ 		 </set>
+ 		 where nick_name=#{nickName}
+	</update>
+
+	<!-- 根据NickName删除-->
+	<delete id="deleteByNickName">
+		delete from user_info where nick_name=#{nickName}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByNickName" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from user_info where nick_name=#{nickName}
+	</select>
+
+</mapper>
