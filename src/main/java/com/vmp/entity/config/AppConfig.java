@@ -17,9 +17,6 @@ public class AppConfig {
     @Value("${project.folder:}")
     private String projectFolder;
 
-    @Value("${dev:false}")
-    private Boolean dev;
-
 
     public String getProjectFolder() {
         if (!StringTools.isEmpty(projectFolder) && !projectFolder.endsWith("/")) {
@@ -30,9 +27,5 @@ public class AppConfig {
 
     public static Logger getLogger() {
         return logger;
-    }
-
-    public Boolean getDev() {
-        return dev;
     }
 }

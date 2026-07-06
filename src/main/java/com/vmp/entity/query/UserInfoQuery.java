@@ -17,6 +17,13 @@ public class UserInfoQuery extends BaseParam {
 	private String userIdFuzzy;
 
 	/**
+	 * 账号
+	 */
+	private String account;
+
+	private String accountFuzzy;
+
+	/**
 	 * 昵称
 	 */
 	private String nickName;
@@ -31,11 +38,11 @@ public class UserInfoQuery extends BaseParam {
 	private String ddOpenUnionidFuzzy;
 
 	/**
-	 * 钉钉头像
+	 * 头像
 	 */
-	private String ddAvatar;
+	private String avatar;
 
-	private String ddAvatarFuzzy;
+	private String avatarFuzzy;
 
 	/**
 	 * 密码
@@ -63,6 +70,11 @@ public class UserInfoQuery extends BaseParam {
 	private String lastLoginTimeEnd;
 
 	/**
+	 * 0非管理员1管理员
+	 */
+	private Integer admin;
+
+	/**
 	 * 0禁用1启用
 	 */
 	private Integer status;
@@ -82,6 +94,22 @@ public class UserInfoQuery extends BaseParam {
 
 	public String getUserIdFuzzy(){
 		return this.userIdFuzzy;
+	}
+
+	public void setAccount(String account){
+		this.account = account;
+	}
+
+	public String getAccount(){
+		return this.account;
+	}
+
+	public void setAccountFuzzy(String accountFuzzy){
+		this.accountFuzzy = accountFuzzy;
+	}
+
+	public String getAccountFuzzy(){
+		return this.accountFuzzy;
 	}
 
 	public void setNickName(String nickName){
@@ -116,20 +144,20 @@ public class UserInfoQuery extends BaseParam {
 		return this.ddOpenUnionidFuzzy;
 	}
 
-	public void setDdAvatar(String ddAvatar){
-		this.ddAvatar = ddAvatar;
+	public void setAvatar(String avatar){
+		this.avatar = avatar;
 	}
 
-	public String getDdAvatar(){
-		return this.ddAvatar;
+	public String getAvatar(){
+		return this.avatar;
 	}
 
-	public void setDdAvatarFuzzy(String ddAvatarFuzzy){
-		this.ddAvatarFuzzy = ddAvatarFuzzy;
+	public void setAvatarFuzzy(String avatarFuzzy){
+		this.avatarFuzzy = avatarFuzzy;
 	}
 
-	public String getDdAvatarFuzzy(){
-		return this.ddAvatarFuzzy;
+	public String getAvatarFuzzy(){
+		return this.avatarFuzzy;
 	}
 
 	public void setPassword(String password){
@@ -192,6 +220,14 @@ public class UserInfoQuery extends BaseParam {
 
 	public String getLastLoginTimeEnd(){
 		return this.lastLoginTimeEnd;
+	}
+
+	public void setAdmin(Integer admin){
+		this.admin = admin;
+	}
+
+	public Integer getAdmin(){
+		return this.admin;
 	}
 
 	public void setStatus(Integer status){

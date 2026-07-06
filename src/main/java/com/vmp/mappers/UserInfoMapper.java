@@ -44,21 +44,21 @@ public interface UserInfoMapper<T,P> extends BaseMapper<T,P> {
 
 
 	/**
-	 * 根据NickName更新
+	 * 根据Account更新
 	 */
-	 Integer updateByNickName(@Param("bean") T t,@Param("nickName") String nickName);
+	 Integer updateByAccount(@Param("bean") T t,@Param("account") String account);
 
 
 	/**
-	 * 根据NickName删除
+	 * 根据Account删除
 	 */
-	 Integer deleteByNickName(@Param("nickName") String nickName);
+	 Integer deleteByAccount(@Param("account") String account);
 
 
 	/**
-	 * 根据NickName获取对象
+	 * 根据Account获取对象
 	 */
-	 T selectByNickName(@Param("nickName") String nickName);
+	 T selectByAccount(@Param("account") String account);
 
 
 }

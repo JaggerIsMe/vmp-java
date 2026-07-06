@@ -1,19 +1,29 @@
 package com.vmp.service.impl;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Service;
-
+import com.vmp.entity.config.AppConfig;
+import com.vmp.entity.constants.Constants;
+import com.vmp.entity.dto.TokenUserInfoDto;
+import com.vmp.entity.enums.AdminStatusEnum;
 import com.vmp.entity.enums.PageSize;
-import com.vmp.entity.query.UserInfoQuery;
+import com.vmp.entity.enums.UserStatusEnum;
 import com.vmp.entity.po.UserInfo;
-import com.vmp.entity.vo.PaginationResultVO;
 import com.vmp.entity.query.SimplePage;
+import com.vmp.entity.query.UserInfoQuery;
+import com.vmp.entity.vo.PaginationResultVO;
+import com.vmp.exception.BusinessException;
 import com.vmp.mappers.UserInfoMapper;
+import com.vmp.redis.RedisComponent;
 import com.vmp.service.UserInfoService;
 import com.vmp.utils.StringTools;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -22,157 +32,302 @@ import com.vmp.utils.StringTools;
 @Service("userInfoService")
 public class UserInfoServiceImpl implements UserInfoService {
 
-	@Resource
-	private UserInfoMapper<UserInfo, UserInfoQuery> userInfoMapper;
+    @Resource
+    private UserInfoMapper<UserInfo, UserInfoQuery> userInfoMapper;
 
-	/**
-	 * 根据条件查询列表
-	 */
-	@Override
-	public List<UserInfo> findListByParam(UserInfoQuery param) {
-		return this.userInfoMapper.selectList(param);
-	}
+    @Resource
+    private RedisComponent redisComponent;
 
-	/**
-	 * 根据条件查询列表
-	 */
-	@Override
-	public Integer findCountByParam(UserInfoQuery param) {
-		return this.userInfoMapper.selectCount(param);
-	}
+    @Resource
+    private AppConfig appConfig;
 
-	/**
-	 * 分页查询方法
-	 */
-	@Override
-	public PaginationResultVO<UserInfo> findListByPage(UserInfoQuery param) {
-		int count = this.findCountByParam(param);
-		int pageSize = param.getPageSize() == null ? PageSize.SIZE15.getSize() : param.getPageSize();
+    /**
+     * 根据条件查询列表
+     */
+    @Override
+    public List<UserInfo> findListByParam(UserInfoQuery param) {
+        return this.userInfoMapper.selectList(param);
+    }
 
-		SimplePage page = new SimplePage(param.getPageNo(), count, pageSize);
-		param.setSimplePage(page);
-		List<UserInfo> list = this.findListByParam(param);
-		PaginationResultVO<UserInfo> result = new PaginationResultVO(count, page.getPageSize(), page.getPageNo(), page.getPageTotal(), list);
-		return result;
-	}
+    /**
+     * 根据条件查询列表
+     */
+    @Override
+    public Integer findCountByParam(UserInfoQuery param) {
+        return this.userInfoMapper.selectCount(param);
+    }
 
-	/**
-	 * 新增
-	 */
-	@Override
-	public Integer add(UserInfo bean) {
-		return this.userInfoMapper.insert(bean);
-	}
+    /**
+     * 分页查询方法
+     */
+    @Override
+    public PaginationResultVO<UserInfo> findListByPage(UserInfoQuery param) {
+        int count = this.findCountByParam(param);
+        int pageSize = param.getPageSize() == null ? PageSize.SIZE15.getSize() : param.getPageSize();
 
-	/**
-	 * 批量新增
-	 */
-	@Override
-	public Integer addBatch(List<UserInfo> listBean) {
-		if (listBean == null || listBean.isEmpty()) {
-			return 0;
-		}
-		return this.userInfoMapper.insertBatch(listBean);
-	}
+        SimplePage page = new SimplePage(param.getPageNo(), count, pageSize);
+        param.setSimplePage(page);
+        List<UserInfo> list = this.findListByParam(param);
+        PaginationResultVO<UserInfo> result = new PaginationResultVO(count, page.getPageSize(), page.getPageNo(), page.getPageTotal(), list);
+        return result;
+    }
 
-	/**
-	 * 批量新增或者修改
-	 */
-	@Override
-	public Integer addOrUpdateBatch(List<UserInfo> listBean) {
-		if (listBean == null || listBean.isEmpty()) {
-			return 0;
-		}
-		return this.userInfoMapper.insertOrUpdateBatch(listBean);
-	}
+    /**
+     * 新增
+     */
+    @Override
+    public Integer add(UserInfo bean) {
+        return this.userInfoMapper.insert(bean);
+    }
 
-	/**
-	 * 多条件更新
-	 */
-	@Override
-	public Integer updateByParam(UserInfo bean, UserInfoQuery param) {
-		StringTools.checkParam(param);
-		return this.userInfoMapper.updateByParam(bean, param);
-	}
+    /**
+     * 批量新增
+     */
+    @Override
+    public Integer addBatch(List<UserInfo> listBean) {
+        if (listBean == null || listBean.isEmpty()) {
+            return 0;
+        }
+        return this.userInfoMapper.insertBatch(listBean);
+    }
 
-	/**
-	 * 多条件删除
-	 */
-	@Override
-	public Integer deleteByParam(UserInfoQuery param) {
-		StringTools.checkParam(param);
-		return this.userInfoMapper.deleteByParam(param);
-	}
+    /**
+     * 批量新增或者修改
+     */
+    @Override
+    public Integer addOrUpdateBatch(List<UserInfo> listBean) {
+        if (listBean == null || listBean.isEmpty()) {
+            return 0;
+        }
+        return this.userInfoMapper.insertOrUpdateBatch(listBean);
+    }
 
-	/**
-	 * 根据UserId获取对象
-	 */
-	@Override
-	public UserInfo getUserInfoByUserId(String userId) {
-		return this.userInfoMapper.selectByUserId(userId);
-	}
+    /**
+     * 多条件更新
+     */
+    @Override
+    public Integer updateByParam(UserInfo bean, UserInfoQuery param) {
+        StringTools.checkParam(param);
+        return this.userInfoMapper.updateByParam(bean, param);
+    }
 
-	/**
-	 * 根据UserId修改
-	 */
-	@Override
-	public Integer updateUserInfoByUserId(UserInfo bean, String userId) {
-		return this.userInfoMapper.updateByUserId(bean, userId);
-	}
+    /**
+     * 多条件删除
+     */
+    @Override
+    public Integer deleteByParam(UserInfoQuery param) {
+        StringTools.checkParam(param);
+        return this.userInfoMapper.deleteByParam(param);
+    }
 
-	/**
-	 * 根据UserId删除
-	 */
-	@Override
-	public Integer deleteUserInfoByUserId(String userId) {
-		return this.userInfoMapper.deleteByUserId(userId);
-	}
+    /**
+     * 根据UserId获取对象
+     */
+    @Override
+    public UserInfo getUserInfoByUserId(String userId) {
+        return this.userInfoMapper.selectByUserId(userId);
+    }
 
-	/**
-	 * 根据DdOpenUnionid获取对象
-	 */
-	@Override
-	public UserInfo getUserInfoByDdOpenUnionid(String ddOpenUnionid) {
-		return this.userInfoMapper.selectByDdOpenUnionid(ddOpenUnionid);
-	}
+    /**
+     * 根据UserId修改
+     */
+    @Override
+    public Integer updateUserInfoByUserId(UserInfo bean, String userId) {
+        return this.userInfoMapper.updateByUserId(bean, userId);
+    }
 
-	/**
-	 * 根据DdOpenUnionid修改
-	 */
-	@Override
-	public Integer updateUserInfoByDdOpenUnionid(UserInfo bean, String ddOpenUnionid) {
-		return this.userInfoMapper.updateByDdOpenUnionid(bean, ddOpenUnionid);
-	}
+    /**
+     * 根据UserId删除
+     */
+    @Override
+    public Integer deleteUserInfoByUserId(String userId) {
+        return this.userInfoMapper.deleteByUserId(userId);
+    }
 
-	/**
-	 * 根据DdOpenUnionid删除
-	 */
-	@Override
-	public Integer deleteUserInfoByDdOpenUnionid(String ddOpenUnionid) {
-		return this.userInfoMapper.deleteByDdOpenUnionid(ddOpenUnionid);
-	}
+    /**
+     * 根据DdOpenUnionid获取对象
+     */
+    @Override
+    public UserInfo getUserInfoByDdOpenUnionid(String ddOpenUnionid) {
+        return this.userInfoMapper.selectByDdOpenUnionid(ddOpenUnionid);
+    }
 
-	/**
-	 * 根据NickName获取对象
-	 */
-	@Override
-	public UserInfo getUserInfoByNickName(String nickName) {
-		return this.userInfoMapper.selectByNickName(nickName);
-	}
+    /**
+     * 根据DdOpenUnionid修改
+     */
+    @Override
+    public Integer updateUserInfoByDdOpenUnionid(UserInfo bean, String ddOpenUnionid) {
+        return this.userInfoMapper.updateByDdOpenUnionid(bean, ddOpenUnionid);
+    }
 
-	/**
-	 * 根据NickName修改
-	 */
-	@Override
-	public Integer updateUserInfoByNickName(UserInfo bean, String nickName) {
-		return this.userInfoMapper.updateByNickName(bean, nickName);
-	}
+    /**
+     * 根据DdOpenUnionid删除
+     */
+    @Override
+    public Integer deleteUserInfoByDdOpenUnionid(String ddOpenUnionid) {
+        return this.userInfoMapper.deleteByDdOpenUnionid(ddOpenUnionid);
+    }
 
-	/**
-	 * 根据NickName删除
-	 */
-	@Override
-	public Integer deleteUserInfoByNickName(String nickName) {
-		return this.userInfoMapper.deleteByNickName(nickName);
-	}
+    /**
+     * 根据Account获取对象
+     */
+    @Override
+    public UserInfo getUserInfoByAccount(String account) {
+        return this.userInfoMapper.selectByAccount(account);
+    }
+
+    /**
+     * 根据Account修改
+     */
+    @Override
+    public Integer updateUserInfoByAccount(UserInfo bean, String account) {
+        return this.userInfoMapper.updateByAccount(bean, account);
+    }
+
+    /**
+     * 根据Account删除
+     */
+    @Override
+    public Integer deleteUserInfoByAccount(String account) {
+        return this.userInfoMapper.deleteByAccount(account);
+    }
+
+    /**
+     * 由UserInfo获取TokenUserInfoDto对象
+     *
+     * @param userInfo
+     * @return
+     */
+    private TokenUserInfoDto getTokenUserInfoDto(UserInfo userInfo) {
+        TokenUserInfoDto tokenUserInfoDto = new TokenUserInfoDto();
+        tokenUserInfoDto.setUserId(userInfo.getUserId());
+        tokenUserInfoDto.setAccount(userInfo.getAccount());
+        tokenUserInfoDto.setNickName(userInfo.getNickName());
+        tokenUserInfoDto.setDdOpenUnionid(userInfo.getDdOpenUnionid());
+        tokenUserInfoDto.setAvatar(userInfo.getAvatar());
+        if (AdminStatusEnum.ADMIN.getStatus().equals(userInfo.getAdmin())) {
+            tokenUserInfoDto.setAdmin(true);
+        } else {
+            tokenUserInfoDto.setAdmin(false);
+        }
+        return tokenUserInfoDto;
+    }
+
+    /**
+     * 登录
+     *
+     * @param account
+     * @param password
+     * @return
+     */
+    @Override
+    public TokenUserInfoDto login(String account, String password) {
+        UserInfo userInfo = this.userInfoMapper.selectByAccount(account);
+        if (null == userInfo || !userInfo.getPassword().equals(password)) {
+            throw new BusinessException("账号或密码错误");
+        }
+        if (UserStatusEnum.DISABLE.getStatus().equals(userInfo.getStatus())) {
+            throw new BusinessException("账号已禁用");
+        }
+        UserInfo updateInfo = new UserInfo();
+        updateInfo.setLastLoginTime(new Date());
+        this.userInfoMapper.updateByUserId(updateInfo, userInfo.getUserId());
+
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(userInfo);
+
+        String token = StringTools.encodeByMD5(userInfo.getUserId() + StringTools.getRandomString(Constants.LENGTH_20));
+        tokenUserInfoDto.setToken(token);
+        redisComponent.saveTokenUserInfoDto(tokenUserInfoDto);
+
+        return tokenUserInfoDto;
+    }
+
+    /**
+     * 退出登录
+     *
+     * @param token
+     */
+    @Override
+    public void logout(String token) {
+        TokenUserInfoDto tokenUserInfoDto = redisComponent.getTokenUserInfoDto(token);
+        if (null != tokenUserInfoDto) {
+            redisComponent.cleanLatestTokenByUserId(tokenUserInfoDto.getUserId());
+        }
+        redisComponent.delTokenUserInfoDto(token);
+    }
+
+    /**
+     * 重置密码
+     *
+     * @param userId
+     * @param password
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void resetPwd(String userId, String password) {
+        UserInfo userInfo = this.userInfoMapper.selectByUserId(userId);
+        if (null == userInfo) {
+            throw new BusinessException("账号不存在");
+        }
+        UserInfo updateInfo = new UserInfo();
+        updateInfo.setPassword(StringTools.encodeByMD5(password));
+        this.userInfoMapper.updateByUserId(updateInfo, userInfo.getUserId());
+    }
+
+    /**
+     * 修改用户信息
+     *
+     * @param userInfo
+     * @param avatarFile
+     * @param avatarCover
+     * @throws IOException
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateByUserInfo(UserInfo userInfo, MultipartFile avatarFile, MultipartFile avatarCover) throws IOException {
+        if (null != avatarFile) {
+            String baseFolder = appConfig.getProjectFolder() + Constants.FILE_FOLDER_FILE;
+            File targetFileFolder = new File(baseFolder + Constants.FILE_FOLDER_AVATAR_NAME);
+            if (!targetFileFolder.exists()) {
+                targetFileFolder.mkdirs();
+            }
+            String filePath = targetFileFolder.getPath() + "/" + userInfo.getUserId() + Constants.AVATAR_SUFFIX;
+            String coverPath = targetFileFolder.getPath() + "/" + userInfo.getUserId() + Constants.AVATAR_COVER_SUFFIX;
+            avatarFile.transferTo(new File(filePath));
+            avatarCover.transferTo(new File(coverPath));
+            userInfo.setAvatar(userInfo.getUserId() + Constants.AVATAR_SUFFIX);
+        }
+        //查询获取更新前的用户信息，保存下来
+        UserInfo dbInfo = this.userInfoMapper.selectByUserId(userInfo.getUserId());
+        //更新用户信息
+        this.userInfoMapper.updateByUserId(userInfo, userInfo.getUserId());
+        /**
+         * 上面的小细节
+         * 先查询后更新的小细节：
+         * 先查询后更新，事务开启的时间就比较短
+         * 查询时不会开启事务，更新时才会开启事务
+         * 如果先更新，开启事务，然后再查询，如果查询耗时较长，可能导致事务超时
+         */
+        String accountUpdate = null;
+        String nickNameUpdate = null;
+        //如果更新前的账号(或昵称)和更新后的账号(或昵称)不相等
+        if (!dbInfo.getAccount().equals(userInfo.getAccount()) || !dbInfo.getNickName().equals(userInfo.getNickName())) {
+            accountUpdate = userInfo.getAccount();
+            nickNameUpdate = userInfo.getNickName();
+        }
+        if (null == accountUpdate && null == nickNameUpdate) {
+            return;
+        }
+
+        //更新缓存里的tokenUserInfo
+        TokenUserInfoDto tokenUserInfoDto = redisComponent.getTokenUserInfoDtoByUserId(userInfo.getUserId());
+        if (null != accountUpdate) {
+            tokenUserInfoDto.setAccount(accountUpdate);
+        }
+        if (null != nickNameUpdate) {
+            tokenUserInfoDto.setNickName(nickNameUpdate);
+        }
+
+        redisComponent.saveTokenUserInfoDto(tokenUserInfoDto);
+    }
 }

@@ -2,10 +2,11 @@ package com.vmp.aspect;
 
 import com.vmp.annotation.GlobalInterceptor;
 import com.vmp.annotation.VerifyParam;
-import com.vmp.entity.config.AppConfig;
+import com.vmp.redis.RedisUtils;
+import com.vmp.entity.constants.Constants;
+import com.vmp.entity.dto.TokenUserInfoDto;
 import com.vmp.entity.enums.ResponseCodeEnum;
 import com.vmp.exception.BusinessException;
-import com.vmp.service.UserInfoService;
 import com.vmp.utils.StringTools;
 import com.vmp.utils.VerifyUtils;
 import org.aspectj.lang.JoinPoint;
@@ -16,8 +17,12 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -32,10 +37,7 @@ public class GlobalOperationAspect {
     private static final String TYPE_LONG = "java.lang.Long";
 
     @Resource
-    private UserInfoService userInfoService;
-
-    @Resource
-    private AppConfig appConfig;
+    private RedisUtils redisUtils;
 
 
     @Pointcut("@annotation(com.vmp.annotation.GlobalInterceptor)")
@@ -79,9 +81,44 @@ public class GlobalOperationAspect {
     }
 
 
-    //校验登录
+    /**
+     * 校验登录和管理员
+     * @param checkAdmin
+     */
     private void checkLogin(Boolean checkAdmin) {
-
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        Cookie[] cookies = request.getCookies();
+        if (null == cookies) {
+            throw new BusinessException(ResponseCodeEnum.CODE_500);
+        }
+        String token = null;
+        for (Cookie cookie : cookies) {
+            if (Constants.WEB_TOKEN_KEY.equals(cookie.getName())) {
+                token = cookie.getValue();
+                break;
+            }
+        }
+        if (StringTools.isEmpty(token)) {
+            throw new BusinessException(ResponseCodeEnum.CODE_500);
+        }
+        TokenUserInfoDto tokenUserInfoDto = (TokenUserInfoDto) redisUtils.get(Constants.REDIS_KEY_ONLINE_TOKEN + token);
+        if (null == tokenUserInfoDto) {
+            throw new BusinessException(ResponseCodeEnum.CODE_901);
+        }
+        String latestToken = (String) redisUtils.get(Constants.REDIS_KEY_ONLINE_USERID_LATEST_TOKEN + tokenUserInfoDto.getUserId());
+        if (!token.equals(latestToken)) {
+            throw new BusinessException(ResponseCodeEnum.CODE_902);
+        }
+        // token续期(小于10分钟)
+        Long ttl = redisUtils.getExpires(Constants.REDIS_KEY_ONLINE_TOKEN + token);
+        if (null != ttl && ttl < Constants.REDIS_KEY_EXPIRES_TEN_MIN) {
+            redisUtils.expire(Constants.REDIS_KEY_ONLINE_TOKEN + token, Constants.REDIS_KEY_EXPIRES_ONE_HOUR);
+            redisUtils.expire(Constants.REDIS_KEY_ONLINE_USERID_LATEST_TOKEN + tokenUserInfoDto.getUserId(), Constants.REDIS_KEY_EXPIRES_ONE_HOUR);
+        }
+        // 需要管理员权限验证
+        if (checkAdmin && !tokenUserInfoDto.getAdmin()) {
+            throw new BusinessException(ResponseCodeEnum.CODE_404);
+        }
     }
 
 

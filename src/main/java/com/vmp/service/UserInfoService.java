@@ -1,10 +1,13 @@
 package com.vmp.service;
 
+import java.io.IOException;
 import java.util.List;
 
-import com.vmp.entity.query.UserInfoQuery;
+import com.vmp.entity.dto.TokenUserInfoDto;
 import com.vmp.entity.po.UserInfo;
+import com.vmp.entity.query.UserInfoQuery;
 import com.vmp.entity.vo.PaginationResultVO;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -89,20 +92,49 @@ public interface UserInfoService {
 
 
 	/**
-	 * 根据NickName查询对象
+	 * 根据Account查询对象
 	 */
-	UserInfo getUserInfoByNickName(String nickName);
+	UserInfo getUserInfoByAccount(String account);
 
 
 	/**
-	 * 根据NickName修改
+	 * 根据Account修改
 	 */
-	Integer updateUserInfoByNickName(UserInfo bean,String nickName);
+	Integer updateUserInfoByAccount(UserInfo bean,String account);
 
 
 	/**
-	 * 根据NickName删除
+	 * 根据Account删除
 	 */
-	Integer deleteUserInfoByNickName(String nickName);
+	Integer deleteUserInfoByAccount(String account);
+
+	/**
+	 * 登录
+	 * @param account
+	 * @param password
+	 * @return
+	 */
+	TokenUserInfoDto login(String account, String password);
+
+	/**
+	 * 退出登录
+	 * @param token
+	 */
+	void logout(String token);
+
+	/**
+	 * 重置密码
+	 * @param userId
+	 * @param password
+	 */
+	void resetPwd(String userId, String password);
+
+	/**
+	 * 更新用户信息
+	 * @param userInfo
+	 * @param avatarFile
+	 * @param avatarCover
+	 */
+	void updateByUserInfo(UserInfo userInfo, MultipartFile avatarFile, MultipartFile avatarCover) throws IOException;
 
 }
