@@ -22,8 +22,8 @@ public class RedisComponent {
      * @param tokenUserInfoDto
      */
     public void saveTokenUserInfoDto(TokenUserInfoDto tokenUserInfoDto) {
-        redisUtils.setex(Constants.REDIS_KEY_ONLINE_TOKEN + tokenUserInfoDto.getToken(), tokenUserInfoDto, Constants.REDIS_KEY_EXPIRES_ONE_HOUR);
-        redisUtils.setex(Constants.REDIS_KEY_ONLINE_USERID_LATEST_TOKEN + tokenUserInfoDto.getUserId(), tokenUserInfoDto.getToken(), Constants.REDIS_KEY_EXPIRES_ONE_HOUR);
+        redisUtils.setex(Constants.REDIS_KEY_ONLINE_TOKEN + tokenUserInfoDto.getToken(), tokenUserInfoDto, Constants.REDIS_KEY_EXPIRES_THREE_DAY);
+        redisUtils.setex(Constants.REDIS_KEY_ONLINE_USERID_LATEST_TOKEN + tokenUserInfoDto.getUserId(), tokenUserInfoDto.getToken(), Constants.REDIS_KEY_EXPIRES_THREE_DAY);
     }
 
     /**

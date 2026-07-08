@@ -120,7 +120,7 @@
     <dependency>
       <groupId>com.aliyun</groupId>
       <artifactId>dingtalk</artifactId>
-      <version>${com.aliyun.dingtalk.version}</version>  <!-- 修复：去掉多余的 } -->
+      <version>${com.aliyun.dingtalk.version}</version>
     </dependency>
 
     <dependency>

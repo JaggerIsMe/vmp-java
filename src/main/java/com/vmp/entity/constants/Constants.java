@@ -1,6 +1,8 @@
 package com.vmp.entity.constants;
 
 public class Constants {
+    public static final String SYS_NAME = "vmp";
+
     public static final String ZERO_STR = "0";
 
     public static final Integer ZERO = 0;
@@ -39,8 +41,6 @@ public class Constants {
 
     public static final String AVATAR_SUFFIX = ".jpg";
 
-    public static final String AVATAR_COVER_SUFFIX = "_cover.jpg";
-
     public static final String FILE_FOLDER_AVATAR_NAME = "avatar/";
 
     public static final String AVATAR_DEFUALT = "default_avatar.jpg";
@@ -64,6 +64,11 @@ public class Constants {
      * 过期时间 1天
      */
     public static final Integer REDIS_KEY_EXPIRES_DAY = REDIS_KEY_EXPIRES_ONE_MIN * 60 * 24;
+
+    /**
+     * 过期时间 3天
+     */
+    public static final Integer REDIS_KEY_EXPIRES_THREE_DAY = REDIS_KEY_EXPIRES_DAY * 3;
 
     public static final Integer REDIS_KEY_EXPIRES_ONE_HOUR = REDIS_KEY_EXPIRES_ONE_MIN * 60;
 

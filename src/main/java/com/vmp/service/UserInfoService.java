@@ -109,6 +109,14 @@ public interface UserInfoService {
 	Integer deleteUserInfoByAccount(String account);
 
 	/**
+	 * 由UserInfo获取TokenUserInfoDto对象
+	 *
+	 * @param userInfo
+	 * @return
+	 */
+	TokenUserInfoDto getTokenUserInfoDto(UserInfo userInfo);
+
+	/**
 	 * 登录
 	 * @param account
 	 * @param password
@@ -133,8 +141,7 @@ public interface UserInfoService {
 	 * 更新用户信息
 	 * @param userInfo
 	 * @param avatarFile
-	 * @param avatarCover
 	 */
-	void updateByUserInfo(UserInfo userInfo, MultipartFile avatarFile, MultipartFile avatarCover) throws IOException;
+	void updateByUserInfo(UserInfo userInfo, MultipartFile avatarFile) throws IOException;
 
 }

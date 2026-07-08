@@ -94,6 +94,14 @@ public class StringTools {
         return RandomStringUtils.random(count, false, true);
     }
 
+    public static final String createUserId() {
+        return Constants.SYS_NAME + getRandomNumber(Constants.LENGTH_5);
+    }
+
+    public static final String createToken(String userId) {
+        return encodeByMD5(userId + StringTools.getRandomString(Constants.LENGTH_20));
+    }
+
 
     public static String escapeTitle(String content) {
         if (isEmpty(content)) {

@@ -198,7 +198,8 @@ public class UserInfoServiceImpl implements UserInfoService {
      * @param userInfo
      * @return
      */
-    private TokenUserInfoDto getTokenUserInfoDto(UserInfo userInfo) {
+    @Override
+    public TokenUserInfoDto getTokenUserInfoDto(UserInfo userInfo) {
         TokenUserInfoDto tokenUserInfoDto = new TokenUserInfoDto();
         tokenUserInfoDto.setUserId(userInfo.getUserId());
         tokenUserInfoDto.setAccount(userInfo.getAccount());
@@ -227,7 +228,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw new BusinessException("账号或密码错误");
         }
         if (UserStatusEnum.DISABLE.getStatus().equals(userInfo.getStatus())) {
-            throw new BusinessException("账号已禁用");
+            throw new BusinessException("账号已被禁用无法登录");
         }
         UserInfo updateInfo = new UserInfo();
         updateInfo.setLastLoginTime(new Date());
@@ -235,8 +236,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(userInfo);
 
-        String token = StringTools.encodeByMD5(userInfo.getUserId() + StringTools.getRandomString(Constants.LENGTH_20));
-        tokenUserInfoDto.setToken(token);
+        tokenUserInfoDto.setToken(StringTools.createToken(userInfo.getUserId()));
         redisComponent.saveTokenUserInfoDto(tokenUserInfoDto);
 
         return tokenUserInfoDto;
@@ -279,12 +279,11 @@ public class UserInfoServiceImpl implements UserInfoService {
      *
      * @param userInfo
      * @param avatarFile
-     * @param avatarCover
      * @throws IOException
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateByUserInfo(UserInfo userInfo, MultipartFile avatarFile, MultipartFile avatarCover) throws IOException {
+    public void updateByUserInfo(UserInfo userInfo, MultipartFile avatarFile) throws IOException {
         if (null != avatarFile) {
             String baseFolder = appConfig.getProjectFolder() + Constants.FILE_FOLDER_FILE;
             File targetFileFolder = new File(baseFolder + Constants.FILE_FOLDER_AVATAR_NAME);
@@ -292,9 +291,7 @@ public class UserInfoServiceImpl implements UserInfoService {
                 targetFileFolder.mkdirs();
             }
             String filePath = targetFileFolder.getPath() + "/" + userInfo.getUserId() + Constants.AVATAR_SUFFIX;
-            String coverPath = targetFileFolder.getPath() + "/" + userInfo.getUserId() + Constants.AVATAR_COVER_SUFFIX;
             avatarFile.transferTo(new File(filePath));
-            avatarCover.transferTo(new File(coverPath));
             userInfo.setAvatar(userInfo.getUserId() + Constants.AVATAR_SUFFIX);
         }
         //查询获取更新前的用户信息，保存下来

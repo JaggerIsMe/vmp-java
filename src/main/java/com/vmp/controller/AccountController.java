@@ -11,6 +11,7 @@ import com.vmp.entity.query.UserInfoQuery;
 import com.vmp.entity.vo.ResponseVO;
 import com.vmp.entity.vo.UserInfoVO;
 import com.vmp.service.UserInfoService;
+import com.vmp.utils.CookieUtils;
 import com.vmp.utils.CopyTools;
 import com.vmp.utils.StringTools;
 import org.slf4j.Logger;
@@ -149,8 +150,8 @@ public class AccountController extends ABaseController {
      * 根据Account修改对象
      */
     @RequestMapping("/updateUserInfoByAccount")
-    public ResponseVO updateUserInfoByAccount(UserInfo bean,String account) {
-        userInfoService.updateUserInfoByAccount(bean,account);
+    public ResponseVO updateUserInfoByAccount(UserInfo bean, String account) {
+        userInfoService.updateUserInfoByAccount(bean, account);
         return getSuccessResponseVO(null);
     }
 
@@ -177,8 +178,7 @@ public class AccountController extends ABaseController {
                             @VerifyParam(required = true) String account,
                             @VerifyParam(required = true) String password) {
         TokenUserInfoDto tokenUserInfoDto = userInfoService.login(account, password);
-        Cookie cookie = new Cookie(Constants.WEB_TOKEN_KEY, tokenUserInfoDto.getToken());
-        response.addCookie(cookie);
+        CookieUtils.addHttpOnlyCookie(response, Constants.WEB_TOKEN_KEY, tokenUserInfoDto.getToken(), Constants.REDIS_KEY_EXPIRES_THREE_DAY);
         return getSuccessResponseVO(tokenUserInfoDto);
     }
 
@@ -191,19 +191,8 @@ public class AccountController extends ABaseController {
      */
     @RequestMapping("/logout")
     public ResponseVO logout(HttpServletRequest request, HttpServletResponse response) {
-        Cookie[] cookies = request.getCookies();
-        String token = null;
-        if (null == cookies) {
-            return getSuccessResponseVO(null);
-        }
-        for (Cookie cookie : cookies) {
-            if (Constants.WEB_TOKEN_KEY.equals(cookie.getName())) {
-                token = cookie.getValue();
-                cookie.setMaxAge(0);
-                response.addCookie(cookie);
-                break;
-            }
-        }
+        String token = CookieUtils.getCookieValue(request, Constants.WEB_TOKEN_KEY);
+        CookieUtils.deleteCookie(response, Constants.WEB_TOKEN_KEY);
         if (!StringTools.isEmpty(token)) {
             userInfoService.logout(token);
         }
@@ -224,11 +213,13 @@ public class AccountController extends ABaseController {
         UserInfo userInfo = userInfoService.getUserInfoByUserId(tokenUserInfoDto.getUserId());
         UserInfoVO userInfoVO = CopyTools.copy(userInfo, UserInfoVO.class);
         userInfoVO.setAdmin(tokenUserInfoDto.getAdmin());
+        userInfoVO.setNewToHere(StringTools.isEmpty(userInfo.getPassword()));
         return getSuccessResponseVO(userInfoVO);
     }
 
     /**
      * 重置密码
+     *
      * @param request
      * @param password
      * @return
@@ -249,15 +240,13 @@ public class AccountController extends ABaseController {
      * @param request
      * @param userInfo
      * @param avatarFile
-     * @param avatarCover
      * @return
      * @throws IOException
      */
     @RequestMapping("/saveUserInfo")
     @GlobalInterceptor
     public ResponseVO saveUserInfo(HttpServletRequest request, UserInfo userInfo,
-                                   MultipartFile avatarFile,
-                                   MultipartFile avatarCover) throws IOException {
+                                   MultipartFile avatarFile) throws IOException {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
         userInfo.setUserId(tokenUserInfoDto.getUserId());
         //这些置空的操作是为了防止恶意注入导致用户某些字段值被篡改
@@ -268,13 +257,14 @@ public class AccountController extends ABaseController {
         userInfo.setJoinTime(null);
         userInfo.setLastLoginTime(null);
 
-        this.userInfoService.updateByUserInfo(userInfo, avatarFile, avatarCover);
+        this.userInfoService.updateByUserInfo(userInfo, avatarFile);
         //修改保存后，返回新的个人信息
         return getUserInfo(request);
     }
 
     /**
      * 获取用户头像
+     *
      * @param response
      * @param userId
      */
@@ -313,6 +303,31 @@ public class AccountController extends ABaseController {
         } finally {
             writer.close();
         }
+    }
+
+    /**
+     * 初始化用户信息(账号、密码、昵称)，初次钉钉扫码登录后
+     *
+     * @param request
+     * @param userInfo
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping("/initUserInfo")
+    @GlobalInterceptor
+    public ResponseVO initUserInfo(HttpServletRequest request, UserInfo userInfo) throws IOException {
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+        //这些置空的操作是为了防止恶意注入导致用户某些字段值被篡改
+        userInfo.setUserId(null);
+        userInfo.setDdOpenUnionid(null);
+        userInfo.setAdmin(null);
+        userInfo.setStatus(null);
+        userInfo.setJoinTime(null);
+        userInfo.setLastLoginTime(null);
+
+        this.userInfoService.updateUserInfoByUserId(userInfo, tokenUserInfoDto.getUserId());
+        //修改保存后，返回新的个人信息
+        return getUserInfo(request);
     }
 
 }

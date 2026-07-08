@@ -6,6 +6,9 @@ import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
@@ -18,7 +21,7 @@ public class OKHttpUtils {
      */
     private static final int TIME_OUT_SECONDS = 5;
 
-    private static Logger logger = LoggerFactory.getLogger(OKHttpUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(OKHttpUtils.class);
 
     private static OkHttpClient.Builder getClientBuilder() {
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder().followRedirects(false).retryOnConnectionFailure(false);
@@ -126,6 +129,71 @@ public class OKHttpUtils {
         } finally {
             if (body != null) {
                 body.close();
+            }
+        }
+    }
+
+    public static void downloadFile(String url, File targetFile) throws BusinessException {
+        Response response = null;
+        ResponseBody responseBody = null;
+        InputStream inputStream = null;
+        FileOutputStream outputStream = null;
+        try {
+            if (StringTools.isEmpty(url) || targetFile == null) {
+                throw new BusinessException(ResponseCodeEnum.CODE_600);
+            }
+            File parentFile = targetFile.getParentFile();
+            if (parentFile != null && !parentFile.exists()) {
+                parentFile.mkdirs();
+            }
+            OkHttpClient client = getClientBuilder().followRedirects(true).followSslRedirects(true).build();
+            Request request = getRequestBuilder(null).url(url).get().build();
+            response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                logger.error("OKhttp 下载文件失败,url:{},code:{}", url, response.code());
+                throw new BusinessException(ResponseCodeEnum.CODE_500);
+            }
+            responseBody = response.body();
+            if (responseBody == null) {
+                logger.error("OKhttp 下载文件失败,响应体为空,url:{}", url);
+                throw new BusinessException(ResponseCodeEnum.CODE_500);
+            }
+            inputStream = responseBody.byteStream();
+            outputStream = new FileOutputStream(targetFile);
+            byte[] byteData = new byte[8192];
+            int len;
+            while ((len = inputStream.read(byteData)) != -1) {
+                outputStream.write(byteData, 0, len);
+            }
+            outputStream.flush();
+        } catch (SocketTimeoutException | ConnectException e) {
+            logger.error("OKhttp 下载文件超时,url:{}", url, e);
+            throw new BusinessException(ResponseCodeEnum.CODE_500);
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("OKhttp 下载文件异常,url:{}", url, e);
+            throw new BusinessException(ResponseCodeEnum.CODE_500);
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (Exception e) {
+                    logger.error("关闭文件输入流失败", e);
+                }
+            }
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (Exception e) {
+                    logger.error("关闭文件输出流失败", e);
+                }
+            }
+            if (responseBody != null) {
+                responseBody.close();
+            }
+            if (response != null) {
+                response.close();
             }
         }
     }

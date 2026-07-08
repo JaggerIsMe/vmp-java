@@ -17,12 +17,26 @@ public class AppConfig {
     @Value("${project.folder:}")
     private String projectFolder;
 
+    // 钉钉相关
+    @Value("${dingtalk.app.clientId}")
+    private String dingTalkAppClientId;
+    @Value("${dingtalk.app.clientSecret}")
+    private String dingTalkAppClientSecret;
+
 
     public String getProjectFolder() {
         if (!StringTools.isEmpty(projectFolder) && !projectFolder.endsWith("/")) {
             projectFolder = projectFolder + "/";
         }
         return projectFolder;
+    }
+
+    public String getDingTalkAppClientId() {
+        return dingTalkAppClientId;
+    }
+
+    public String getDingTalkAppClientSecret() {
+        return dingTalkAppClientSecret;
     }
 
     public static Logger getLogger() {
