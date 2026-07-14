@@ -1,6 +1,6 @@
 package com.vmp.entity.query;
 
-import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -78,6 +78,11 @@ public class UserInfoQuery extends BaseParam {
 	 * 0禁用1启用
 	 */
 	private Integer status;
+
+	/**
+	 * 可提供userId列表查询用户
+	 */
+	private List<String> userIdList;
 
 
 	public void setUserId(String userId){
@@ -238,4 +243,11 @@ public class UserInfoQuery extends BaseParam {
 		return this.status;
 	}
 
+	public List<String> getUserIdList() {
+		return userIdList;
+	}
+
+	public void setUserIdList(List<String> userIdList) {
+		this.userIdList = userIdList;
+	}
 }

@@ -1,21 +1,20 @@
 package com.vmp.entity.po;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.Date;
 import com.vmp.entity.enums.DateTimePatternEnum;
 import com.vmp.utils.DateUtil;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.util.Date;
 
 
 /**
  * 用户信息
  */
 public class UserInfo implements Serializable {
-
-
+	private static final long serialVersionUID = 8387827809768248686L;
 	/**
 	 * 用户id
 	 */
@@ -44,6 +43,7 @@ public class UserInfo implements Serializable {
 	/**
 	 * 密码
 	 */
+	@JsonIgnore
 	private String password;
 
 	/**

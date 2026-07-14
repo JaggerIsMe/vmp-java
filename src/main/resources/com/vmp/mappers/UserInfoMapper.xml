@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.vmp.mappers.UserInfoMapper">
 
 	<!--实体映射-->
@@ -30,41 +30,41 @@
 
 	<!-- 通用查询结果列-->
 	<sql id="base_column_list">
-		 user_id,account,nick_name,dd_open_unionId,avatar,
+		user_id,account,nick_name,dd_open_unionId,avatar,
 		 password,join_time,last_login_time,admin,status
-		 
+
 	</sql>
 
 	<sql id="base_condition_filed">
 		<if test="query.userId != null and query.userId!=''">
-			 and  user_id = #{query.userId}
+			and  user_id = #{query.userId}
 		</if>
 		<if test="query.account != null and query.account!=''">
-			 and  account = #{query.account}
+			and  account = #{query.account}
 		</if>
 		<if test="query.nickName != null and query.nickName!=''">
-			 and  nick_name = #{query.nickName}
+			and  nick_name = #{query.nickName}
 		</if>
 		<if test="query.ddOpenUnionid != null and query.ddOpenUnionid!=''">
-			 and  dd_open_unionId = #{query.ddOpenUnionid}
+			and  dd_open_unionId = #{query.ddOpenUnionid}
 		</if>
 		<if test="query.avatar != null and query.avatar!=''">
-			 and  avatar = #{query.avatar}
+			and  avatar = #{query.avatar}
 		</if>
 		<if test="query.password != null and query.password!=''">
-			 and  password = #{query.password}
+			and  password = #{query.password}
 		</if>
 		<if test="query.joinTime != null and query.joinTime!=''">
-			 <![CDATA[ and  join_time=str_to_date(#{query.joinTime}, '%Y-%m-%d') ]]>
+			<![CDATA[ and  join_time=str_to_date(#{query.joinTime}, '%Y-%m-%d') ]]>
 		</if>
 		<if test="query.lastLoginTime != null and query.lastLoginTime!=''">
-			 <![CDATA[ and  last_login_time=str_to_date(#{query.lastLoginTime}, '%Y-%m-%d') ]]>
+			<![CDATA[ and  last_login_time=str_to_date(#{query.lastLoginTime}, '%Y-%m-%d') ]]>
 		</if>
 		<if test="query.admin != null">
-			 and  admin = #{query.admin}
+			and  admin = #{query.admin}
 		</if>
 		<if test="query.status != null">
-			 and  status = #{query.status}
+			and  status = #{query.status}
 		</if>
 	</sql>
 
@@ -73,373 +73,386 @@
 		<where>
 			<include refid="base_condition_filed" />
 			<if test="query.userIdFuzzy!= null  and query.userIdFuzzy!=''">
-				 and  user_id like concat('%', #{query.userIdFuzzy}, '%')
+				and  user_id like concat('%', #{query.userIdFuzzy}, '%')
 			</if>
 			<if test="query.accountFuzzy!= null  and query.accountFuzzy!=''">
-				 and  account like concat('%', #{query.accountFuzzy}, '%')
+				and  account like concat('%', #{query.accountFuzzy}, '%')
 			</if>
 			<if test="query.nickNameFuzzy!= null  and query.nickNameFuzzy!=''">
-				 and  nick_name like concat('%', #{query.nickNameFuzzy}, '%')
+				and  nick_name like concat('%', #{query.nickNameFuzzy}, '%')
 			</if>
 			<if test="query.ddOpenUnionidFuzzy!= null  and query.ddOpenUnionidFuzzy!=''">
-				 and  dd_open_unionId like concat('%', #{query.ddOpenUnionidFuzzy}, '%')
+				and  dd_open_unionId like concat('%', #{query.ddOpenUnionidFuzzy}, '%')
 			</if>
 			<if test="query.avatarFuzzy!= null  and query.avatarFuzzy!=''">
-				 and  avatar like concat('%', #{query.avatarFuzzy}, '%')
+				and  avatar like concat('%', #{query.avatarFuzzy}, '%')
 			</if>
 			<if test="query.passwordFuzzy!= null  and query.passwordFuzzy!=''">
-				 and  password like concat('%', #{query.passwordFuzzy}, '%')
+				and  password like concat('%', #{query.passwordFuzzy}, '%')
 			</if>
 			<if test="query.joinTimeStart!= null and query.joinTimeStart!=''">
-				 <![CDATA[ and  join_time>=str_to_date(#{query.joinTimeStart}, '%Y-%m-%d') ]]>
+				<![CDATA[ and  join_time>=str_to_date(#{query.joinTimeStart}, '%Y-%m-%d') ]]>
 			</if>
 			<if test="query.joinTimeEnd!= null and query.joinTimeEnd!=''">
-				 <![CDATA[ and  join_time< date_sub(str_to_date(#{query.joinTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+				<![CDATA[ and  join_time< date_sub(str_to_date(#{query.joinTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
 			</if>
 			<if test="query.lastLoginTimeStart!= null and query.lastLoginTimeStart!=''">
-				 <![CDATA[ and  last_login_time>=str_to_date(#{query.lastLoginTimeStart}, '%Y-%m-%d') ]]>
+				<![CDATA[ and  last_login_time>=str_to_date(#{query.lastLoginTimeStart}, '%Y-%m-%d') ]]>
 			</if>
 			<if test="query.lastLoginTimeEnd!= null and query.lastLoginTimeEnd!=''">
-				 <![CDATA[ and  last_login_time< date_sub(str_to_date(#{query.lastLoginTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+				<![CDATA[ and  last_login_time< date_sub(str_to_date(#{query.lastLoginTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.userIdList != null">
+				<choose>
+					<when test="query.userIdList.size() > 0">
+						and user_id in
+						<foreach collection="query.userIdList" item="userId" open="(" separator="," close=")">
+							#{userId}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
 			</if>
 		</where>
 	</sql>
 
 	<!-- 查询集合-->
 	<select id="selectList" resultMap="base_result_map" >
-		 SELECT <include refid="base_column_list" /> FROM user_info <include refid="query_condition" />
-		 <if test="query.orderBy!=null">
-			 order by ${query.orderBy}
-		 </if>
-		 <if test="query.simplePage!=null">
-			 limit #{query.simplePage.start},#{query.simplePage.end}
-		 </if>
+		SELECT <include refid="base_column_list" /> FROM user_info <include refid="query_condition" />
+		<if test="query.orderBy!=null">
+			order by ${query.orderBy}
+		</if>
+		<if test="query.simplePage!=null">
+			limit #{query.simplePage.start},#{query.simplePage.end}
+		</if>
 	</select>
 
 	<!-- 查询数量-->
 	<select id="selectCount" resultType="java.lang.Integer" >
-		 SELECT count(1) FROM user_info <include refid="query_condition" />
+		SELECT count(1) FROM user_info <include refid="query_condition" />
 	</select>
 
 	<!-- 插入 （匹配有值的字段）-->
 	<insert id="insert" parameterType="com.vmp.entity.po.UserInfo">
-		 INSERT INTO user_info
-		 <trim prefix="(" suffix=")" suffixOverrides="," >
+		INSERT INTO user_info
+		<trim prefix="(" suffix=")" suffixOverrides="," >
 			<if test="bean.userId != null">
-				 user_id,
+				user_id,
 			</if>
 			<if test="bean.account != null">
-				 account,
+				account,
 			</if>
 			<if test="bean.nickName != null">
-				 nick_name,
+				nick_name,
 			</if>
 			<if test="bean.ddOpenUnionid != null">
-				 dd_open_unionId,
+				dd_open_unionId,
 			</if>
 			<if test="bean.avatar != null">
-				 avatar,
+				avatar,
 			</if>
 			<if test="bean.password != null">
-				 password,
+				password,
 			</if>
 			<if test="bean.joinTime != null">
-				 join_time,
+				join_time,
 			</if>
 			<if test="bean.lastLoginTime != null">
-				 last_login_time,
+				last_login_time,
 			</if>
 			<if test="bean.admin != null">
-				 admin,
+				admin,
 			</if>
 			<if test="bean.status != null">
-				 status,
+				status,
 			</if>
-		 </trim>
-		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
 			<if test="bean.userId!=null">
-				 #{bean.userId},
+				#{bean.userId},
 			</if>
 			<if test="bean.account!=null">
-				 #{bean.account},
+				#{bean.account},
 			</if>
 			<if test="bean.nickName!=null">
-				 #{bean.nickName},
+				#{bean.nickName},
 			</if>
 			<if test="bean.ddOpenUnionid!=null">
-				 #{bean.ddOpenUnionid},
+				#{bean.ddOpenUnionid},
 			</if>
 			<if test="bean.avatar!=null">
-				 #{bean.avatar},
+				#{bean.avatar},
 			</if>
 			<if test="bean.password!=null">
-				 #{bean.password},
+				#{bean.password},
 			</if>
 			<if test="bean.joinTime!=null">
-				 #{bean.joinTime},
+				#{bean.joinTime},
 			</if>
 			<if test="bean.lastLoginTime!=null">
-				 #{bean.lastLoginTime},
+				#{bean.lastLoginTime},
 			</if>
 			<if test="bean.admin!=null">
-				 #{bean.admin},
+				#{bean.admin},
 			</if>
 			<if test="bean.status!=null">
-				 #{bean.status},
+				#{bean.status},
 			</if>
-		 </trim>
+		</trim>
 	</insert>
 
 	<!-- 插入或者更新 （匹配有值的字段）-->
 	<insert id="insertOrUpdate" parameterType="com.vmp.entity.po.UserInfo">
-		 INSERT INTO user_info
-		 <trim prefix="(" suffix=")" suffixOverrides=",">
+		INSERT INTO user_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="bean.userId != null">
-				 user_id,
+				user_id,
 			</if>
 			<if test="bean.account != null">
-				 account,
+				account,
 			</if>
 			<if test="bean.nickName != null">
-				 nick_name,
+				nick_name,
 			</if>
 			<if test="bean.ddOpenUnionid != null">
-				 dd_open_unionId,
+				dd_open_unionId,
 			</if>
 			<if test="bean.avatar != null">
-				 avatar,
+				avatar,
 			</if>
 			<if test="bean.password != null">
-				 password,
+				password,
 			</if>
 			<if test="bean.joinTime != null">
-				 join_time,
+				join_time,
 			</if>
 			<if test="bean.lastLoginTime != null">
-				 last_login_time,
+				last_login_time,
 			</if>
 			<if test="bean.admin != null">
-				 admin,
+				admin,
 			</if>
 			<if test="bean.status != null">
-				 status,
+				status,
 			</if>
-		 </trim>
-		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="bean.userId!=null">
-				 #{bean.userId},
+				#{bean.userId},
 			</if>
 			<if test="bean.account!=null">
-				 #{bean.account},
+				#{bean.account},
 			</if>
 			<if test="bean.nickName!=null">
-				 #{bean.nickName},
+				#{bean.nickName},
 			</if>
 			<if test="bean.ddOpenUnionid!=null">
-				 #{bean.ddOpenUnionid},
+				#{bean.ddOpenUnionid},
 			</if>
 			<if test="bean.avatar!=null">
-				 #{bean.avatar},
+				#{bean.avatar},
 			</if>
 			<if test="bean.password!=null">
-				 #{bean.password},
+				#{bean.password},
 			</if>
 			<if test="bean.joinTime!=null">
-				 #{bean.joinTime},
+				#{bean.joinTime},
 			</if>
 			<if test="bean.lastLoginTime!=null">
-				 #{bean.lastLoginTime},
+				#{bean.lastLoginTime},
 			</if>
 			<if test="bean.admin!=null">
-				 #{bean.admin},
+				#{bean.admin},
 			</if>
 			<if test="bean.status!=null">
-				 #{bean.status},
+				#{bean.status},
 			</if>
-		 </trim>
-		 on DUPLICATE key update 
-		 <trim prefix="" suffix="" suffixOverrides=",">
+		</trim>
+		on DUPLICATE key update
+		<trim prefix="" suffix="" suffixOverrides=",">
 			<if test="bean.userId!=null">
-				 user_id = VALUES(user_id),
+				user_id = VALUES(user_id),
 			</if>
 			<if test="bean.account!=null">
-				 account = VALUES(account),
+				account = VALUES(account),
 			</if>
 			<if test="bean.nickName!=null">
-				 nick_name = VALUES(nick_name),
+				nick_name = VALUES(nick_name),
 			</if>
 			<if test="bean.ddOpenUnionid!=null">
-				 dd_open_unionId = VALUES(dd_open_unionId),
+				dd_open_unionId = VALUES(dd_open_unionId),
 			</if>
 			<if test="bean.avatar!=null">
-				 avatar = VALUES(avatar),
+				avatar = VALUES(avatar),
 			</if>
 			<if test="bean.password!=null">
-				 password = VALUES(password),
+				password = VALUES(password),
 			</if>
 			<if test="bean.joinTime!=null">
-				 join_time = VALUES(join_time),
+				join_time = VALUES(join_time),
 			</if>
 			<if test="bean.lastLoginTime!=null">
-				 last_login_time = VALUES(last_login_time),
+				last_login_time = VALUES(last_login_time),
 			</if>
 			<if test="bean.admin!=null">
-				 admin = VALUES(admin),
+				admin = VALUES(admin),
 			</if>
 			<if test="bean.status!=null">
-				 status = VALUES(status),
+				status = VALUES(status),
 			</if>
-		 </trim>
+		</trim>
 	</insert>
 
 	<!-- 添加 （批量插入）-->
 	<insert id="insertBatch" parameterType="com.vmp.entity.po.UserInfo">
-		 INSERT INTO user_info(
-			 user_id,
-			 account,
-			 nick_name,
-			 dd_open_unionId,
-			 avatar,
-			 password,
-			 join_time,
-			 last_login_time,
-			 admin,
-			 status
-		 )values
-		 <foreach collection="list" item="item" separator=",">
-			 (
-				 #{item.userId},
-				 #{item.account},
-				 #{item.nickName},
-				 #{item.ddOpenUnionid},
-				 #{item.avatar},
-				 #{item.password},
-				 #{item.joinTime},
-				 #{item.lastLoginTime},
-				 #{item.admin},
-				 #{item.status}
-			 )
-		 </foreach>
+		INSERT INTO user_info(
+		user_id,
+		account,
+		nick_name,
+		dd_open_unionId,
+		avatar,
+		password,
+		join_time,
+		last_login_time,
+		admin,
+		status
+		)values
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.userId},
+			#{item.account},
+			#{item.nickName},
+			#{item.ddOpenUnionid},
+			#{item.avatar},
+			#{item.password},
+			#{item.joinTime},
+			#{item.lastLoginTime},
+			#{item.admin},
+			#{item.status}
+			)
+		</foreach>
 	</insert>
 
 	<!-- 批量新增修改 （批量插入）-->
 	<insert id="insertOrUpdateBatch" parameterType="com.vmp.entity.po.UserInfo">
-		 INSERT INTO user_info(
-			 user_id,
-			 account,
-			 nick_name,
-			 dd_open_unionId,
-			 avatar,
-			 password,
-			 join_time,
-			 last_login_time,
-			 admin,
-			 status
-		 )values
-		 <foreach collection="list" item="item" separator=",">
-			 (
-				 #{item.userId},
-				 #{item.account},
-				 #{item.nickName},
-				 #{item.ddOpenUnionid},
-				 #{item.avatar},
-				 #{item.password},
-				 #{item.joinTime},
-				 #{item.lastLoginTime},
-				 #{item.admin},
-				 #{item.status}
-			 )
-		 </foreach>
-			on DUPLICATE key update 
-			user_id = VALUES(user_id),
-			account = VALUES(account),
-			nick_name = VALUES(nick_name),
-			dd_open_unionId = VALUES(dd_open_unionId),
-			avatar = VALUES(avatar),
-			password = VALUES(password),
-			join_time = VALUES(join_time),
-			last_login_time = VALUES(last_login_time),
-			admin = VALUES(admin),
-			status = VALUES(status)
+		INSERT INTO user_info(
+		user_id,
+		account,
+		nick_name,
+		dd_open_unionId,
+		avatar,
+		password,
+		join_time,
+		last_login_time,
+		admin,
+		status
+		)values
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{item.userId},
+			#{item.account},
+			#{item.nickName},
+			#{item.ddOpenUnionid},
+			#{item.avatar},
+			#{item.password},
+			#{item.joinTime},
+			#{item.lastLoginTime},
+			#{item.admin},
+			#{item.status}
+			)
+		</foreach>
+		on DUPLICATE key update
+		user_id = VALUES(user_id),
+		account = VALUES(account),
+		nick_name = VALUES(nick_name),
+		dd_open_unionId = VALUES(dd_open_unionId),
+		avatar = VALUES(avatar),
+		password = VALUES(password),
+		join_time = VALUES(join_time),
+		last_login_time = VALUES(last_login_time),
+		admin = VALUES(admin),
+		status = VALUES(status)
 	</insert>
 
 	<!--多条件修改-->
 	<update id="updateByParam" parameterType="com.vmp.entity.query.UserInfoQuery">
-		 UPDATE user_info
- 		 <set> 
+		UPDATE user_info
+		<set>
 			<if test="bean.userId != null">
-				 user_id = #{bean.userId},
+				user_id = #{bean.userId},
 			</if>
 			<if test="bean.account != null">
-				 account = #{bean.account},
+				account = #{bean.account},
 			</if>
 			<if test="bean.nickName != null">
-				 nick_name = #{bean.nickName},
+				nick_name = #{bean.nickName},
 			</if>
 			<if test="bean.ddOpenUnionid != null">
-				 dd_open_unionId = #{bean.ddOpenUnionid},
+				dd_open_unionId = #{bean.ddOpenUnionid},
 			</if>
 			<if test="bean.avatar != null">
-				 avatar = #{bean.avatar},
+				avatar = #{bean.avatar},
 			</if>
 			<if test="bean.password != null">
-				 password = #{bean.password},
+				password = #{bean.password},
 			</if>
 			<if test="bean.joinTime != null">
-				 join_time = #{bean.joinTime},
+				join_time = #{bean.joinTime},
 			</if>
 			<if test="bean.lastLoginTime != null">
-				 last_login_time = #{bean.lastLoginTime},
+				last_login_time = #{bean.lastLoginTime},
 			</if>
 			<if test="bean.admin != null">
-				 admin = #{bean.admin},
+				admin = #{bean.admin},
 			</if>
 			<if test="bean.status != null">
-				 status = #{bean.status},
+				status = #{bean.status},
 			</if>
- 		 </set>
- 		 <include refid="query_condition" />
+		</set>
+		<include refid="query_condition" />
 	</update>
 
 	<!--多条件删除-->
 	<delete id="deleteByParam">
-		 delete from user_info
- 		 <include refid="query_condition" />
+		delete from user_info
+		<include refid="query_condition" />
 	</delete>
 
 	<!-- 根据UserId修改-->
 	<update id="updateByUserId" parameterType="com.vmp.entity.po.UserInfo">
-		 UPDATE user_info
- 		 <set> 
+		UPDATE user_info
+		<set>
 			<if test="bean.account != null">
-				 account = #{bean.account},
+				account = #{bean.account},
 			</if>
 			<if test="bean.nickName != null">
-				 nick_name = #{bean.nickName},
+				nick_name = #{bean.nickName},
 			</if>
 			<if test="bean.ddOpenUnionid != null">
-				 dd_open_unionId = #{bean.ddOpenUnionid},
+				dd_open_unionId = #{bean.ddOpenUnionid},
 			</if>
 			<if test="bean.avatar != null">
-				 avatar = #{bean.avatar},
+				avatar = #{bean.avatar},
 			</if>
 			<if test="bean.password != null">
-				 password = #{bean.password},
+				password = #{bean.password},
 			</if>
 			<if test="bean.joinTime != null">
-				 join_time = #{bean.joinTime},
+				join_time = #{bean.joinTime},
 			</if>
 			<if test="bean.lastLoginTime != null">
-				 last_login_time = #{bean.lastLoginTime},
+				last_login_time = #{bean.lastLoginTime},
 			</if>
 			<if test="bean.admin != null">
-				 admin = #{bean.admin},
+				admin = #{bean.admin},
 			</if>
 			<if test="bean.status != null">
-				 status = #{bean.status},
+				status = #{bean.status},
 			</if>
- 		 </set>
- 		 where user_id=#{userId}
+		</set>
+		where user_id=#{userId}
 	</update>
 
 	<!-- 根据UserId删除-->
@@ -454,37 +467,37 @@
 
 	<!-- 根据DdOpenUnionid修改-->
 	<update id="updateByDdOpenUnionid" parameterType="com.vmp.entity.po.UserInfo">
-		 UPDATE user_info
- 		 <set> 
+		UPDATE user_info
+		<set>
 			<if test="bean.userId != null">
-				 user_id = #{bean.userId},
+				user_id = #{bean.userId},
 			</if>
 			<if test="bean.account != null">
-				 account = #{bean.account},
+				account = #{bean.account},
 			</if>
 			<if test="bean.nickName != null">
-				 nick_name = #{bean.nickName},
+				nick_name = #{bean.nickName},
 			</if>
 			<if test="bean.avatar != null">
-				 avatar = #{bean.avatar},
+				avatar = #{bean.avatar},
 			</if>
 			<if test="bean.password != null">
-				 password = #{bean.password},
+				password = #{bean.password},
 			</if>
 			<if test="bean.joinTime != null">
-				 join_time = #{bean.joinTime},
+				join_time = #{bean.joinTime},
 			</if>
 			<if test="bean.lastLoginTime != null">
-				 last_login_time = #{bean.lastLoginTime},
+				last_login_time = #{bean.lastLoginTime},
 			</if>
 			<if test="bean.admin != null">
-				 admin = #{bean.admin},
+				admin = #{bean.admin},
 			</if>
 			<if test="bean.status != null">
-				 status = #{bean.status},
+				status = #{bean.status},
 			</if>
- 		 </set>
- 		 where dd_open_unionId=#{ddOpenUnionid}
+		</set>
+		where dd_open_unionId=#{ddOpenUnionid}
 	</update>
 
 	<!-- 根据DdOpenUnionid删除-->
@@ -499,37 +512,37 @@
 
 	<!-- 根据Account修改-->
 	<update id="updateByAccount" parameterType="com.vmp.entity.po.UserInfo">
-		 UPDATE user_info
- 		 <set> 
+		UPDATE user_info
+		<set>
 			<if test="bean.userId != null">
-				 user_id = #{bean.userId},
+				user_id = #{bean.userId},
 			</if>
 			<if test="bean.nickName != null">
-				 nick_name = #{bean.nickName},
+				nick_name = #{bean.nickName},
 			</if>
 			<if test="bean.ddOpenUnionid != null">
-				 dd_open_unionId = #{bean.ddOpenUnionid},
+				dd_open_unionId = #{bean.ddOpenUnionid},
 			</if>
 			<if test="bean.avatar != null">
-				 avatar = #{bean.avatar},
+				avatar = #{bean.avatar},
 			</if>
 			<if test="bean.password != null">
-				 password = #{bean.password},
+				password = #{bean.password},
 			</if>
 			<if test="bean.joinTime != null">
-				 join_time = #{bean.joinTime},
+				join_time = #{bean.joinTime},
 			</if>
 			<if test="bean.lastLoginTime != null">
-				 last_login_time = #{bean.lastLoginTime},
+				last_login_time = #{bean.lastLoginTime},
 			</if>
 			<if test="bean.admin != null">
-				 admin = #{bean.admin},
+				admin = #{bean.admin},
 			</if>
 			<if test="bean.status != null">
-				 status = #{bean.status},
+				status = #{bean.status},
 			</if>
- 		 </set>
- 		 where account=#{account}
+		</set>
+		where account=#{account}
 	</update>
 
 	<!-- 根据Account删除-->

@@ -5,11 +5,14 @@ import com.vmp.annotation.VerifyParam;
 import com.vmp.entity.config.AppConfig;
 import com.vmp.entity.constants.Constants;
 import com.vmp.entity.dto.TokenUserInfoDto;
+import com.vmp.entity.enums.AdminStatusEnum;
+import com.vmp.entity.enums.ResponseCodeEnum;
 import com.vmp.entity.enums.VerifyRegexEnum;
 import com.vmp.entity.po.UserInfo;
-import com.vmp.entity.query.UserInfoQuery;
 import com.vmp.entity.vo.ResponseVO;
 import com.vmp.entity.vo.UserInfoVO;
+import com.vmp.exception.BusinessException;
+import com.vmp.service.RoleInfoService;
 import com.vmp.service.UserInfoService;
 import com.vmp.utils.CookieUtils;
 import com.vmp.utils.CopyTools;
@@ -18,19 +21,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 
 /**
  * 用户信息 Controller
@@ -45,124 +45,14 @@ public class AccountController extends ABaseController {
     private static final String CONTENT_TYPE_VALUE = "application/json;charset=UTF-8";
 
     @Resource
+    private AppConfig appConfig;
+
+    @Resource
     private UserInfoService userInfoService;
 
     @Resource
-    private AppConfig appConfig;
+    private RoleInfoService roleInfoService;
 
-    /**
-     * 根据条件分页查询
-     */
-    @RequestMapping("/loadUserList")
-    @GlobalInterceptor(checkParams = true, checkAdmin = true)
-    public ResponseVO loadUserList(UserInfoQuery query) {
-        return getSuccessResponseVO(userInfoService.findListByPage(query));
-    }
-
-    /**
-     * 新增
-     */
-    @RequestMapping("/add")
-    public ResponseVO add(UserInfo bean) {
-        userInfoService.add(bean);
-        return getSuccessResponseVO(null);
-    }
-
-    /**
-     * 批量新增
-     */
-    @RequestMapping("/addBatch")
-    public ResponseVO addBatch(@RequestBody List<UserInfo> listBean) {
-        userInfoService.addBatch(listBean);
-        return getSuccessResponseVO(null);
-    }
-
-    /**
-     * 批量新增/修改
-     */
-    @RequestMapping("/addOrUpdateBatch")
-    public ResponseVO addOrUpdateBatch(@RequestBody List<UserInfo> listBean) {
-        userInfoService.addBatch(listBean);
-        return getSuccessResponseVO(null);
-    }
-
-    /**
-     * 根据UserId查询对象
-     */
-    @RequestMapping("/getUserInfoByUserId")
-    public ResponseVO getUserInfoByUserId(String userId) {
-        return getSuccessResponseVO(userInfoService.getUserInfoByUserId(userId));
-    }
-
-    /**
-     * 根据UserId修改对象
-     */
-    @RequestMapping("/updateUserInfoByUserId")
-    public ResponseVO updateUserInfoByUserId(UserInfo bean, String userId) {
-        userInfoService.updateUserInfoByUserId(bean, userId);
-        return getSuccessResponseVO(null);
-    }
-
-    /**
-     * 根据UserId删除
-     */
-    @RequestMapping("/deleteUserInfoByUserId")
-    public ResponseVO deleteUserInfoByUserId(String userId) {
-        userInfoService.deleteUserInfoByUserId(userId);
-        return getSuccessResponseVO(null);
-    }
-
-    /**
-     * 根据DdOpenUnionid查询对象
-     */
-    @RequestMapping("/getUserInfoByDdOpenUnionid")
-    public ResponseVO getUserInfoByDdOpenUnionid(String ddOpenUnionid) {
-        return getSuccessResponseVO(userInfoService.getUserInfoByDdOpenUnionid(ddOpenUnionid));
-    }
-
-    /**
-     * 根据DdOpenUnionid修改对象
-     */
-    @RequestMapping("/updateUserInfoByDdOpenUnionid")
-    public ResponseVO updateUserInfoByDdOpenUnionid(UserInfo bean, String ddOpenUnionid) {
-        userInfoService.updateUserInfoByDdOpenUnionid(bean, ddOpenUnionid);
-        return getSuccessResponseVO(null);
-    }
-
-    /**
-     * 根据DdOpenUnionid删除
-     */
-    @RequestMapping("/deleteUserInfoByDdOpenUnionid")
-    public ResponseVO deleteUserInfoByDdOpenUnionid(String ddOpenUnionid) {
-        userInfoService.deleteUserInfoByDdOpenUnionid(ddOpenUnionid);
-        return getSuccessResponseVO(null);
-    }
-
-    /**
-     * 根据Account查询对象
-     */
-    @RequestMapping("/getUserInfoByAccount")
-    public ResponseVO getUserInfoByAccount(String account) {
-        return getSuccessResponseVO(userInfoService.getUserInfoByAccount(account));
-    }
-
-    /**
-     * 根据Account修改对象
-     */
-    @RequestMapping("/updateUserInfoByAccount")
-    public ResponseVO updateUserInfoByAccount(UserInfo bean, String account) {
-        userInfoService.updateUserInfoByAccount(bean, account);
-        return getSuccessResponseVO(null);
-    }
-
-    /**
-     * 根据Account删除
-     */
-    @RequestMapping("/deleteUserInfoByAccount")
-    public ResponseVO deleteUserInfoByAccount(String account) {
-        userInfoService.deleteUserInfoByAccount(account);
-        return getSuccessResponseVO(null);
-    }
 
     /**
      * 登录
@@ -269,8 +159,14 @@ public class AccountController extends ABaseController {
      * @param userId
      */
     @RequestMapping("/getAvatar/{userId}")
-    @GlobalInterceptor(checkLogin = false, checkParams = true)
-    public void getAvatar(HttpServletResponse response, @VerifyParam(required = true) @PathVariable("userId") String userId) {
+    @GlobalInterceptor(checkParams = true)
+    public void getAvatar(HttpServletRequest request, HttpServletResponse response, @VerifyParam(required = true) @PathVariable("userId") String userId) {
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+        // 非管理员只能获取自己的头像
+        if (!tokenUserInfoDto.getUserId().equals(userId) && !AdminStatusEnum.ADMIN.getStatus().equals(tokenUserInfoDto.getAdmin())) {
+            throw new BusinessException(ResponseCodeEnum.CODE_404);
+        }
+
         String avatarFolderName = Constants.FILE_FOLDER_FILE + Constants.FILE_FOLDER_AVATAR_NAME;
         File folder = new File(appConfig.getProjectFolder() + avatarFolderName);
         if (!folder.exists()) {
@@ -328,6 +224,24 @@ public class AccountController extends ABaseController {
         this.userInfoService.updateUserInfoByUserId(userInfo, tokenUserInfoDto.getUserId());
         //修改保存后，返回新的个人信息
         return getUserInfo(request);
+    }
+
+    /**
+     * 获取指定用户角色权限信息
+     *
+     * @return
+     */
+    @RequestMapping("/getUserRoleMenuPermissionsInfo/{userId}")
+    @GlobalInterceptor(checkParams = true)
+    public ResponseVO getUserRoleMenuPermissionsInfo(HttpServletRequest request,
+                                                     @VerifyParam(required = true) @PathVariable("userId") String userId){
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+        // 非管理员只能获取自己的角色权限信息
+        if (!tokenUserInfoDto.getUserId().equals(userId) && !AdminStatusEnum.ADMIN.getStatus().equals(tokenUserInfoDto.getAdmin())) {
+            throw new BusinessException(ResponseCodeEnum.CODE_404);
+        }
+
+        return getSuccessResponseVO(roleInfoService.getUserRoleMenuPermissionsInfo(userId));
     }
 
 }

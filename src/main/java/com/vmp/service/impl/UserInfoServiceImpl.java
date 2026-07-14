@@ -5,15 +5,20 @@ import com.vmp.entity.constants.Constants;
 import com.vmp.entity.dto.TokenUserInfoDto;
 import com.vmp.entity.enums.AdminStatusEnum;
 import com.vmp.entity.enums.PageSize;
+import com.vmp.entity.enums.ResponseCodeEnum;
 import com.vmp.entity.enums.UserStatusEnum;
+import com.vmp.entity.po.SysRolesMenus;
+import com.vmp.entity.po.SysUsersRoles;
 import com.vmp.entity.po.UserInfo;
-import com.vmp.entity.query.SimplePage;
-import com.vmp.entity.query.UserInfoQuery;
+import com.vmp.entity.query.*;
 import com.vmp.entity.vo.PaginationResultVO;
+import com.vmp.entity.vo.RoleInfoVO;
+import com.vmp.entity.vo.SysMenuInfoVO;
 import com.vmp.exception.BusinessException;
 import com.vmp.mappers.UserInfoMapper;
 import com.vmp.redis.RedisComponent;
-import com.vmp.service.UserInfoService;
+import com.vmp.service.*;
+import com.vmp.utils.CopyTools;
 import com.vmp.utils.StringTools;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +27,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 /**
@@ -31,7 +39,6 @@ import java.util.List;
  */
 @Service("userInfoService")
 public class UserInfoServiceImpl implements UserInfoService {
-
     @Resource
     private UserInfoMapper<UserInfo, UserInfoQuery> userInfoMapper;
 
@@ -206,11 +213,8 @@ public class UserInfoServiceImpl implements UserInfoService {
         tokenUserInfoDto.setNickName(userInfo.getNickName());
         tokenUserInfoDto.setDdOpenUnionid(userInfo.getDdOpenUnionid());
         tokenUserInfoDto.setAvatar(userInfo.getAvatar());
-        if (AdminStatusEnum.ADMIN.getStatus().equals(userInfo.getAdmin())) {
-            tokenUserInfoDto.setAdmin(true);
-        } else {
-            tokenUserInfoDto.setAdmin(false);
-        }
+        tokenUserInfoDto.setAdmin(userInfo.getAdmin());
+
         return tokenUserInfoDto;
     }
 
@@ -254,6 +258,16 @@ public class UserInfoServiceImpl implements UserInfoService {
             redisComponent.cleanLatestTokenByUserId(tokenUserInfoDto.getUserId());
         }
         redisComponent.delTokenUserInfoDto(token);
+    }
+
+    /**
+     * 强制用户下线
+     *
+     * @param userId
+     */
+    @Override
+    public void forceLogout(String userId) {
+        redisComponent.cleanLatestTokenByUserId(userId);
     }
 
     /**
@@ -326,5 +340,36 @@ public class UserInfoServiceImpl implements UserInfoService {
         }
 
         redisComponent.saveTokenUserInfoDto(tokenUserInfoDto);
+    }
+
+    /**
+     * 修改用户状态
+     *
+     * @param userId
+     * @param status
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateUserStatus(String userId, Integer status) {
+        if (!UserStatusEnum.ENABLE.getStatus().equals(status) && !UserStatusEnum.DISABLE.getStatus().equals(status)) {
+            throw new BusinessException(ResponseCodeEnum.CODE_600);
+        }
+        UserInfo userInfo = new UserInfo();
+        userInfo.setStatus(status);
+        // 强制用户下线
+        if (UserStatusEnum.DISABLE.getStatus().equals(status)) {
+            forceLogout(userId);
+        }
+        userInfoMapper.updateByUserId(userInfo, userId);
+    }
+
+    /**
+     * 获取在线用户userId列表
+     *
+     * @return
+     */
+    @Override
+    public List<String> getOnlineUserIdList() {
+        return redisComponent.getOnlineUserIdList();
     }
 }

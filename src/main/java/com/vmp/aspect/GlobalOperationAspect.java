@@ -2,6 +2,7 @@ package com.vmp.aspect;
 
 import com.vmp.annotation.GlobalInterceptor;
 import com.vmp.annotation.VerifyParam;
+import com.vmp.entity.enums.AdminStatusEnum;
 import com.vmp.redis.RedisUtils;
 import com.vmp.entity.constants.Constants;
 import com.vmp.entity.dto.TokenUserInfoDto;
@@ -83,6 +84,7 @@ public class GlobalOperationAspect {
 
     /**
      * 校验登录和管理员
+     *
      * @param checkAdmin
      */
     private void checkLogin(Boolean checkAdmin) {
@@ -116,7 +118,7 @@ public class GlobalOperationAspect {
             redisUtils.expire(Constants.REDIS_KEY_ONLINE_USERID_LATEST_TOKEN + tokenUserInfoDto.getUserId(), Constants.REDIS_KEY_EXPIRES_ONE_HOUR);
         }
         // 需要管理员权限验证
-        if (checkAdmin && !tokenUserInfoDto.getAdmin()) {
+        if (checkAdmin && !AdminStatusEnum.ADMIN.getStatus().equals(tokenUserInfoDto.getAdmin())) {
             throw new BusinessException(ResponseCodeEnum.CODE_404);
         }
     }

@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vmp.mappers.SysMenuInfoMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.vmp.entity.po.SysMenuInfo">
+		<!--菜单id-->
+		<result column="menu_id" property="menuId"  />
+		<!--父级菜单id-->
+		<result column="pid" property="pid"  />
+		<!--菜单标题-->
+		<result column="title" property="title"  />
+		<!--url路径-->
+		<result column="path" property="path"  />
+		<!--创建人id-->
+		<result column="create_by" property="createBy"  />
+		<!--修改人id-->
+		<result column="update_by" property="updateBy"  />
+		<!--创建时间-->
+		<result column="create_time" property="createTime"  />
+		<!--修改时间-->
+		<result column="update_time" property="updateTime"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 menu_id,pid,title,path,create_by,
+		 update_by,create_time,update_time
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.menuId != null and query.menuId!=''">
+			 and  menu_id = #{query.menuId}
+		</if>
+		<if test="query.pid != null and query.pid!=''">
+			 and  pid = #{query.pid}
+		</if>
+		<if test="query.title != null and query.title!=''">
+			 and  title = #{query.title}
+		</if>
+		<if test="query.path != null and query.path!=''">
+			 and  path = #{query.path}
+		</if>
+		<if test="query.createBy != null and query.createBy!=''">
+			 and  create_by = #{query.createBy}
+		</if>
+		<if test="query.updateBy != null and query.updateBy!=''">
+			 and  update_by = #{query.updateBy}
+		</if>
+		<if test="query.createTime != null and query.createTime!=''">
+			 <![CDATA[ and  create_time=str_to_date(#{query.createTime}, '%Y-%m-%d') ]]>
+		</if>
+		<if test="query.updateTime != null and query.updateTime!=''">
+			 <![CDATA[ and  update_time=str_to_date(#{query.updateTime}, '%Y-%m-%d') ]]>
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.menuIdFuzzy!= null  and query.menuIdFuzzy!=''">
+				 and  menu_id like concat('%', #{query.menuIdFuzzy}, '%')
+			</if>
+			<if test="query.pidFuzzy!= null  and query.pidFuzzy!=''">
+				 and  pid like concat('%', #{query.pidFuzzy}, '%')
+			</if>
+			<if test="query.titleFuzzy!= null  and query.titleFuzzy!=''">
+				 and  title like concat('%', #{query.titleFuzzy}, '%')
+			</if>
+			<if test="query.pathFuzzy!= null  and query.pathFuzzy!=''">
+				 and  path like concat('%', #{query.pathFuzzy}, '%')
+			</if>
+			<if test="query.createByFuzzy!= null  and query.createByFuzzy!=''">
+				 and  create_by like concat('%', #{query.createByFuzzy}, '%')
+			</if>
+			<if test="query.updateByFuzzy!= null  and query.updateByFuzzy!=''">
+				 and  update_by like concat('%', #{query.updateByFuzzy}, '%')
+			</if>
+			<if test="query.createTimeStart!= null and query.createTimeStart!=''">
+				 <![CDATA[ and  create_time>=str_to_date(#{query.createTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.createTimeEnd!= null and query.createTimeEnd!=''">
+				 <![CDATA[ and  create_time< date_sub(str_to_date(#{query.createTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.updateTimeStart!= null and query.updateTimeStart!=''">
+				 <![CDATA[ and  update_time>=str_to_date(#{query.updateTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.updateTimeEnd!= null and query.updateTimeEnd!=''">
+				 <![CDATA[ and  update_time< date_sub(str_to_date(#{query.updateTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.menuIdList != null">
+				<choose>
+					<when test="query.menuIdList.size() > 0">
+						and menu_id in
+						<foreach collection="query.menuIdList" item="menuId" open="(" separator="," close=")">
+							#{menuId}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM sys_menu_info <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM sys_menu_info <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.vmp.entity.po.SysMenuInfo">
+		 INSERT INTO sys_menu_info
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.menuId != null">
+				 menu_id,
+			</if>
+			<if test="bean.pid != null">
+				 pid,
+			</if>
+			<if test="bean.title != null">
+				 title,
+			</if>
+			<if test="bean.path != null">
+				 path,
+			</if>
+			<if test="bean.createBy != null">
+				 create_by,
+			</if>
+			<if test="bean.updateBy != null">
+				 update_by,
+			</if>
+			<if test="bean.createTime != null">
+				 create_time,
+			</if>
+			<if test="bean.updateTime != null">
+				 update_time,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.menuId!=null">
+				 #{bean.menuId},
+			</if>
+			<if test="bean.pid!=null">
+				 #{bean.pid},
+			</if>
+			<if test="bean.title!=null">
+				 #{bean.title},
+			</if>
+			<if test="bean.path!=null">
+				 #{bean.path},
+			</if>
+			<if test="bean.createBy!=null">
+				 #{bean.createBy},
+			</if>
+			<if test="bean.updateBy!=null">
+				 #{bean.updateBy},
+			</if>
+			<if test="bean.createTime!=null">
+				 #{bean.createTime},
+			</if>
+			<if test="bean.updateTime!=null">
+				 #{bean.updateTime},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.vmp.entity.po.SysMenuInfo">
+		 INSERT INTO sys_menu_info
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.menuId != null">
+				 menu_id,
+			</if>
+			<if test="bean.pid != null">
+				 pid,
+			</if>
+			<if test="bean.title != null">
+				 title,
+			</if>
+			<if test="bean.path != null">
+				 path,
+			</if>
+			<if test="bean.createBy != null">
+				 create_by,
+			</if>
+			<if test="bean.updateBy != null">
+				 update_by,
+			</if>
+			<if test="bean.createTime != null">
+				 create_time,
+			</if>
+			<if test="bean.updateTime != null">
+				 update_time,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.menuId!=null">
+				 #{bean.menuId},
+			</if>
+			<if test="bean.pid!=null">
+				 #{bean.pid},
+			</if>
+			<if test="bean.title!=null">
+				 #{bean.title},
+			</if>
+			<if test="bean.path!=null">
+				 #{bean.path},
+			</if>
+			<if test="bean.createBy!=null">
+				 #{bean.createBy},
+			</if>
+			<if test="bean.updateBy!=null">
+				 #{bean.updateBy},
+			</if>
+			<if test="bean.createTime!=null">
+				 #{bean.createTime},
+			</if>
+			<if test="bean.updateTime!=null">
+				 #{bean.updateTime},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.menuId!=null">
+				 menu_id = VALUES(menu_id),
+			</if>
+			<if test="bean.pid!=null">
+				 pid = VALUES(pid),
+			</if>
+			<if test="bean.title!=null">
+				 title = VALUES(title),
+			</if>
+			<if test="bean.path!=null">
+				 path = VALUES(path),
+			</if>
+			<if test="bean.createBy!=null">
+				 create_by = VALUES(create_by),
+			</if>
+			<if test="bean.updateBy!=null">
+				 update_by = VALUES(update_by),
+			</if>
+			<if test="bean.createTime!=null">
+				 create_time = VALUES(create_time),
+			</if>
+			<if test="bean.updateTime!=null">
+				 update_time = VALUES(update_time),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.vmp.entity.po.SysMenuInfo">
+		 INSERT INTO sys_menu_info(
+			 menu_id,
+			 pid,
+			 title,
+			 path,
+			 create_by,
+			 update_by,
+			 create_time,
+			 update_time
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.menuId},
+				 #{item.pid},
+				 #{item.title},
+				 #{item.path},
+				 #{item.createBy},
+				 #{item.updateBy},
+				 #{item.createTime},
+				 #{item.updateTime}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.vmp.entity.po.SysMenuInfo">
+		 INSERT INTO sys_menu_info(
+			 menu_id,
+			 pid,
+			 title,
+			 path,
+			 create_by,
+			 update_by,
+			 create_time,
+			 update_time
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.menuId},
+				 #{item.pid},
+				 #{item.title},
+				 #{item.path},
+				 #{item.createBy},
+				 #{item.updateBy},
+				 #{item.createTime},
+				 #{item.updateTime}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			menu_id = VALUES(menu_id),
+			pid = VALUES(pid),
+			title = VALUES(title),
+			path = VALUES(path),
+			create_by = VALUES(create_by),
+			update_by = VALUES(update_by),
+			create_time = VALUES(create_time),
+			update_time = VALUES(update_time)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.vmp.entity.query.SysMenuInfoQuery">
+		 UPDATE sys_menu_info
+ 		 <set> 
+			<if test="bean.menuId != null">
+				 menu_id = #{bean.menuId},
+			</if>
+			<if test="bean.pid != null">
+				 pid = #{bean.pid},
+			</if>
+			<if test="bean.title != null">
+				 title = #{bean.title},
+			</if>
+			<if test="bean.path != null">
+				 path = #{bean.path},
+			</if>
+			<if test="bean.createBy != null">
+				 create_by = #{bean.createBy},
+			</if>
+			<if test="bean.updateBy != null">
+				 update_by = #{bean.updateBy},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+			<if test="bean.updateTime != null">
+				 update_time = #{bean.updateTime},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from sys_menu_info
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据MenuId修改-->
+	<update id="updateByMenuId" parameterType="com.vmp.entity.po.SysMenuInfo">
+		 UPDATE sys_menu_info
+ 		 <set> 
+			<if test="bean.pid != null">
+				 pid = #{bean.pid},
+			</if>
+			<if test="bean.title != null">
+				 title = #{bean.title},
+			</if>
+			<if test="bean.path != null">
+				 path = #{bean.path},
+			</if>
+			<if test="bean.createBy != null">
+				 create_by = #{bean.createBy},
+			</if>
+			<if test="bean.updateBy != null">
+				 update_by = #{bean.updateBy},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+			<if test="bean.updateTime != null">
+				 update_time = #{bean.updateTime},
+			</if>
+ 		 </set>
+ 		 where menu_id=#{menuId}
+	</update>
+
+	<!-- 根据MenuId删除-->
+	<delete id="deleteByMenuId">
+		delete from sys_menu_info where menu_id=#{menuId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByMenuId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from sys_menu_info where menu_id=#{menuId}
+	</select>
+
+	<!-- 根据Title修改-->
+	<update id="updateByTitle" parameterType="com.vmp.entity.po.SysMenuInfo">
+		 UPDATE sys_menu_info
+ 		 <set> 
+			<if test="bean.menuId != null">
+				 menu_id = #{bean.menuId},
+			</if>
+			<if test="bean.pid != null">
+				 pid = #{bean.pid},
+			</if>
+			<if test="bean.path != null">
+				 path = #{bean.path},
+			</if>
+			<if test="bean.createBy != null">
+				 create_by = #{bean.createBy},
+			</if>
+			<if test="bean.updateBy != null">
+				 update_by = #{bean.updateBy},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+			<if test="bean.updateTime != null">
+				 update_time = #{bean.updateTime},
+			</if>
+ 		 </set>
+ 		 where title=#{title}
+	</update>
+
+	<!-- 根据Title删除-->
+	<delete id="deleteByTitle">
+		delete from sys_menu_info where title=#{title}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByTitle" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from sys_menu_info where title=#{title}
+	</select>
+
+</mapper>

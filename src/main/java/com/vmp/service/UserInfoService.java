@@ -7,6 +7,7 @@ import com.vmp.entity.dto.TokenUserInfoDto;
 import com.vmp.entity.po.UserInfo;
 import com.vmp.entity.query.UserInfoQuery;
 import com.vmp.entity.vo.PaginationResultVO;
+import com.vmp.entity.vo.RoleInfoVO;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -131,6 +132,12 @@ public interface UserInfoService {
 	void logout(String token);
 
 	/**
+	 * 强制用户下线
+	 * @param userId
+	 */
+	void forceLogout(String userId);
+
+	/**
 	 * 重置密码
 	 * @param userId
 	 * @param password
@@ -143,5 +150,18 @@ public interface UserInfoService {
 	 * @param avatarFile
 	 */
 	void updateByUserInfo(UserInfo userInfo, MultipartFile avatarFile) throws IOException;
+
+	/**
+	 * 修改用户状态
+	 * @param userId
+	 * @param status
+	 */
+	void updateUserStatus(String userId, Integer status);
+
+	/**
+	 * 获取在线用户userId列表
+	 * @return
+	 */
+	List<String> getOnlineUserIdList();
 
 }

@@ -2,13 +2,19 @@ package com.vmp.redis;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Component("redisUtils")
@@ -151,5 +157,33 @@ public class RedisUtils<V> {
             e.printStackTrace();
             return 0;
         }
+    }
+
+    public Set<String> scanKeys(String pattern) {
+        Set<String> keys = new HashSet<>();
+
+        ScanOptions options = ScanOptions.scanOptions()
+                .match(pattern)
+                .count(1000)
+                .build();
+
+        try {
+            redisTemplate.execute((RedisCallback<Void>) connection -> {
+                try (Cursor<byte[]> cursor = connection.scan(options)) {
+                    while (cursor.hasNext()) {
+                        byte[] keyBytes = cursor.next();
+                        String key = (String) redisTemplate.getKeySerializer().deserialize(keyBytes);
+                        if (key != null) {
+                            keys.add(key);
+                        }
+                    }
+                }
+                return null;
+            });
+        } catch (Exception e) {
+            logger.error("扫描redisKey失败，pattern:{}", pattern, e);
+        }
+
+        return keys;
     }
 }

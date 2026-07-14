@@ -6,6 +6,9 @@ import com.vmp.utils.StringTools;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Component("redisComponent")
 public class RedisComponent {
@@ -73,6 +76,22 @@ public class RedisComponent {
             return;
         }
         redisUtils.delete(Constants.REDIS_KEY_ONLINE_USERID_LATEST_TOKEN + userId);
+    }
+
+    /**
+     * 获取在线用户userId列表
+     * @return
+     */
+    public List<String> getOnlineUserIdList() {
+        String prefix = Constants.REDIS_KEY_ONLINE_USERID_LATEST_TOKEN;
+        Set<String> keys = redisUtils.scanKeys(prefix + "*");
+
+        List<String> userIdList = new ArrayList<>();
+        for (String key : keys) {
+            userIdList.add(key.substring(prefix.length()));
+        }
+
+        return userIdList;
     }
 
 }

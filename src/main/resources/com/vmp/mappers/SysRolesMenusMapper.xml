@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vmp.mappers.SysRolesMenusMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.vmp.entity.po.SysRolesMenus">
+		<!--角色id-->
+		<result column="role_id" property="roleId"  />
+		<!--菜单id-->
+		<result column="menu_id" property="menuId"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 role_id,menu_id
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.roleId != null and query.roleId!=''">
+			 and  role_id = #{query.roleId}
+		</if>
+		<if test="query.menuId != null and query.menuId!=''">
+			 and  menu_id = #{query.menuId}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.roleIdFuzzy!= null  and query.roleIdFuzzy!=''">
+				 and  role_id like concat('%', #{query.roleIdFuzzy}, '%')
+			</if>
+			<if test="query.menuIdFuzzy!= null  and query.menuIdFuzzy!=''">
+				 and  menu_id like concat('%', #{query.menuIdFuzzy}, '%')
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM sys_roles_menus <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM sys_roles_menus <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.vmp.entity.po.SysRolesMenus">
+		 INSERT INTO sys_roles_menus
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.roleId != null">
+				 role_id,
+			</if>
+			<if test="bean.menuId != null">
+				 menu_id,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.roleId!=null">
+				 #{bean.roleId},
+			</if>
+			<if test="bean.menuId!=null">
+				 #{bean.menuId},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.vmp.entity.po.SysRolesMenus">
+		 INSERT INTO sys_roles_menus
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.roleId != null">
+				 role_id,
+			</if>
+			<if test="bean.menuId != null">
+				 menu_id,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.roleId!=null">
+				 #{bean.roleId},
+			</if>
+			<if test="bean.menuId!=null">
+				 #{bean.menuId},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.roleId!=null">
+				 role_id = VALUES(role_id),
+			</if>
+			<if test="bean.menuId!=null">
+				 menu_id = VALUES(menu_id),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.vmp.entity.po.SysRolesMenus">
+		 INSERT INTO sys_roles_menus(
+			 role_id,
+			 menu_id
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.roleId},
+				 #{item.menuId}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.vmp.entity.po.SysRolesMenus">
+		 INSERT INTO sys_roles_menus(
+			 role_id,
+			 menu_id
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.roleId},
+				 #{item.menuId}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			role_id = VALUES(role_id),
+			menu_id = VALUES(menu_id)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.vmp.entity.query.SysRolesMenusQuery">
+		 UPDATE sys_roles_menus
+ 		 <set> 
+			<if test="bean.roleId != null">
+				 role_id = #{bean.roleId},
+			</if>
+			<if test="bean.menuId != null">
+				 menu_id = #{bean.menuId},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from sys_roles_menus
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据RoleIdAndMenuId修改-->
+	<update id="updateByRoleIdAndMenuId" parameterType="com.vmp.entity.po.SysRolesMenus">
+		 UPDATE sys_roles_menus
+ 		 <set> 
+ 		 </set>
+ 		 where role_id=#{roleId} and menu_id=#{menuId}
+	</update>
+
+	<!-- 根据RoleIdAndMenuId删除-->
+	<delete id="deleteByRoleIdAndMenuId">
+		delete from sys_roles_menus where role_id=#{roleId} and menu_id=#{menuId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByRoleIdAndMenuId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from sys_roles_menus where role_id=#{roleId} and menu_id=#{menuId}
+	</select>
+
+</mapper>

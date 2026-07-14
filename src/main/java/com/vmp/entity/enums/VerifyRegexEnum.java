@@ -10,7 +10,8 @@ public enum VerifyRegexEnum {
     COMMON("^[a-zA-Z0-9_\\u4e00-\\u9fa5]+$", "数字，字母，中文，下划线"),
     PASSWORD("^(?=.*\\d)(?=.*[a-zA-Z])[\\da-zA-Z~!@#$%^&*_]{8,}$", "只能是数字，字母，特殊字符 8-18位"),
     ACCOUNT("^[0-9a-zA-Z_]{1,}$", "字母开头,由数字、英文字母或者下划线组成"),
-    MONEY("^[0-9]+(.[0-9]{1,2})?$", "金额");
+    MONEY("^[0-9]+(.[0-9]{1,2})?$", "金额"),
+    MENU_PATH("^/[a-z]+(?:-[a-z]+)*$", "必须以/开头，只能包含小写英文字母和连字符-，且只能有一个/");
 
     private String regex;
     private String desc;

@@ -15,10 +15,12 @@ import com.vmp.entity.dto.TokenUserInfoDto;
 import com.vmp.entity.enums.AdminStatusEnum;
 import com.vmp.entity.enums.ResponseCodeEnum;
 import com.vmp.entity.enums.UserStatusEnum;
+import com.vmp.entity.po.SysUsersRoles;
 import com.vmp.entity.po.UserInfo;
 import com.vmp.exception.BusinessException;
 import com.vmp.redis.RedisComponent;
 import com.vmp.service.DingTalkService;
+import com.vmp.service.SysUsersRolesService;
 import com.vmp.service.UserInfoService;
 import com.vmp.utils.DingTalkUtils;
 import com.vmp.utils.OKHttpUtils;
@@ -45,6 +47,9 @@ public class DingTalkServiceImpl implements DingTalkService {
 
     @Resource
     private UserInfoService userInfoService;
+
+    @Resource
+    private SysUsersRolesService sysUsersRolesService;
 
     private static final Logger logger = LoggerFactory.getLogger(DingTalkServiceImpl.class);
 
@@ -166,6 +171,12 @@ public class DingTalkServiceImpl implements DingTalkService {
             }
 
             this.userInfoService.add(userInfo);
+
+            // 为新用户分配初始化角色
+            SysUsersRoles newUserRole = new SysUsersRoles();
+            newUserRole.setUserId(userId);
+            newUserRole.setRoleId(Constants.SYS_INIT_USER_ROLE_ID);
+            this.sysUsersRolesService.add(newUserRole);
         } else {
             UserInfo updateInfo = new UserInfo();
             updateInfo.setLastLoginTime(new Date());
