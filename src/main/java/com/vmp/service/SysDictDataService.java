@@ -88,6 +88,23 @@ public interface SysDictDataService {
 	Integer deleteSysDictDataByDictCode(String dictCode);
 
 	/**
+	 * 根据PidAndDictName查询对象
+	 */
+	SysDictData getSysDictDataByPidAndDictName(String pid,String dictName);
+
+
+	/**
+	 * 根据PidAndDictName修改
+	 */
+	Integer updateSysDictDataByPidAndDictName(SysDictData bean,String pid,String dictName);
+
+
+	/**
+	 * 根据PidAndDictName删除
+	 */
+	Integer deleteSysDictDataByPidAndDictName(String pid,String dictName);
+
+	/**
 	 * 新增字典数据
 	 * @param dictData
 	 */

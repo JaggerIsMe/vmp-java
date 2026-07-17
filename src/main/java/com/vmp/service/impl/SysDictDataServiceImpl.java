@@ -156,6 +156,30 @@ public class SysDictDataServiceImpl implements SysDictDataService {
 	}
 
 	/**
+	 * 根据PidAndDictName获取对象
+	 */
+	@Override
+	public SysDictData getSysDictDataByPidAndDictName(String pid, String dictName) {
+		return this.sysDictDataMapper.selectByPidAndDictName(pid, dictName);
+	}
+
+	/**
+	 * 根据PidAndDictName修改
+	 */
+	@Override
+	public Integer updateSysDictDataByPidAndDictName(SysDictData bean, String pid, String dictName) {
+		return this.sysDictDataMapper.updateByPidAndDictName(bean, pid, dictName);
+	}
+
+	/**
+	 * 根据PidAndDictName删除
+	 */
+	@Override
+	public Integer deleteSysDictDataByPidAndDictName(String pid, String dictName) {
+		return this.sysDictDataMapper.deleteByPidAndDictName(pid, dictName);
+	}
+
+	/**
 	 * 新增字典数据
 	 *
 	 * @param dictData

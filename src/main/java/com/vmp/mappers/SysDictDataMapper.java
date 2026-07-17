@@ -43,4 +43,22 @@ public interface SysDictDataMapper<T,P> extends BaseMapper<T,P> {
 	 T selectByDictCode(@Param("dictCode") String dictCode);
 
 
+	/**
+	 * 根据PidAndDictName更新
+	 */
+	 Integer updateByPidAndDictName(@Param("bean") T t,@Param("pid") String pid,@Param("dictName") String dictName);
+
+
+	/**
+	 * 根据PidAndDictName删除
+	 */
+	 Integer deleteByPidAndDictName(@Param("pid") String pid,@Param("dictName") String dictName);
+
+
+	/**
+	 * 根据PidAndDictName获取对象
+	 */
+	 T selectByPidAndDictName(@Param("pid") String pid,@Param("dictName") String dictName);
+
+
 }
