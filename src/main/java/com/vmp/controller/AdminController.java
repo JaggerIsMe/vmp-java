@@ -2,15 +2,19 @@ package com.vmp.controller;
 
 import com.vmp.annotation.GlobalInterceptor;
 import com.vmp.annotation.VerifyParam;
+import com.vmp.entity.constants.Constants;
 import com.vmp.entity.dto.TokenUserInfoDto;
 import com.vmp.entity.enums.RoleStatusEnum;
 import com.vmp.entity.po.RoleInfo;
+import com.vmp.entity.po.SysDictData;
 import com.vmp.entity.po.SysMenuInfo;
 import com.vmp.entity.query.RoleInfoQuery;
+import com.vmp.entity.query.SysDictDataQuery;
 import com.vmp.entity.query.SysMenuInfoQuery;
 import com.vmp.entity.query.UserInfoQuery;
 import com.vmp.entity.vo.*;
 import com.vmp.service.RoleInfoService;
+import com.vmp.service.SysDictDataService;
 import com.vmp.service.SysMenuInfoService;
 import com.vmp.service.UserInfoService;
 import com.vmp.utils.CopyTools;
@@ -42,6 +46,9 @@ public class AdminController extends ABaseController {
 
     @Resource
     private SysMenuInfoService sysMenuInfoService;
+
+    @Resource
+    private SysDictDataService sysDictDataService;
 
     /**
      * 获取用户列表 根据条件分页查询
@@ -228,6 +235,63 @@ public class AdminController extends ABaseController {
     public ResponseVO updateUserRoleByUserId(@VerifyParam(required = true) @PathVariable("userId") String userId,
                                              @VerifyParam(required = true) @PathVariable("roleId") String roleId) {
         roleInfoService.updateUserRoleByUserId(userId, roleId);
+        return getSuccessResponseVO(null);
+    }
+
+    /**
+     * 获取所有一级字典数据
+     *
+     * @return
+     */
+    @RequestMapping("/loadAllFatherDictDataList")
+    @GlobalInterceptor(checkAdmin = true)
+    public ResponseVO loadAllFatherDictDataList() {
+        SysDictDataQuery query = new SysDictDataQuery();
+        query.setPid(Constants.SYS_NAME.toUpperCase());
+        query.setOrderBy("create_time asc");
+        return getSuccessResponseVO(CopyTools.copyList(sysDictDataService.findListByParam(query), SysDictDataVO.class));
+    }
+
+    /**
+     * 获取下级字典数据列表 根据条件分页查询
+     *
+     * @return
+     */
+    @RequestMapping("/loadChildDictDataListByPid/{pid}")
+    @GlobalInterceptor(checkAdmin = true, checkParams = true)
+    public ResponseVO loadChildDictDataListByPid(SysDictDataQuery query, @VerifyParam(required = true) @PathVariable("pid") String pid) {
+        query.setPid(pid);
+        query.setOrderBy("create_time asc");
+        PaginationResultVO resultVO = sysDictDataService.findListByPage(query);
+        return getSuccessResponseVO(convert2PaginationVO(resultVO, SysDictDataVO.class));
+    }
+
+    /**
+     * 新增字典数据
+     *
+     * @return
+     */
+    @RequestMapping("/newDictData/{pid}")
+    @GlobalInterceptor(checkAdmin = true, checkParams = true)
+    public ResponseVO newDictData(SysDictData dictData, @VerifyParam(required = true) @PathVariable("pid") String pid) {
+        dictData.setPid(pid);
+        sysDictDataService.newDictData(dictData);
+        return getSuccessResponseVO(null);
+    }
+
+    /**
+     * 修改字典数据
+     *
+     * @return
+     */
+    @RequestMapping("/updateDictData/{dictId}")
+    @GlobalInterceptor(checkAdmin = true, checkParams = true)
+    public ResponseVO updateDictData(SysDictData dictData, @VerifyParam(required = true) @PathVariable("dictId") String dictId) {
+        dictData.setDictId(dictId);
+        dictData.setPid(null);
+        dictData.setDictCode(null);
+        dictData.setCreateTime(null);
+        sysDictDataService.updateSysDictDataByDictId(dictData, dictId);
         return getSuccessResponseVO(null);
     }
 
