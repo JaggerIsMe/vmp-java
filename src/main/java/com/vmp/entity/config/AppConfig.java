@@ -23,12 +23,15 @@ public class AppConfig {
     @Value("${dingtalk.app.clientSecret}")
     private String dingTalkAppClientSecret;
 
-
     public String getProjectFolder() {
         if (!StringTools.isEmpty(projectFolder) && !projectFolder.endsWith("/")) {
             projectFolder = projectFolder + "/";
         }
         return projectFolder;
+    }
+
+    public static Logger getLogger() {
+        return logger;
     }
 
     public String getDingTalkAppClientId() {
@@ -37,9 +40,5 @@ public class AppConfig {
 
     public String getDingTalkAppClientSecret() {
         return dingTalkAppClientSecret;
-    }
-
-    public static Logger getLogger() {
-        return logger;
     }
 }

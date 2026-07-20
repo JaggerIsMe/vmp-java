@@ -21,6 +21,8 @@ public class OKHttpUtils {
      */
     private static final int TIME_OUT_SECONDS = 5;
 
+    private static final MediaType JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
+
     private static final Logger logger = LoggerFactory.getLogger(OKHttpUtils.class);
 
     private static OkHttpClient.Builder getClientBuilder() {
@@ -46,7 +48,23 @@ public class OKHttpUtils {
         return requestBuilder;
     }
 
-    private static FormBody.Builder getBuilder(Map<String, String> params) {
+    private static HttpUrl getHttpUrl(String url, Map<String, String> queryParam) {
+        HttpUrl.Builder urlBuilder = HttpUrl.get(url).newBuilder();
+        if (queryParam != null) {
+            for (Map.Entry<String, String> map : queryParam.entrySet()) {
+                String value;
+                if (map.getValue() == null) {
+                    value = "";
+                } else {
+                    value = map.getValue();
+                }
+                urlBuilder.addQueryParameter(map.getKey(), value);
+            }
+        }
+        return urlBuilder.build();
+    }
+
+    private static FormBody.Builder getFormBodyBuilder(Map<String, String> params) {
         FormBody.Builder builder = new FormBody.Builder();
         if (params == null) {
             return builder;
@@ -65,19 +83,27 @@ public class OKHttpUtils {
     }
 
     public static String getRequest(String url) throws BusinessException {
+        return getRequest(url, null, null);
+    }
+
+    public static String getRequest(String url, Map<String, String> header) throws BusinessException {
+        return getRequest(url, header, null);
+    }
+
+    public static String getRequest(String url, Map<String, String> header, Map<String, String> queryParam) throws BusinessException {
         ResponseBody responseBody = null;
         try {
             OkHttpClient.Builder clientBuilder = getClientBuilder();
-            Request.Builder requestBuilder = getRequestBuilder(null);
+            Request.Builder requestBuilder = getRequestBuilder(header);
             OkHttpClient client = clientBuilder.build();
-            Request request = requestBuilder.url(url).build();
+            Request request = requestBuilder.url(getHttpUrl(url, queryParam)).build();
             Response response = client.newCall(request).execute();
             responseBody = response.body();
             String responseStr = responseBody.string();
-            logger.info("postRequest请求地址:{},返回信息:{}", url, responseStr);
+            logger.info("getRequest请求地址:{},返回信息:{}", url, responseStr);
             return responseStr;
         } catch (SocketTimeoutException | ConnectException e) {
-            logger.error("OKhttp POST 请求超时,url:{}", url, e);
+            logger.error("OKhttp GET 请求超时,url:{}", url, e);
             throw new BusinessException(ResponseCodeEnum.CODE_500);
         } catch (Exception e) {
             logger.error("OKhttp GET 请求异常", e);
@@ -90,31 +116,26 @@ public class OKHttpUtils {
     }
 
     public static String postRequest(String url, Map<String, String> params) throws BusinessException {
+        return postRequest(url, params, null, null);
+    }
+
+    public static String postRequest(String url, Map<String, String> params, Map<String, String> header) throws BusinessException {
+        return postRequest(url, params, header, null);
+    }
+
+    public static String postRequest(String url, Map<String, String> params, Map<String, String> header, Map<String, String> queryParam) throws BusinessException {
         ResponseBody body = null;
         try {
             if (params == null) {
                 params = new HashMap<>();
             }
-            OkHttpClient.Builder clientBuilder =
-                    new OkHttpClient.Builder().followRedirects(false).retryOnConnectionFailure(false);
-            clientBuilder.connectTimeout(TIME_OUT_SECONDS, TimeUnit.SECONDS).readTimeout(TIME_OUT_SECONDS, TimeUnit.SECONDS);
+            OkHttpClient.Builder clientBuilder = getClientBuilder();
             OkHttpClient client = clientBuilder.build();
-            FormBody.Builder builder = new FormBody.Builder();
-            RequestBody requestBody = null;
-            for (Map.Entry<String, String> map : params.entrySet()) {
-                String key = map.getKey();
-                String value;
-                if (map.getValue() == null) {
-                    value = "";
-                } else {
-                    value = map.getValue();
-                }
-                builder.add(key, value);
-            }
-            requestBody = builder.build();
+            FormBody.Builder builder = getFormBodyBuilder(params);
+            RequestBody requestBody = builder.build();
 
-            Request.Builder requestBuilder = new Request.Builder();
-            Request request = requestBuilder.url(url).post(requestBody).build();
+            Request.Builder requestBuilder = getRequestBuilder(header);
+            Request request = requestBuilder.url(getHttpUrl(url, queryParam)).post(requestBody).build();
             Response response = client.newCall(request).execute();
             body = response.body();
             String responseStr = body.string();
@@ -133,7 +154,50 @@ public class OKHttpUtils {
         }
     }
 
+    public static String postJsonRequest(String url, Map<String, Object> params) throws BusinessException {
+        return postJsonRequest(url, params, null, null);
+    }
+
+    public static String postJsonRequest(String url, Map<String, Object> params, Map<String, String> header) throws BusinessException {
+        return postJsonRequest(url, params, header, null);
+    }
+
+    public static String postJsonRequest(String url, Map<String, Object> params, Map<String, String> header, Map<String, String> queryParam) throws BusinessException {
+        ResponseBody body = null;
+        try {
+            if (params == null) {
+                params = new HashMap<>();
+            }
+            String requestJson = JsonUtils.convertObj2Json(params);
+            OkHttpClient.Builder clientBuilder = getClientBuilder();
+            OkHttpClient client = clientBuilder.build();
+            RequestBody requestBody = RequestBody.create(requestJson, JSON_MEDIA_TYPE);
+
+            Request.Builder requestBuilder = getRequestBuilder(header);
+            Request request = requestBuilder.url(getHttpUrl(url, queryParam)).post(requestBody).build();
+            Response response = client.newCall(request).execute();
+            body = response.body();
+            String responseStr = body.string();
+            logger.info("postJsonRequest请求地址:{},参数:{},返回信息:{}", url, requestJson, responseStr);
+            return responseStr;
+        } catch (SocketTimeoutException | ConnectException e) {
+            logger.error("OKhttp JSON POST 请求超时,url:{},请求参数：{}", url, JsonUtils.convertObj2Json(params), e);
+            throw new BusinessException(ResponseCodeEnum.CODE_500);
+        } catch (Exception e) {
+            logger.error("OKhttp JSON POST 请求异常,url:{},请求参数：{}", url, JsonUtils.convertObj2Json(params), e);
+            return null;
+        } finally {
+            if (body != null) {
+                body.close();
+            }
+        }
+    }
+
     public static void downloadFile(String url, File targetFile) throws BusinessException {
+        downloadFile(url, targetFile, null);
+    }
+
+    public static void downloadFile(String url, File targetFile, Map<String, String> header) throws BusinessException {
         Response response = null;
         ResponseBody responseBody = null;
         InputStream inputStream = null;
@@ -147,7 +211,7 @@ public class OKHttpUtils {
                 parentFile.mkdirs();
             }
             OkHttpClient client = getClientBuilder().followRedirects(true).followSslRedirects(true).build();
-            Request request = getRequestBuilder(null).url(url).get().build();
+            Request request = getRequestBuilder(header).url(url).get().build();
             response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
                 logger.error("OKhttp 下载文件失败,url:{},code:{}", url, response.code());

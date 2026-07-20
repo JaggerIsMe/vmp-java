@@ -92,4 +92,6 @@ public class Constants {
 
     public static final String REDIS_KEY_ONLINE_USERID_LATEST_TOKEN = "vmp:online:userId:";
 
+    public static final String AK_ACCESS_TOKEN = "vmp:ak:token:";
+
 }

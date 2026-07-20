@@ -1,6 +1,5 @@
 package com.vmp.service;
 
-import com.vmp.entity.dto.DingTalkUserInfoDto;
 import com.vmp.entity.dto.TokenUserInfoDto;
 
 public interface DingTalkService {
