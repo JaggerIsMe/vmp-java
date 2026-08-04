@@ -6,13 +6,18 @@ import com.vmp.entity.config.AppConfig;
 import com.vmp.entity.constants.Constants;
 import com.vmp.entity.dto.TokenUserInfoDto;
 import com.vmp.entity.enums.AdminStatusEnum;
+import com.vmp.entity.enums.DictStatusEnum;
 import com.vmp.entity.enums.ResponseCodeEnum;
 import com.vmp.entity.enums.VerifyRegexEnum;
 import com.vmp.entity.po.UserInfo;
+import com.vmp.entity.query.SysDictDataQuery;
+import com.vmp.entity.vo.PaginationResultVO;
 import com.vmp.entity.vo.ResponseVO;
+import com.vmp.entity.vo.SysDictDataVO;
 import com.vmp.entity.vo.UserInfoVO;
 import com.vmp.exception.BusinessException;
 import com.vmp.service.RoleInfoService;
+import com.vmp.service.SysDictDataService;
 import com.vmp.service.UserInfoService;
 import com.vmp.utils.CookieUtils;
 import com.vmp.utils.CopyTools;
@@ -52,6 +57,9 @@ public class AccountController extends ABaseController {
 
     @Resource
     private RoleInfoService roleInfoService;
+
+    @Resource
+    private SysDictDataService sysDictDataService;
 
 
     /**
@@ -176,30 +184,30 @@ public class AccountController extends ABaseController {
         String avatarPath = appConfig.getProjectFolder() + avatarFolderName + userId + Constants.AVATAR_SUFFIX;
         File file = new File(avatarPath);
         if (!file.exists()) {
-            if (!new File(appConfig.getProjectFolder() + avatarFolderName + Constants.AVATAR_DEFUALT).exists()) {
+            if (!new File(appConfig.getProjectFolder() + avatarFolderName + Constants.AVATAR_DEFAULT).exists()) {
                 printNoDefaultImage(response);
                 return;
             }
-            avatarPath = appConfig.getProjectFolder() + avatarFolderName + Constants.AVATAR_DEFUALT;
+            avatarPath = appConfig.getProjectFolder() + avatarFolderName + Constants.AVATAR_DEFAULT;
         }
         response.setContentType("image/jpg");
         readFile(response, avatarPath);
     }
 
-    private void printNoDefaultImage(HttpServletResponse response) {
-        response.setHeader(CONTENT_TYPE, CONTENT_TYPE_VALUE);
-        response.setStatus(HttpStatus.OK.value());
-        PrintWriter writer = null;
-        try {
-            writer = response.getWriter();
-            writer.print("请在头像目录下放置默认头像default_avatar.jpg");
-            writer.close();
-        } catch (Exception e) {
-            logger.error("输出无默认图失败", e);
-        } finally {
-            writer.close();
-        }
-    }
+//    private void printNoDefaultImage(HttpServletResponse response) {
+//        response.setHeader(CONTENT_TYPE, CONTENT_TYPE_VALUE);
+//        response.setStatus(HttpStatus.OK.value());
+//        PrintWriter writer = null;
+//        try {
+//            writer = response.getWriter();
+//            writer.print("请在头像目录下放置默认头像default_avatar.jpg");
+//            writer.close();
+//        } catch (Exception e) {
+//            logger.error("输出无默认图失败", e);
+//        } finally {
+//            writer.close();
+//        }
+//    }
 
     /**
      * 初始化用户信息(账号、密码、昵称)，初次钉钉扫码登录后
@@ -242,6 +250,21 @@ public class AccountController extends ABaseController {
         }
 
         return getSuccessResponseVO(roleInfoService.getUserRoleMenuPermissionsInfo(userId));
+    }
+
+    /**
+     * 根据pid获取所有可用下级字典数据(非管理员权限可访问)
+     *
+     * @return
+     */
+    @RequestMapping("/getAllEnableChildDictDataByPid/{pid}")
+    @GlobalInterceptor(checkParams = true)
+    public ResponseVO getAllEnableChildDictDataByPid(@VerifyParam(required = true) @PathVariable("pid") String pid) {
+        SysDictDataQuery query = new SysDictDataQuery();
+        query.setPid(pid);
+        query.setStatus(DictStatusEnum.ENABLE.getStatus());
+        query.setOrderBy("create_time asc");
+        return getSuccessResponseVO(sysDictDataService.findListByParam(query));
     }
 
 }

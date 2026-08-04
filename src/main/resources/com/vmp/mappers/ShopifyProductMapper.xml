@@ -1,0 +1,1011 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vmp.mappers.ShopifyProductMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.vmp.entity.po.ShopifyProduct">
+		<!--店铺id-->
+		<result column="store_id" property="storeId"  />
+		<!--店铺名称-->
+		<result column="store_name" property="storeName"  />
+		<!--货币代码-->
+		<result column="currency_code" property="currencyCode"  />
+		<!--产品id-->
+		<result column="product_id" property="productId"  />
+		<!--产品标题-->
+		<result column="product_title" property="productTitle"  />
+		<!--产品url后缀-->
+		<result column="handle" property="handle"  />
+		<!--产品前台链接-->
+		<result column="product_url" property="productUrl"  />
+		<!--产品状态-->
+		<result column="product_status" property="productStatus"  />
+		<!--产品创建时间-->
+		<result column="product_created_at" property="productCreatedAt"  />
+		<!--产品类型-->
+		<result column="product_type" property="productType"  />
+		<!--产品类目-->
+		<result column="product_category" property="productCategory"  />
+		<!--产品主图链接-->
+		<result column="product_img_url" property="productImgUrl"  />
+		<!--变体id-->
+		<result column="variant_id" property="variantId"  />
+		<!--变体属性-->
+		<result column="attribute" property="attribute"  />
+		<!--库存编码-->
+		<result column="sku" property="sku"  />
+		<!--条码-->
+		<result column="barcode" property="barcode"  />
+		<!--单价-->
+		<result column="unit_price" property="unitPrice"  />
+		<!--变体创建时间-->
+		<result column="variant_created_at" property="variantCreatedAt"  />
+		<!--变体标题-->
+		<result column="variant_title" property="variantTitle"  />
+		<!--变体主图链接-->
+		<result column="variant_img_url" property="variantImgUrl"  />
+		<!--总可用库存数-->
+		<result column="total_available_quantity" property="totalAvailableQuantity"  />
+		<!--变体可售状态 0不可售 1可售-->
+		<result column="available_for_sale" property="availableForSale"  />
+		<!--Parent主体Child变体-->
+		<result column="parent_status" property="parentStatus"  />
+		<!--品牌-->
+		<result column="brand" property="brand"  />
+		<!--负责人-->
+		<result column="person_in_charge" property="personInCharge"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 store_id,store_name,currency_code,product_id,product_title,
+		 handle,product_url,product_status,product_created_at,product_type,
+		 product_category,product_img_url,variant_id,attribute,sku,
+		 barcode,unit_price,variant_created_at,variant_title,variant_img_url,
+		 total_available_quantity,available_for_sale,parent_status,brand,person_in_charge
+		 
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.storeId != null and query.storeId!=''">
+			 and  store_id = #{query.storeId}
+		</if>
+		<if test="query.storeName != null and query.storeName!=''">
+			 and  store_name = #{query.storeName}
+		</if>
+		<if test="query.currencyCode != null and query.currencyCode!=''">
+			 and  currency_code = #{query.currencyCode}
+		</if>
+		<if test="query.productId != null and query.productId!=''">
+			 and  product_id = #{query.productId}
+		</if>
+		<if test="query.productTitle != null and query.productTitle!=''">
+			 and  product_title = #{query.productTitle}
+		</if>
+		<if test="query.handle != null and query.handle!=''">
+			 and  handle = #{query.handle}
+		</if>
+		<if test="query.productUrl != null and query.productUrl!=''">
+			 and  product_url = #{query.productUrl}
+		</if>
+		<if test="query.productStatus != null and query.productStatus!=''">
+			 and  product_status = #{query.productStatus}
+		</if>
+		<if test="query.productCreatedAt != null and query.productCreatedAt!=''">
+			 <![CDATA[ and  product_created_at=str_to_date(#{query.productCreatedAt}, '%Y-%m-%d') ]]>
+		</if>
+		<if test="query.productType != null and query.productType!=''">
+			 and  product_type = #{query.productType}
+		</if>
+		<if test="query.productCategory != null and query.productCategory!=''">
+			 and  product_category = #{query.productCategory}
+		</if>
+		<if test="query.productImgUrl != null and query.productImgUrl!=''">
+			 and  product_img_url = #{query.productImgUrl}
+		</if>
+		<if test="query.variantId != null and query.variantId!=''">
+			 and  variant_id = #{query.variantId}
+		</if>
+		<if test="query.attribute != null and query.attribute!=''">
+			 and  attribute = #{query.attribute}
+		</if>
+		<if test="query.sku != null and query.sku!=''">
+			 and  sku = #{query.sku}
+		</if>
+		<if test="query.barcode != null and query.barcode!=''">
+			 and  barcode = #{query.barcode}
+		</if>
+		<if test="query.unitPrice != null">
+			 and  unit_price = #{query.unitPrice}
+		</if>
+		<if test="query.variantCreatedAt != null and query.variantCreatedAt!=''">
+			 <![CDATA[ and  variant_created_at=str_to_date(#{query.variantCreatedAt}, '%Y-%m-%d') ]]>
+		</if>
+		<if test="query.variantTitle != null and query.variantTitle!=''">
+			 and  variant_title = #{query.variantTitle}
+		</if>
+		<if test="query.variantImgUrl != null and query.variantImgUrl!=''">
+			 and  variant_img_url = #{query.variantImgUrl}
+		</if>
+		<if test="query.totalAvailableQuantity != null">
+			 and  total_available_quantity = #{query.totalAvailableQuantity}
+		</if>
+		<if test="query.availableForSale != null">
+			 and  available_for_sale = #{query.availableForSale}
+		</if>
+		<if test="query.parentStatus != null and query.parentStatus!=''">
+			 and  parent_status = #{query.parentStatus}
+		</if>
+		<if test="query.brand != null and query.brand!=''">
+			 and  brand = #{query.brand}
+		</if>
+		<if test="query.personInCharge != null and query.personInCharge!=''">
+			 and  person_in_charge = #{query.personInCharge}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.storeIdFuzzy!= null  and query.storeIdFuzzy!=''">
+				 and  store_id like concat('%', #{query.storeIdFuzzy}, '%')
+			</if>
+			<if test="query.storeNameFuzzy!= null  and query.storeNameFuzzy!=''">
+				 and  store_name like concat('%', #{query.storeNameFuzzy}, '%')
+			</if>
+			<if test="query.currencyCodeFuzzy!= null  and query.currencyCodeFuzzy!=''">
+				 and  currency_code like concat('%', #{query.currencyCodeFuzzy}, '%')
+			</if>
+			<if test="query.productIdFuzzy!= null  and query.productIdFuzzy!=''">
+				 and  product_id like concat('%', #{query.productIdFuzzy}, '%')
+			</if>
+			<if test="query.productTitleFuzzy!= null  and query.productTitleFuzzy!=''">
+				 and  product_title like concat('%', #{query.productTitleFuzzy}, '%')
+			</if>
+			<if test="query.handleFuzzy!= null  and query.handleFuzzy!=''">
+				 and  handle like concat('%', #{query.handleFuzzy}, '%')
+			</if>
+			<if test="query.productUrlFuzzy!= null  and query.productUrlFuzzy!=''">
+				 and  product_url like concat('%', #{query.productUrlFuzzy}, '%')
+			</if>
+			<if test="query.productStatusFuzzy!= null  and query.productStatusFuzzy!=''">
+				 and  product_status like concat('%', #{query.productStatusFuzzy}, '%')
+			</if>
+			<if test="query.productCreatedAtStart!= null and query.productCreatedAtStart!=''">
+				 <![CDATA[ and  product_created_at>=str_to_date(#{query.productCreatedAtStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.productCreatedAtEnd!= null and query.productCreatedAtEnd!=''">
+				 <![CDATA[ and  product_created_at< date_sub(str_to_date(#{query.productCreatedAtEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.productTypeFuzzy!= null  and query.productTypeFuzzy!=''">
+				 and  product_type like concat('%', #{query.productTypeFuzzy}, '%')
+			</if>
+			<if test="query.productCategoryFuzzy!= null  and query.productCategoryFuzzy!=''">
+				 and  product_category like concat('%', #{query.productCategoryFuzzy}, '%')
+			</if>
+			<if test="query.productImgUrlFuzzy!= null  and query.productImgUrlFuzzy!=''">
+				 and  product_img_url like concat('%', #{query.productImgUrlFuzzy}, '%')
+			</if>
+			<if test="query.variantIdFuzzy!= null  and query.variantIdFuzzy!=''">
+				 and  variant_id like concat('%', #{query.variantIdFuzzy}, '%')
+			</if>
+			<if test="query.attributeFuzzy!= null  and query.attributeFuzzy!=''">
+				 and  attribute like concat('%', #{query.attributeFuzzy}, '%')
+			</if>
+			<if test="query.skuFuzzy!= null  and query.skuFuzzy!=''">
+				 and  sku like concat('%', #{query.skuFuzzy}, '%')
+			</if>
+			<if test="query.barcodeFuzzy!= null  and query.barcodeFuzzy!=''">
+				 and  barcode like concat('%', #{query.barcodeFuzzy}, '%')
+			</if>
+			<if test="query.variantCreatedAtStart!= null and query.variantCreatedAtStart!=''">
+				 <![CDATA[ and  variant_created_at>=str_to_date(#{query.variantCreatedAtStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.variantCreatedAtEnd!= null and query.variantCreatedAtEnd!=''">
+				 <![CDATA[ and  variant_created_at< date_sub(str_to_date(#{query.variantCreatedAtEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.variantTitleFuzzy!= null  and query.variantTitleFuzzy!=''">
+				 and  variant_title like concat('%', #{query.variantTitleFuzzy}, '%')
+			</if>
+			<if test="query.variantImgUrlFuzzy!= null  and query.variantImgUrlFuzzy!=''">
+				 and  variant_img_url like concat('%', #{query.variantImgUrlFuzzy}, '%')
+			</if>
+			<if test="query.parentStatusFuzzy!= null  and query.parentStatusFuzzy!=''">
+				 and  parent_status like concat('%', #{query.parentStatusFuzzy}, '%')
+			</if>
+			<if test="query.brandFuzzy!= null  and query.brandFuzzy!=''">
+				 and  brand like concat('%', #{query.brandFuzzy}, '%')
+			</if>
+			<if test="query.personInChargeFuzzy!= null  and query.personInChargeFuzzy!=''">
+				 and  person_in_charge like concat('%', #{query.personInChargeFuzzy}, '%')
+			</if>
+			<if test="query.storeIdList != null">
+				<choose>
+					<when test="query.storeIdList.size() > 0">
+						and store_id in
+						<foreach collection="query.storeIdList" item="storeId" open="(" separator="," close=")">
+							#{storeId}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+			<if test="query.productIdList != null">
+				<choose>
+					<when test="query.productIdList.size() > 0">
+						and product_id in
+						<foreach collection="query.productIdList" item="productId" open="(" separator="," close=")">
+							#{productId}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+			<if test="query.brandList != null">
+				<choose>
+					<when test="query.brandList.size() > 0">
+						and brand in
+						<foreach collection="query.brandList" item="brand" open="(" separator="," close=")">
+							#{brand}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+			<if test="query.personInChargeList != null">
+				<choose>
+					<when test="query.personInChargeList.size() > 0">
+						and person_in_charge in
+						<foreach collection="query.personInChargeList" item="personInCharge" open="(" separator="," close=")">
+							#{personInCharge}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM shopify_product <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM shopify_product <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.vmp.entity.po.ShopifyProduct">
+		 INSERT INTO shopify_product
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.storeId != null">
+				 store_id,
+			</if>
+			<if test="bean.storeName != null">
+				 store_name,
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code,
+			</if>
+			<if test="bean.productId != null">
+				 product_id,
+			</if>
+			<if test="bean.productTitle != null">
+				 product_title,
+			</if>
+			<if test="bean.handle != null">
+				 handle,
+			</if>
+			<if test="bean.productUrl != null">
+				 product_url,
+			</if>
+			<if test="bean.productStatus != null">
+				 product_status,
+			</if>
+			<if test="bean.productCreatedAt != null">
+				 product_created_at,
+			</if>
+			<if test="bean.productType != null">
+				 product_type,
+			</if>
+			<if test="bean.productCategory != null">
+				 product_category,
+			</if>
+			<if test="bean.productImgUrl != null">
+				 product_img_url,
+			</if>
+			<if test="bean.variantId != null">
+				 variant_id,
+			</if>
+			<if test="bean.attribute != null">
+				 attribute,
+			</if>
+			<if test="bean.sku != null">
+				 sku,
+			</if>
+			<if test="bean.barcode != null">
+				 barcode,
+			</if>
+			<if test="bean.unitPrice != null">
+				 unit_price,
+			</if>
+			<if test="bean.variantCreatedAt != null">
+				 variant_created_at,
+			</if>
+			<if test="bean.variantTitle != null">
+				 variant_title,
+			</if>
+			<if test="bean.variantImgUrl != null">
+				 variant_img_url,
+			</if>
+			<if test="bean.totalAvailableQuantity != null">
+				 total_available_quantity,
+			</if>
+			<if test="bean.availableForSale != null">
+				 available_for_sale,
+			</if>
+			<if test="bean.parentStatus != null">
+				 parent_status,
+			</if>
+			<if test="bean.brand != null">
+				 brand,
+			</if>
+			<if test="bean.personInCharge != null">
+				 person_in_charge,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.storeId!=null">
+				 #{bean.storeId},
+			</if>
+			<if test="bean.storeName!=null">
+				 #{bean.storeName},
+			</if>
+			<if test="bean.currencyCode!=null">
+				 #{bean.currencyCode},
+			</if>
+			<if test="bean.productId!=null">
+				 #{bean.productId},
+			</if>
+			<if test="bean.productTitle!=null">
+				 #{bean.productTitle},
+			</if>
+			<if test="bean.handle!=null">
+				 #{bean.handle},
+			</if>
+			<if test="bean.productUrl!=null">
+				 #{bean.productUrl},
+			</if>
+			<if test="bean.productStatus!=null">
+				 #{bean.productStatus},
+			</if>
+			<if test="bean.productCreatedAt!=null">
+				 #{bean.productCreatedAt},
+			</if>
+			<if test="bean.productType!=null">
+				 #{bean.productType},
+			</if>
+			<if test="bean.productCategory!=null">
+				 #{bean.productCategory},
+			</if>
+			<if test="bean.productImgUrl!=null">
+				 #{bean.productImgUrl},
+			</if>
+			<if test="bean.variantId!=null">
+				 #{bean.variantId},
+			</if>
+			<if test="bean.attribute!=null">
+				 #{bean.attribute},
+			</if>
+			<if test="bean.sku!=null">
+				 #{bean.sku},
+			</if>
+			<if test="bean.barcode!=null">
+				 #{bean.barcode},
+			</if>
+			<if test="bean.unitPrice!=null">
+				 #{bean.unitPrice},
+			</if>
+			<if test="bean.variantCreatedAt!=null">
+				 #{bean.variantCreatedAt},
+			</if>
+			<if test="bean.variantTitle!=null">
+				 #{bean.variantTitle},
+			</if>
+			<if test="bean.variantImgUrl!=null">
+				 #{bean.variantImgUrl},
+			</if>
+			<if test="bean.totalAvailableQuantity!=null">
+				 #{bean.totalAvailableQuantity},
+			</if>
+			<if test="bean.availableForSale!=null">
+				 #{bean.availableForSale},
+			</if>
+			<if test="bean.parentStatus!=null">
+				 #{bean.parentStatus},
+			</if>
+			<if test="bean.brand!=null">
+				 #{bean.brand},
+			</if>
+			<if test="bean.personInCharge!=null">
+				 #{bean.personInCharge},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.vmp.entity.po.ShopifyProduct">
+		 INSERT INTO shopify_product
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.storeId != null">
+				 store_id,
+			</if>
+			<if test="bean.storeName != null">
+				 store_name,
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code,
+			</if>
+			<if test="bean.productId != null">
+				 product_id,
+			</if>
+			<if test="bean.productTitle != null">
+				 product_title,
+			</if>
+			<if test="bean.handle != null">
+				 handle,
+			</if>
+			<if test="bean.productUrl != null">
+				 product_url,
+			</if>
+			<if test="bean.productStatus != null">
+				 product_status,
+			</if>
+			<if test="bean.productCreatedAt != null">
+				 product_created_at,
+			</if>
+			<if test="bean.productType != null">
+				 product_type,
+			</if>
+			<if test="bean.productCategory != null">
+				 product_category,
+			</if>
+			<if test="bean.productImgUrl != null">
+				 product_img_url,
+			</if>
+			<if test="bean.variantId != null">
+				 variant_id,
+			</if>
+			<if test="bean.attribute != null">
+				 attribute,
+			</if>
+			<if test="bean.sku != null">
+				 sku,
+			</if>
+			<if test="bean.barcode != null">
+				 barcode,
+			</if>
+			<if test="bean.unitPrice != null">
+				 unit_price,
+			</if>
+			<if test="bean.variantCreatedAt != null">
+				 variant_created_at,
+			</if>
+			<if test="bean.variantTitle != null">
+				 variant_title,
+			</if>
+			<if test="bean.variantImgUrl != null">
+				 variant_img_url,
+			</if>
+			<if test="bean.totalAvailableQuantity != null">
+				 total_available_quantity,
+			</if>
+			<if test="bean.availableForSale != null">
+				 available_for_sale,
+			</if>
+			<if test="bean.parentStatus != null">
+				 parent_status,
+			</if>
+			<if test="bean.brand != null">
+				 brand,
+			</if>
+			<if test="bean.personInCharge != null">
+				 person_in_charge,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.storeId!=null">
+				 #{bean.storeId},
+			</if>
+			<if test="bean.storeName!=null">
+				 #{bean.storeName},
+			</if>
+			<if test="bean.currencyCode!=null">
+				 #{bean.currencyCode},
+			</if>
+			<if test="bean.productId!=null">
+				 #{bean.productId},
+			</if>
+			<if test="bean.productTitle!=null">
+				 #{bean.productTitle},
+			</if>
+			<if test="bean.handle!=null">
+				 #{bean.handle},
+			</if>
+			<if test="bean.productUrl!=null">
+				 #{bean.productUrl},
+			</if>
+			<if test="bean.productStatus!=null">
+				 #{bean.productStatus},
+			</if>
+			<if test="bean.productCreatedAt!=null">
+				 #{bean.productCreatedAt},
+			</if>
+			<if test="bean.productType!=null">
+				 #{bean.productType},
+			</if>
+			<if test="bean.productCategory!=null">
+				 #{bean.productCategory},
+			</if>
+			<if test="bean.productImgUrl!=null">
+				 #{bean.productImgUrl},
+			</if>
+			<if test="bean.variantId!=null">
+				 #{bean.variantId},
+			</if>
+			<if test="bean.attribute!=null">
+				 #{bean.attribute},
+			</if>
+			<if test="bean.sku!=null">
+				 #{bean.sku},
+			</if>
+			<if test="bean.barcode!=null">
+				 #{bean.barcode},
+			</if>
+			<if test="bean.unitPrice!=null">
+				 #{bean.unitPrice},
+			</if>
+			<if test="bean.variantCreatedAt!=null">
+				 #{bean.variantCreatedAt},
+			</if>
+			<if test="bean.variantTitle!=null">
+				 #{bean.variantTitle},
+			</if>
+			<if test="bean.variantImgUrl!=null">
+				 #{bean.variantImgUrl},
+			</if>
+			<if test="bean.totalAvailableQuantity!=null">
+				 #{bean.totalAvailableQuantity},
+			</if>
+			<if test="bean.availableForSale!=null">
+				 #{bean.availableForSale},
+			</if>
+			<if test="bean.parentStatus!=null">
+				 #{bean.parentStatus},
+			</if>
+			<if test="bean.brand!=null">
+				 #{bean.brand},
+			</if>
+			<if test="bean.personInCharge!=null">
+				 #{bean.personInCharge},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.storeId!=null">
+				 store_id = VALUES(store_id),
+			</if>
+			<if test="bean.storeName!=null">
+				 store_name = VALUES(store_name),
+			</if>
+			<if test="bean.currencyCode!=null">
+				 currency_code = VALUES(currency_code),
+			</if>
+			<if test="bean.productId!=null">
+				 product_id = VALUES(product_id),
+			</if>
+			<if test="bean.productTitle!=null">
+				 product_title = VALUES(product_title),
+			</if>
+			<if test="bean.handle!=null">
+				 handle = VALUES(handle),
+			</if>
+			<if test="bean.productUrl!=null">
+				 product_url = VALUES(product_url),
+			</if>
+			<if test="bean.productStatus!=null">
+				 product_status = VALUES(product_status),
+			</if>
+			<if test="bean.productCreatedAt!=null">
+				 product_created_at = VALUES(product_created_at),
+			</if>
+			<if test="bean.productType!=null">
+				 product_type = VALUES(product_type),
+			</if>
+			<if test="bean.productCategory!=null">
+				 product_category = VALUES(product_category),
+			</if>
+			<if test="bean.productImgUrl!=null">
+				 product_img_url = VALUES(product_img_url),
+			</if>
+			<if test="bean.variantId!=null">
+				 variant_id = VALUES(variant_id),
+			</if>
+			<if test="bean.attribute!=null">
+				 attribute = VALUES(attribute),
+			</if>
+			<if test="bean.sku!=null">
+				 sku = VALUES(sku),
+			</if>
+			<if test="bean.barcode!=null">
+				 barcode = VALUES(barcode),
+			</if>
+			<if test="bean.unitPrice!=null">
+				 unit_price = VALUES(unit_price),
+			</if>
+			<if test="bean.variantCreatedAt!=null">
+				 variant_created_at = VALUES(variant_created_at),
+			</if>
+			<if test="bean.variantTitle!=null">
+				 variant_title = VALUES(variant_title),
+			</if>
+			<if test="bean.variantImgUrl!=null">
+				 variant_img_url = VALUES(variant_img_url),
+			</if>
+			<if test="bean.totalAvailableQuantity!=null">
+				 total_available_quantity = VALUES(total_available_quantity),
+			</if>
+			<if test="bean.availableForSale!=null">
+				 available_for_sale = VALUES(available_for_sale),
+			</if>
+			<if test="bean.parentStatus!=null">
+				 parent_status = VALUES(parent_status),
+			</if>
+			<if test="bean.brand!=null">
+				 brand = VALUES(brand),
+			</if>
+			<if test="bean.personInCharge!=null">
+				 person_in_charge = VALUES(person_in_charge),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.vmp.entity.po.ShopifyProduct">
+		 INSERT INTO shopify_product(
+			 store_id,
+			 store_name,
+			 currency_code,
+			 product_id,
+			 product_title,
+			 handle,
+			 product_url,
+			 product_status,
+			 product_created_at,
+			 product_type,
+			 product_category,
+			 product_img_url,
+			 variant_id,
+			 attribute,
+			 sku,
+			 barcode,
+			 unit_price,
+			 variant_created_at,
+			 variant_title,
+			 variant_img_url,
+			 total_available_quantity,
+			 available_for_sale,
+			 parent_status,
+			 brand,
+			 person_in_charge
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.storeId},
+				 #{item.storeName},
+				 #{item.currencyCode},
+				 #{item.productId},
+				 #{item.productTitle},
+				 #{item.handle},
+				 #{item.productUrl},
+				 #{item.productStatus},
+				 #{item.productCreatedAt},
+				 #{item.productType},
+				 #{item.productCategory},
+				 #{item.productImgUrl},
+				 #{item.variantId},
+				 #{item.attribute},
+				 #{item.sku},
+				 #{item.barcode},
+				 #{item.unitPrice},
+				 #{item.variantCreatedAt},
+				 #{item.variantTitle},
+				 #{item.variantImgUrl},
+				 #{item.totalAvailableQuantity},
+				 #{item.availableForSale},
+				 #{item.parentStatus},
+				 #{item.brand},
+				 #{item.personInCharge}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.vmp.entity.po.ShopifyProduct">
+		 INSERT INTO shopify_product(
+			 store_id,
+			 store_name,
+			 currency_code,
+			 product_id,
+			 product_title,
+			 handle,
+			 product_url,
+			 product_status,
+			 product_created_at,
+			 product_type,
+			 product_category,
+			 product_img_url,
+			 variant_id,
+			 attribute,
+			 sku,
+			 barcode,
+			 unit_price,
+			 variant_created_at,
+			 variant_title,
+			 variant_img_url,
+			 total_available_quantity,
+			 available_for_sale,
+			 parent_status,
+			 brand,
+			 person_in_charge
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.storeId},
+				 #{item.storeName},
+				 #{item.currencyCode},
+				 #{item.productId},
+				 #{item.productTitle},
+				 #{item.handle},
+				 #{item.productUrl},
+				 #{item.productStatus},
+				 #{item.productCreatedAt},
+				 #{item.productType},
+				 #{item.productCategory},
+				 #{item.productImgUrl},
+				 #{item.variantId},
+				 #{item.attribute},
+				 #{item.sku},
+				 #{item.barcode},
+				 #{item.unitPrice},
+				 #{item.variantCreatedAt},
+				 #{item.variantTitle},
+				 #{item.variantImgUrl},
+				 #{item.totalAvailableQuantity},
+				 #{item.availableForSale},
+				 #{item.parentStatus},
+				 #{item.brand},
+				 #{item.personInCharge}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			store_id = VALUES(store_id),
+			store_name = VALUES(store_name),
+			currency_code = VALUES(currency_code),
+			product_id = VALUES(product_id),
+			product_title = VALUES(product_title),
+			handle = VALUES(handle),
+			product_url = VALUES(product_url),
+			product_status = VALUES(product_status),
+			product_created_at = VALUES(product_created_at),
+			product_type = VALUES(product_type),
+			product_category = VALUES(product_category),
+			product_img_url = VALUES(product_img_url),
+			variant_id = VALUES(variant_id),
+			attribute = VALUES(attribute),
+			sku = VALUES(sku),
+			barcode = VALUES(barcode),
+			unit_price = VALUES(unit_price),
+			variant_created_at = VALUES(variant_created_at),
+			variant_title = VALUES(variant_title),
+			variant_img_url = VALUES(variant_img_url),
+			total_available_quantity = VALUES(total_available_quantity),
+			available_for_sale = VALUES(available_for_sale),
+			parent_status = VALUES(parent_status),
+			brand = VALUES(brand),
+			person_in_charge = VALUES(person_in_charge)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.vmp.entity.query.ShopifyProductQuery">
+		 UPDATE shopify_product
+ 		 <set> 
+			<if test="bean.storeId != null">
+				 store_id = #{bean.storeId},
+			</if>
+			<if test="bean.storeName != null">
+				 store_name = #{bean.storeName},
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code = #{bean.currencyCode},
+			</if>
+			<if test="bean.productId != null">
+				 product_id = #{bean.productId},
+			</if>
+			<if test="bean.productTitle != null">
+				 product_title = #{bean.productTitle},
+			</if>
+			<if test="bean.handle != null">
+				 handle = #{bean.handle},
+			</if>
+			<if test="bean.productUrl != null">
+				 product_url = #{bean.productUrl},
+			</if>
+			<if test="bean.productStatus != null">
+				 product_status = #{bean.productStatus},
+			</if>
+			<if test="bean.productCreatedAt != null">
+				 product_created_at = #{bean.productCreatedAt},
+			</if>
+			<if test="bean.productType != null">
+				 product_type = #{bean.productType},
+			</if>
+			<if test="bean.productCategory != null">
+				 product_category = #{bean.productCategory},
+			</if>
+			<if test="bean.productImgUrl != null">
+				 product_img_url = #{bean.productImgUrl},
+			</if>
+			<if test="bean.variantId != null">
+				 variant_id = #{bean.variantId},
+			</if>
+			<if test="bean.attribute != null">
+				 attribute = #{bean.attribute},
+			</if>
+			<if test="bean.sku != null">
+				 sku = #{bean.sku},
+			</if>
+			<if test="bean.barcode != null">
+				 barcode = #{bean.barcode},
+			</if>
+			<if test="bean.unitPrice != null">
+				 unit_price = #{bean.unitPrice},
+			</if>
+			<if test="bean.variantCreatedAt != null">
+				 variant_created_at = #{bean.variantCreatedAt},
+			</if>
+			<if test="bean.variantTitle != null">
+				 variant_title = #{bean.variantTitle},
+			</if>
+			<if test="bean.variantImgUrl != null">
+				 variant_img_url = #{bean.variantImgUrl},
+			</if>
+			<if test="bean.totalAvailableQuantity != null">
+				 total_available_quantity = #{bean.totalAvailableQuantity},
+			</if>
+			<if test="bean.availableForSale != null">
+				 available_for_sale = #{bean.availableForSale},
+			</if>
+			<if test="bean.parentStatus != null">
+				 parent_status = #{bean.parentStatus},
+			</if>
+			<if test="bean.brand != null">
+				 brand = #{bean.brand},
+			</if>
+			<if test="bean.personInCharge != null">
+				 person_in_charge = #{bean.personInCharge},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from shopify_product
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据StoreIdAndProductIdAndVariantId修改-->
+	<update id="updateByStoreIdAndProductIdAndVariantId" parameterType="com.vmp.entity.po.ShopifyProduct">
+		 UPDATE shopify_product
+ 		 <set> 
+			<if test="bean.storeName != null">
+				 store_name = #{bean.storeName},
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code = #{bean.currencyCode},
+			</if>
+			<if test="bean.productTitle != null">
+				 product_title = #{bean.productTitle},
+			</if>
+			<if test="bean.handle != null">
+				 handle = #{bean.handle},
+			</if>
+			<if test="bean.productUrl != null">
+				 product_url = #{bean.productUrl},
+			</if>
+			<if test="bean.productStatus != null">
+				 product_status = #{bean.productStatus},
+			</if>
+			<if test="bean.productCreatedAt != null">
+				 product_created_at = #{bean.productCreatedAt},
+			</if>
+			<if test="bean.productType != null">
+				 product_type = #{bean.productType},
+			</if>
+			<if test="bean.productCategory != null">
+				 product_category = #{bean.productCategory},
+			</if>
+			<if test="bean.productImgUrl != null">
+				 product_img_url = #{bean.productImgUrl},
+			</if>
+			<if test="bean.attribute != null">
+				 attribute = #{bean.attribute},
+			</if>
+			<if test="bean.sku != null">
+				 sku = #{bean.sku},
+			</if>
+			<if test="bean.barcode != null">
+				 barcode = #{bean.barcode},
+			</if>
+			<if test="bean.unitPrice != null">
+				 unit_price = #{bean.unitPrice},
+			</if>
+			<if test="bean.variantCreatedAt != null">
+				 variant_created_at = #{bean.variantCreatedAt},
+			</if>
+			<if test="bean.variantTitle != null">
+				 variant_title = #{bean.variantTitle},
+			</if>
+			<if test="bean.variantImgUrl != null">
+				 variant_img_url = #{bean.variantImgUrl},
+			</if>
+			<if test="bean.totalAvailableQuantity != null">
+				 total_available_quantity = #{bean.totalAvailableQuantity},
+			</if>
+			<if test="bean.availableForSale != null">
+				 available_for_sale = #{bean.availableForSale},
+			</if>
+			<if test="bean.parentStatus != null">
+				 parent_status = #{bean.parentStatus},
+			</if>
+			<if test="bean.brand != null">
+				 brand = #{bean.brand},
+			</if>
+			<if test="bean.personInCharge != null">
+				 person_in_charge = #{bean.personInCharge},
+			</if>
+ 		 </set>
+ 		 where store_id=#{storeId} and product_id=#{productId} and variant_id=#{variantId}
+	</update>
+
+	<!-- 根据StoreIdAndProductIdAndVariantId删除-->
+	<delete id="deleteByStoreIdAndProductIdAndVariantId">
+		delete from shopify_product where store_id=#{storeId} and product_id=#{productId} and variant_id=#{variantId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByStoreIdAndProductIdAndVariantId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from shopify_product where store_id=#{storeId} and product_id=#{productId} and variant_id=#{variantId}
+	</select>
+
+</mapper>

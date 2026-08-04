@@ -1,9 +1,10 @@
 package com.vmp.service.impl;
 
 import com.vmp.asinking.AKConfig;
+import com.vmp.asinking.ApiSign;
 import com.vmp.entity.constants.Constants;
-import com.vmp.entity.po.AKResult;
-import com.vmp.entity.po.AKToken;
+import com.vmp.entity.apidto.AKResult;
+import com.vmp.entity.apidto.AKToken;
 import com.vmp.redis.RedisUtils;
 import com.vmp.service.AsinKingService;
 import com.vmp.utils.JsonUtils;
@@ -13,8 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 领星业务接口
@@ -31,11 +31,41 @@ public class AsinKingServiceImpl implements AsinKingService {
     private RedisUtils redisUtils;
 
     /**
+     * 构建通用查询参数
+     *
+     * @return
+     */
+    private Map<String, String> buildCommonQueryParams() {
+        String appId = akConfig.getAsinkingAppId();
+        String accessToken = getAccessToken();
+
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("timestamp", System.currentTimeMillis() / 1000 + "");
+        queryParams.put("access_token", accessToken);
+        queryParams.put("app_key", appId);
+
+        return queryParams;
+    }
+
+    /**
+     * 获取加密Sign
+     * @param queryParamsMap
+     * @param bodyMap
+     * @return
+     */
+    private String getSign(Map<String, String> queryParamsMap, Map<String, Object> bodyMap) {
+        Map<String, Object> signMap = new HashMap<>(queryParamsMap);
+        if (null != bodyMap) {
+            signMap.putAll(bodyMap);
+        }
+        return ApiSign.sign(signMap, akConfig.getAsinkingAppId());
+    }
+
+    /**
      * 保存Access Token
      *
      * @return
      */
-    @Override
     public AKToken saveAccessToken() {
         String url = akConfig.getAsinkingEndpoint() + "/api/auth-server/oauth/access-token";
         String appId = akConfig.getAsinkingAppId();
@@ -56,11 +86,10 @@ public class AsinKingServiceImpl implements AsinKingService {
 
     /**
      * 刷新Access Token
-     * @param akToken
      *
+     * @param akToken
      * @return
      */
-    @Override
     public void refreshAccessToken(AKToken akToken) {
         String url = akConfig.getAsinkingEndpoint() + "/api/auth-server/oauth/refresh";
         String appId = akConfig.getAsinkingAppId();
@@ -95,5 +124,4 @@ public class AsinKingServiceImpl implements AsinKingService {
         }
         return akToken.getAccessToken();
     }
-
 }

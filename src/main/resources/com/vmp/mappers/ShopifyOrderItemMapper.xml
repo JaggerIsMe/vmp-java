@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vmp.mappers.ShopifyOrderItemMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.vmp.entity.po.ShopifyOrderItem">
+		<!--所属订单id-->
+		<result column="order_id" property="orderId"  />
+		<!---->
+		<result column="item_id" property="itemId"  />
+		<!--店铺id-->
+		<result column="store_id" property="storeId"  />
+		<!--订单产品id-->
+		<result column="product_id" property="productId"  />
+		<!--订单变体id-->
+		<result column="variant_id" property="variantId"  />
+		<!--订购数量-->
+		<result column="quantity" property="quantity"  />
+		<!--退款数量-->
+		<result column="refund_quantity" property="refundQuantity"  />
+		<!--原订单项总金额(不含折扣)-->
+		<result column="original_total_price" property="originalTotalPrice"  />
+		<!--原订单项单价(不含折扣)-->
+		<result column="original_unit_price" property="originalUnitPrice"  />
+		<!--折扣后订单项单价-->
+		<result column="discounted_unit_price" property="discountedUnitPrice"  />
+		<!--订单项总折扣-->
+		<result column="total_discount" property="totalDiscount"  />
+		<!--所属订单创建时间-->
+		<result column="created_at" property="createdAt"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 order_id,item_id,store_id,product_id,variant_id,
+		 quantity,refund_quantity,original_total_price,original_unit_price,discounted_unit_price,
+		 total_discount,created_at
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.orderId != null and query.orderId!=''">
+			 and  order_id = #{query.orderId}
+		</if>
+		<if test="query.itemId != null and query.itemId!=''">
+			 and  item_id = #{query.itemId}
+		</if>
+		<if test="query.storeId != null and query.storeId!=''">
+			 and  store_id = #{query.storeId}
+		</if>
+		<if test="query.productId != null and query.productId!=''">
+			 and  product_id = #{query.productId}
+		</if>
+		<if test="query.variantId != null and query.variantId!=''">
+			 and  variant_id = #{query.variantId}
+		</if>
+		<if test="query.quantity != null">
+			 and  quantity = #{query.quantity}
+		</if>
+		<if test="query.refundQuantity != null">
+			 and  refund_quantity = #{query.refundQuantity}
+		</if>
+		<if test="query.originalTotalPrice != null">
+			 and  original_total_price = #{query.originalTotalPrice}
+		</if>
+		<if test="query.originalUnitPrice != null">
+			 and  original_unit_price = #{query.originalUnitPrice}
+		</if>
+		<if test="query.discountedUnitPrice != null">
+			 and  discounted_unit_price = #{query.discountedUnitPrice}
+		</if>
+		<if test="query.totalDiscount != null">
+			 and  total_discount = #{query.totalDiscount}
+		</if>
+		<if test="query.createdAt != null and query.createdAt!=''">
+			 <![CDATA[ and  created_at=str_to_date(#{query.createdAt}, '%Y-%m-%d') ]]>
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.orderIdFuzzy!= null  and query.orderIdFuzzy!=''">
+				 and  order_id like concat('%', #{query.orderIdFuzzy}, '%')
+			</if>
+			<if test="query.itemIdFuzzy!= null  and query.itemIdFuzzy!=''">
+				 and  item_id like concat('%', #{query.itemIdFuzzy}, '%')
+			</if>
+			<if test="query.storeIdFuzzy!= null  and query.storeIdFuzzy!=''">
+				 and  store_id like concat('%', #{query.storeIdFuzzy}, '%')
+			</if>
+			<if test="query.productIdFuzzy!= null  and query.productIdFuzzy!=''">
+				 and  product_id like concat('%', #{query.productIdFuzzy}, '%')
+			</if>
+			<if test="query.variantIdFuzzy!= null  and query.variantIdFuzzy!=''">
+				 and  variant_id like concat('%', #{query.variantIdFuzzy}, '%')
+			</if>
+			<if test="query.createdAtStart!= null and query.createdAtStart!=''">
+				 <![CDATA[ and  created_at>=str_to_date(#{query.createdAtStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.createdAtEnd!= null and query.createdAtEnd!=''">
+				 <![CDATA[ and  created_at< date_sub(str_to_date(#{query.createdAtEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.storeIdList != null">
+				<choose>
+					<when test="query.storeIdList.size() > 0">
+						and store_id in
+						<foreach collection="query.storeIdList" item="storeId" open="(" separator="," close=")">
+							#{storeId}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+			<if test="query.orderIdList != null">
+				<choose>
+					<when test="query.orderIdList.size() > 0">
+						and order_id in
+						<foreach collection="query.orderIdList" item="orderId" open="(" separator="," close=")">
+							#{orderId}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM shopify_order_item <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM shopify_order_item <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.vmp.entity.po.ShopifyOrderItem">
+		 INSERT INTO shopify_order_item
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.orderId != null">
+				 order_id,
+			</if>
+			<if test="bean.itemId != null">
+				 item_id,
+			</if>
+			<if test="bean.storeId != null">
+				 store_id,
+			</if>
+			<if test="bean.productId != null">
+				 product_id,
+			</if>
+			<if test="bean.variantId != null">
+				 variant_id,
+			</if>
+			<if test="bean.quantity != null">
+				 quantity,
+			</if>
+			<if test="bean.refundQuantity != null">
+				 refund_quantity,
+			</if>
+			<if test="bean.originalTotalPrice != null">
+				 original_total_price,
+			</if>
+			<if test="bean.originalUnitPrice != null">
+				 original_unit_price,
+			</if>
+			<if test="bean.discountedUnitPrice != null">
+				 discounted_unit_price,
+			</if>
+			<if test="bean.totalDiscount != null">
+				 total_discount,
+			</if>
+			<if test="bean.createdAt != null">
+				 created_at,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.orderId!=null">
+				 #{bean.orderId},
+			</if>
+			<if test="bean.itemId!=null">
+				 #{bean.itemId},
+			</if>
+			<if test="bean.storeId!=null">
+				 #{bean.storeId},
+			</if>
+			<if test="bean.productId!=null">
+				 #{bean.productId},
+			</if>
+			<if test="bean.variantId!=null">
+				 #{bean.variantId},
+			</if>
+			<if test="bean.quantity!=null">
+				 #{bean.quantity},
+			</if>
+			<if test="bean.refundQuantity!=null">
+				 #{bean.refundQuantity},
+			</if>
+			<if test="bean.originalTotalPrice!=null">
+				 #{bean.originalTotalPrice},
+			</if>
+			<if test="bean.originalUnitPrice!=null">
+				 #{bean.originalUnitPrice},
+			</if>
+			<if test="bean.discountedUnitPrice!=null">
+				 #{bean.discountedUnitPrice},
+			</if>
+			<if test="bean.totalDiscount!=null">
+				 #{bean.totalDiscount},
+			</if>
+			<if test="bean.createdAt!=null">
+				 #{bean.createdAt},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.vmp.entity.po.ShopifyOrderItem">
+		 INSERT INTO shopify_order_item
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.orderId != null">
+				 order_id,
+			</if>
+			<if test="bean.itemId != null">
+				 item_id,
+			</if>
+			<if test="bean.storeId != null">
+				 store_id,
+			</if>
+			<if test="bean.productId != null">
+				 product_id,
+			</if>
+			<if test="bean.variantId != null">
+				 variant_id,
+			</if>
+			<if test="bean.quantity != null">
+				 quantity,
+			</if>
+			<if test="bean.refundQuantity != null">
+				 refund_quantity,
+			</if>
+			<if test="bean.originalTotalPrice != null">
+				 original_total_price,
+			</if>
+			<if test="bean.originalUnitPrice != null">
+				 original_unit_price,
+			</if>
+			<if test="bean.discountedUnitPrice != null">
+				 discounted_unit_price,
+			</if>
+			<if test="bean.totalDiscount != null">
+				 total_discount,
+			</if>
+			<if test="bean.createdAt != null">
+				 created_at,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.orderId!=null">
+				 #{bean.orderId},
+			</if>
+			<if test="bean.itemId!=null">
+				 #{bean.itemId},
+			</if>
+			<if test="bean.storeId!=null">
+				 #{bean.storeId},
+			</if>
+			<if test="bean.productId!=null">
+				 #{bean.productId},
+			</if>
+			<if test="bean.variantId!=null">
+				 #{bean.variantId},
+			</if>
+			<if test="bean.quantity!=null">
+				 #{bean.quantity},
+			</if>
+			<if test="bean.refundQuantity!=null">
+				 #{bean.refundQuantity},
+			</if>
+			<if test="bean.originalTotalPrice!=null">
+				 #{bean.originalTotalPrice},
+			</if>
+			<if test="bean.originalUnitPrice!=null">
+				 #{bean.originalUnitPrice},
+			</if>
+			<if test="bean.discountedUnitPrice!=null">
+				 #{bean.discountedUnitPrice},
+			</if>
+			<if test="bean.totalDiscount!=null">
+				 #{bean.totalDiscount},
+			</if>
+			<if test="bean.createdAt!=null">
+				 #{bean.createdAt},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.orderId!=null">
+				 order_id = VALUES(order_id),
+			</if>
+			<if test="bean.itemId!=null">
+				 item_id = VALUES(item_id),
+			</if>
+			<if test="bean.storeId!=null">
+				 store_id = VALUES(store_id),
+			</if>
+			<if test="bean.productId!=null">
+				 product_id = VALUES(product_id),
+			</if>
+			<if test="bean.variantId!=null">
+				 variant_id = VALUES(variant_id),
+			</if>
+			<if test="bean.quantity!=null">
+				 quantity = VALUES(quantity),
+			</if>
+			<if test="bean.refundQuantity!=null">
+				 refund_quantity = VALUES(refund_quantity),
+			</if>
+			<if test="bean.originalTotalPrice!=null">
+				 original_total_price = VALUES(original_total_price),
+			</if>
+			<if test="bean.originalUnitPrice!=null">
+				 original_unit_price = VALUES(original_unit_price),
+			</if>
+			<if test="bean.discountedUnitPrice!=null">
+				 discounted_unit_price = VALUES(discounted_unit_price),
+			</if>
+			<if test="bean.totalDiscount!=null">
+				 total_discount = VALUES(total_discount),
+			</if>
+			<if test="bean.createdAt!=null">
+				 created_at = VALUES(created_at),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.vmp.entity.po.ShopifyOrderItem">
+		 INSERT INTO shopify_order_item(
+			 order_id,
+			 item_id,
+			 store_id,
+			 product_id,
+			 variant_id,
+			 quantity,
+			 refund_quantity,
+			 original_total_price,
+			 original_unit_price,
+			 discounted_unit_price,
+			 total_discount,
+			 created_at
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.orderId},
+				 #{item.itemId},
+				 #{item.storeId},
+				 #{item.productId},
+				 #{item.variantId},
+				 #{item.quantity},
+				 #{item.refundQuantity},
+				 #{item.originalTotalPrice},
+				 #{item.originalUnitPrice},
+				 #{item.discountedUnitPrice},
+				 #{item.totalDiscount},
+				 #{item.createdAt}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.vmp.entity.po.ShopifyOrderItem">
+		 INSERT INTO shopify_order_item(
+			 order_id,
+			 item_id,
+			 store_id,
+			 product_id,
+			 variant_id,
+			 quantity,
+			 refund_quantity,
+			 original_total_price,
+			 original_unit_price,
+			 discounted_unit_price,
+			 total_discount,
+			 created_at
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.orderId},
+				 #{item.itemId},
+				 #{item.storeId},
+				 #{item.productId},
+				 #{item.variantId},
+				 #{item.quantity},
+				 #{item.refundQuantity},
+				 #{item.originalTotalPrice},
+				 #{item.originalUnitPrice},
+				 #{item.discountedUnitPrice},
+				 #{item.totalDiscount},
+				 #{item.createdAt}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			order_id = VALUES(order_id),
+			item_id = VALUES(item_id),
+			store_id = VALUES(store_id),
+			product_id = VALUES(product_id),
+			variant_id = VALUES(variant_id),
+			quantity = VALUES(quantity),
+			refund_quantity = VALUES(refund_quantity),
+			original_total_price = VALUES(original_total_price),
+			original_unit_price = VALUES(original_unit_price),
+			discounted_unit_price = VALUES(discounted_unit_price),
+			total_discount = VALUES(total_discount),
+			created_at = VALUES(created_at)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.vmp.entity.query.ShopifyOrderItemQuery">
+		 UPDATE shopify_order_item
+ 		 <set> 
+			<if test="bean.orderId != null">
+				 order_id = #{bean.orderId},
+			</if>
+			<if test="bean.itemId != null">
+				 item_id = #{bean.itemId},
+			</if>
+			<if test="bean.storeId != null">
+				 store_id = #{bean.storeId},
+			</if>
+			<if test="bean.productId != null">
+				 product_id = #{bean.productId},
+			</if>
+			<if test="bean.variantId != null">
+				 variant_id = #{bean.variantId},
+			</if>
+			<if test="bean.quantity != null">
+				 quantity = #{bean.quantity},
+			</if>
+			<if test="bean.refundQuantity != null">
+				 refund_quantity = #{bean.refundQuantity},
+			</if>
+			<if test="bean.originalTotalPrice != null">
+				 original_total_price = #{bean.originalTotalPrice},
+			</if>
+			<if test="bean.originalUnitPrice != null">
+				 original_unit_price = #{bean.originalUnitPrice},
+			</if>
+			<if test="bean.discountedUnitPrice != null">
+				 discounted_unit_price = #{bean.discountedUnitPrice},
+			</if>
+			<if test="bean.totalDiscount != null">
+				 total_discount = #{bean.totalDiscount},
+			</if>
+			<if test="bean.createdAt != null">
+				 created_at = #{bean.createdAt},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from shopify_order_item
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据OrderIdAndItemIdAndStoreId修改-->
+	<update id="updateByOrderIdAndItemIdAndStoreId" parameterType="com.vmp.entity.po.ShopifyOrderItem">
+		 UPDATE shopify_order_item
+ 		 <set> 
+			<if test="bean.productId != null">
+				 product_id = #{bean.productId},
+			</if>
+			<if test="bean.variantId != null">
+				 variant_id = #{bean.variantId},
+			</if>
+			<if test="bean.quantity != null">
+				 quantity = #{bean.quantity},
+			</if>
+			<if test="bean.refundQuantity != null">
+				 refund_quantity = #{bean.refundQuantity},
+			</if>
+			<if test="bean.originalTotalPrice != null">
+				 original_total_price = #{bean.originalTotalPrice},
+			</if>
+			<if test="bean.originalUnitPrice != null">
+				 original_unit_price = #{bean.originalUnitPrice},
+			</if>
+			<if test="bean.discountedUnitPrice != null">
+				 discounted_unit_price = #{bean.discountedUnitPrice},
+			</if>
+			<if test="bean.totalDiscount != null">
+				 total_discount = #{bean.totalDiscount},
+			</if>
+			<if test="bean.createdAt != null">
+				 created_at = #{bean.createdAt},
+			</if>
+ 		 </set>
+ 		 where order_id=#{orderId} and item_id=#{itemId} and store_id=#{storeId}
+	</update>
+
+	<!-- 根据OrderIdAndItemIdAndStoreId删除-->
+	<delete id="deleteByOrderIdAndItemIdAndStoreId">
+		delete from shopify_order_item where order_id=#{orderId} and item_id=#{itemId} and store_id=#{storeId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByOrderIdAndItemIdAndStoreId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from shopify_order_item where order_id=#{orderId} and item_id=#{itemId} and store_id=#{storeId}
+	</select>
+
+</mapper>

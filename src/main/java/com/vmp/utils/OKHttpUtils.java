@@ -1,5 +1,6 @@
 package com.vmp.utils;
 
+import com.vmp.asinking.ApiSign;
 import com.vmp.entity.enums.ResponseCodeEnum;
 import com.vmp.exception.BusinessException;
 import okhttp3.*;
@@ -11,15 +12,14 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class OKHttpUtils {
     /**
      * 请求超时时间5秒
      */
-    private static final int TIME_OUT_SECONDS = 5;
+    private static final int TIME_OUT_SECONDS = 60;
 
     private static final MediaType JSON_MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
 

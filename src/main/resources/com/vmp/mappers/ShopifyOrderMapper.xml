@@ -1,0 +1,815 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vmp.mappers.ShopifyOrderMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.vmp.entity.po.ShopifyOrder">
+		<!--店铺id-->
+		<result column="store_id" property="storeId"  />
+		<!--店铺名称-->
+		<result column="store_name" property="storeName"  />
+		<!--货币代码-->
+		<result column="currency_code" property="currencyCode"  />
+		<!--订单id-->
+		<result column="order_id" property="orderId"  />
+		<!--平台订单名称号-->
+		<result column="order_name" property="orderName"  />
+		<!--销售渠道-->
+		<result column="source_name" property="sourceName"  />
+		<!--订单财务状态-->
+		<result column="display_financial_status" property="displayFinancialStatus"  />
+		<!--订单履行状态-->
+		<result column="display_fulfillment_status" property="displayFulfillmentStatus"  />
+		<!--是否包含税费 0否1是-->
+		<result column="taxes_included" property="taxesIncluded"  />
+		<!--订单金额-->
+		<result column="total_price" property="totalPrice"  />
+		<!--折扣金额-->
+		<result column="total_discount" property="totalDiscount"  />
+		<!--退款总金额-->
+		<result column="total_refunded" property="totalRefunded"  />
+		<!--折扣码-->
+		<result column="discount_code" property="discountCode"  />
+		<!--客户邮箱-->
+		<result column="customer_email" property="customerEmail"  />
+		<!--客户姓名-->
+		<result column="customer_name" property="customerName"  />
+		<!--目标国家-->
+		<result column="customer_country" property="customerCountry"  />
+		<!--目标国家代码-->
+		<result column="customer_country_code" property="customerCountryCode"  />
+		<!--订单退货状态-->
+		<result column="return_status" property="returnStatus"  />
+		<!--订单创建时间-->
+		<result column="created_at" property="createdAt"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 store_id,store_name,currency_code,order_id,order_name,
+		 source_name,display_financial_status,display_fulfillment_status,taxes_included,total_price,
+		 total_discount,total_refunded,discount_code,customer_email,customer_name,
+		 customer_country,customer_country_code,return_status,created_at
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.storeId != null and query.storeId!=''">
+			 and  store_id = #{query.storeId}
+		</if>
+		<if test="query.storeName != null and query.storeName!=''">
+			 and  store_name = #{query.storeName}
+		</if>
+		<if test="query.currencyCode != null and query.currencyCode!=''">
+			 and  currency_code = #{query.currencyCode}
+		</if>
+		<if test="query.orderId != null and query.orderId!=''">
+			 and  order_id = #{query.orderId}
+		</if>
+		<if test="query.orderName != null and query.orderName!=''">
+			 and  order_name = #{query.orderName}
+		</if>
+		<if test="query.sourceName != null and query.sourceName!=''">
+			 and  source_name = #{query.sourceName}
+		</if>
+		<if test="query.displayFinancialStatus != null and query.displayFinancialStatus!=''">
+			 and  display_financial_status = #{query.displayFinancialStatus}
+		</if>
+		<if test="query.displayFulfillmentStatus != null and query.displayFulfillmentStatus!=''">
+			 and  display_fulfillment_status = #{query.displayFulfillmentStatus}
+		</if>
+		<if test="query.taxesIncluded != null">
+			 and  taxes_included = #{query.taxesIncluded}
+		</if>
+		<if test="query.totalPrice != null">
+			 and  total_price = #{query.totalPrice}
+		</if>
+		<if test="query.totalDiscount != null">
+			 and  total_discount = #{query.totalDiscount}
+		</if>
+		<if test="query.totalRefunded != null">
+			 and  total_refunded = #{query.totalRefunded}
+		</if>
+		<if test="query.discountCode != null and query.discountCode!=''">
+			 and  discount_code = #{query.discountCode}
+		</if>
+		<if test="query.customerEmail != null and query.customerEmail!=''">
+			 and  customer_email = #{query.customerEmail}
+		</if>
+		<if test="query.customerName != null and query.customerName!=''">
+			 and  customer_name = #{query.customerName}
+		</if>
+		<if test="query.customerCountry != null and query.customerCountry!=''">
+			 and  customer_country = #{query.customerCountry}
+		</if>
+		<if test="query.customerCountryCode != null and query.customerCountryCode!=''">
+			 and  customer_country_code = #{query.customerCountryCode}
+		</if>
+		<if test="query.returnStatus != null and query.returnStatus!=''">
+			 and  return_status = #{query.returnStatus}
+		</if>
+		<if test="query.createdAt != null and query.createdAt!=''">
+			 <![CDATA[ and  created_at=str_to_date(#{query.createdAt}, '%Y-%m-%d') ]]>
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.storeIdFuzzy!= null  and query.storeIdFuzzy!=''">
+				 and  store_id like concat('%', #{query.storeIdFuzzy}, '%')
+			</if>
+			<if test="query.storeNameFuzzy!= null  and query.storeNameFuzzy!=''">
+				 and  store_name like concat('%', #{query.storeNameFuzzy}, '%')
+			</if>
+			<if test="query.currencyCodeFuzzy!= null  and query.currencyCodeFuzzy!=''">
+				 and  currency_code like concat('%', #{query.currencyCodeFuzzy}, '%')
+			</if>
+			<if test="query.orderIdFuzzy!= null  and query.orderIdFuzzy!=''">
+				 and  order_id like concat('%', #{query.orderIdFuzzy}, '%')
+			</if>
+			<if test="query.orderNameFuzzy!= null  and query.orderNameFuzzy!=''">
+				 and  order_name like concat('%', #{query.orderNameFuzzy}, '%')
+			</if>
+			<if test="query.sourceNameFuzzy!= null  and query.sourceNameFuzzy!=''">
+				 and  source_name like concat('%', #{query.sourceNameFuzzy}, '%')
+			</if>
+			<if test="query.displayFinancialStatusFuzzy!= null  and query.displayFinancialStatusFuzzy!=''">
+				 and  display_financial_status like concat('%', #{query.displayFinancialStatusFuzzy}, '%')
+			</if>
+			<if test="query.displayFulfillmentStatusFuzzy!= null  and query.displayFulfillmentStatusFuzzy!=''">
+				 and  display_fulfillment_status like concat('%', #{query.displayFulfillmentStatusFuzzy}, '%')
+			</if>
+			<if test="query.discountCodeFuzzy!= null  and query.discountCodeFuzzy!=''">
+				 and  discount_code like concat('%', #{query.discountCodeFuzzy}, '%')
+			</if>
+			<if test="query.customerEmailFuzzy!= null  and query.customerEmailFuzzy!=''">
+				 and  customer_email like concat('%', #{query.customerEmailFuzzy}, '%')
+			</if>
+			<if test="query.customerNameFuzzy!= null  and query.customerNameFuzzy!=''">
+				 and  customer_name like concat('%', #{query.customerNameFuzzy}, '%')
+			</if>
+			<if test="query.customerCountryFuzzy!= null  and query.customerCountryFuzzy!=''">
+				 and  customer_country like concat('%', #{query.customerCountryFuzzy}, '%')
+			</if>
+			<if test="query.customerCountryCodeFuzzy!= null  and query.customerCountryCodeFuzzy!=''">
+				 and  customer_country_code like concat('%', #{query.customerCountryCodeFuzzy}, '%')
+			</if>
+			<if test="query.returnStatusFuzzy!= null  and query.returnStatusFuzzy!=''">
+				 and  return_status like concat('%', #{query.returnStatusFuzzy}, '%')
+			</if>
+			<if test="query.createdAtStart!= null and query.createdAtStart!=''">
+				 <![CDATA[ and  created_at>=str_to_date(#{query.createdAtStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.createdAtEnd!= null and query.createdAtEnd!=''">
+				 <![CDATA[ and  created_at< date_sub(str_to_date(#{query.createdAtEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.storeIdList != null">
+				<choose>
+					<when test="query.storeIdList.size() > 0">
+						and store_id in
+						<foreach collection="query.storeIdList" item="storeId" open="(" separator="," close=")">
+							#{storeId}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+			<if test="query.displayFinancialStatusList != null">
+				<choose>
+					<when test="query.displayFinancialStatusList.size() > 0">
+						and display_financial_status in
+						<foreach collection="query.displayFinancialStatusList" item="displayFinancialStatus" open="(" separator="," close=")">
+							#{displayFinancialStatus}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+			<if test="query.displayFulfillmentStatusList != null">
+				<choose>
+					<when test="query.displayFulfillmentStatusList.size() > 0">
+						and display_fulfillment_status in
+						<foreach collection="query.displayFulfillmentStatusList" item="displayFulfillmentStatus" open="(" separator="," close=")">
+							#{displayFulfillmentStatus}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+			<if test="query.orderIdList != null">
+				<choose>
+					<when test="query.orderIdList.size() > 0">
+						and order_id in
+						<foreach collection="query.orderIdList" item="orderId" open="(" separator="," close=")">
+							#{orderId}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+			<if test="query.customerCountryCodeList != null">
+				<choose>
+					<when test="query.customerCountryCodeList.size() > 0">
+						and customer_country_code in
+						<foreach collection="query.customerCountryCodeList" item="customerCountryCode" open="(" separator="," close=")">
+							#{customerCountryCode}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM shopify_order <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM shopify_order <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.vmp.entity.po.ShopifyOrder">
+		 INSERT INTO shopify_order
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.storeId != null">
+				 store_id,
+			</if>
+			<if test="bean.storeName != null">
+				 store_name,
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code,
+			</if>
+			<if test="bean.orderId != null">
+				 order_id,
+			</if>
+			<if test="bean.orderName != null">
+				 order_name,
+			</if>
+			<if test="bean.sourceName != null">
+				 source_name,
+			</if>
+			<if test="bean.displayFinancialStatus != null">
+				 display_financial_status,
+			</if>
+			<if test="bean.displayFulfillmentStatus != null">
+				 display_fulfillment_status,
+			</if>
+			<if test="bean.taxesIncluded != null">
+				 taxes_included,
+			</if>
+			<if test="bean.totalPrice != null">
+				 total_price,
+			</if>
+			<if test="bean.totalDiscount != null">
+				 total_discount,
+			</if>
+			<if test="bean.totalRefunded != null">
+				 total_refunded,
+			</if>
+			<if test="bean.discountCode != null">
+				 discount_code,
+			</if>
+			<if test="bean.customerEmail != null">
+				 customer_email,
+			</if>
+			<if test="bean.customerName != null">
+				 customer_name,
+			</if>
+			<if test="bean.customerCountry != null">
+				 customer_country,
+			</if>
+			<if test="bean.customerCountryCode != null">
+				 customer_country_code,
+			</if>
+			<if test="bean.returnStatus != null">
+				 return_status,
+			</if>
+			<if test="bean.createdAt != null">
+				 created_at,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.storeId!=null">
+				 #{bean.storeId},
+			</if>
+			<if test="bean.storeName!=null">
+				 #{bean.storeName},
+			</if>
+			<if test="bean.currencyCode!=null">
+				 #{bean.currencyCode},
+			</if>
+			<if test="bean.orderId!=null">
+				 #{bean.orderId},
+			</if>
+			<if test="bean.orderName!=null">
+				 #{bean.orderName},
+			</if>
+			<if test="bean.sourceName!=null">
+				 #{bean.sourceName},
+			</if>
+			<if test="bean.displayFinancialStatus!=null">
+				 #{bean.displayFinancialStatus},
+			</if>
+			<if test="bean.displayFulfillmentStatus!=null">
+				 #{bean.displayFulfillmentStatus},
+			</if>
+			<if test="bean.taxesIncluded!=null">
+				 #{bean.taxesIncluded},
+			</if>
+			<if test="bean.totalPrice!=null">
+				 #{bean.totalPrice},
+			</if>
+			<if test="bean.totalDiscount!=null">
+				 #{bean.totalDiscount},
+			</if>
+			<if test="bean.totalRefunded!=null">
+				 #{bean.totalRefunded},
+			</if>
+			<if test="bean.discountCode!=null">
+				 #{bean.discountCode},
+			</if>
+			<if test="bean.customerEmail!=null">
+				 #{bean.customerEmail},
+			</if>
+			<if test="bean.customerName!=null">
+				 #{bean.customerName},
+			</if>
+			<if test="bean.customerCountry!=null">
+				 #{bean.customerCountry},
+			</if>
+			<if test="bean.customerCountryCode!=null">
+				 #{bean.customerCountryCode},
+			</if>
+			<if test="bean.returnStatus!=null">
+				 #{bean.returnStatus},
+			</if>
+			<if test="bean.createdAt!=null">
+				 #{bean.createdAt},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.vmp.entity.po.ShopifyOrder">
+		 INSERT INTO shopify_order
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.storeId != null">
+				 store_id,
+			</if>
+			<if test="bean.storeName != null">
+				 store_name,
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code,
+			</if>
+			<if test="bean.orderId != null">
+				 order_id,
+			</if>
+			<if test="bean.orderName != null">
+				 order_name,
+			</if>
+			<if test="bean.sourceName != null">
+				 source_name,
+			</if>
+			<if test="bean.displayFinancialStatus != null">
+				 display_financial_status,
+			</if>
+			<if test="bean.displayFulfillmentStatus != null">
+				 display_fulfillment_status,
+			</if>
+			<if test="bean.taxesIncluded != null">
+				 taxes_included,
+			</if>
+			<if test="bean.totalPrice != null">
+				 total_price,
+			</if>
+			<if test="bean.totalDiscount != null">
+				 total_discount,
+			</if>
+			<if test="bean.totalRefunded != null">
+				 total_refunded,
+			</if>
+			<if test="bean.discountCode != null">
+				 discount_code,
+			</if>
+			<if test="bean.customerEmail != null">
+				 customer_email,
+			</if>
+			<if test="bean.customerName != null">
+				 customer_name,
+			</if>
+			<if test="bean.customerCountry != null">
+				 customer_country,
+			</if>
+			<if test="bean.customerCountryCode != null">
+				 customer_country_code,
+			</if>
+			<if test="bean.returnStatus != null">
+				 return_status,
+			</if>
+			<if test="bean.createdAt != null">
+				 created_at,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.storeId!=null">
+				 #{bean.storeId},
+			</if>
+			<if test="bean.storeName!=null">
+				 #{bean.storeName},
+			</if>
+			<if test="bean.currencyCode!=null">
+				 #{bean.currencyCode},
+			</if>
+			<if test="bean.orderId!=null">
+				 #{bean.orderId},
+			</if>
+			<if test="bean.orderName!=null">
+				 #{bean.orderName},
+			</if>
+			<if test="bean.sourceName!=null">
+				 #{bean.sourceName},
+			</if>
+			<if test="bean.displayFinancialStatus!=null">
+				 #{bean.displayFinancialStatus},
+			</if>
+			<if test="bean.displayFulfillmentStatus!=null">
+				 #{bean.displayFulfillmentStatus},
+			</if>
+			<if test="bean.taxesIncluded!=null">
+				 #{bean.taxesIncluded},
+			</if>
+			<if test="bean.totalPrice!=null">
+				 #{bean.totalPrice},
+			</if>
+			<if test="bean.totalDiscount!=null">
+				 #{bean.totalDiscount},
+			</if>
+			<if test="bean.totalRefunded!=null">
+				 #{bean.totalRefunded},
+			</if>
+			<if test="bean.discountCode!=null">
+				 #{bean.discountCode},
+			</if>
+			<if test="bean.customerEmail!=null">
+				 #{bean.customerEmail},
+			</if>
+			<if test="bean.customerName!=null">
+				 #{bean.customerName},
+			</if>
+			<if test="bean.customerCountry!=null">
+				 #{bean.customerCountry},
+			</if>
+			<if test="bean.customerCountryCode!=null">
+				 #{bean.customerCountryCode},
+			</if>
+			<if test="bean.returnStatus!=null">
+				 #{bean.returnStatus},
+			</if>
+			<if test="bean.createdAt!=null">
+				 #{bean.createdAt},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.storeId!=null">
+				 store_id = VALUES(store_id),
+			</if>
+			<if test="bean.storeName!=null">
+				 store_name = VALUES(store_name),
+			</if>
+			<if test="bean.currencyCode!=null">
+				 currency_code = VALUES(currency_code),
+			</if>
+			<if test="bean.orderId!=null">
+				 order_id = VALUES(order_id),
+			</if>
+			<if test="bean.orderName!=null">
+				 order_name = VALUES(order_name),
+			</if>
+			<if test="bean.sourceName!=null">
+				 source_name = VALUES(source_name),
+			</if>
+			<if test="bean.displayFinancialStatus!=null">
+				 display_financial_status = VALUES(display_financial_status),
+			</if>
+			<if test="bean.displayFulfillmentStatus!=null">
+				 display_fulfillment_status = VALUES(display_fulfillment_status),
+			</if>
+			<if test="bean.taxesIncluded!=null">
+				 taxes_included = VALUES(taxes_included),
+			</if>
+			<if test="bean.totalPrice!=null">
+				 total_price = VALUES(total_price),
+			</if>
+			<if test="bean.totalDiscount!=null">
+				 total_discount = VALUES(total_discount),
+			</if>
+			<if test="bean.totalRefunded!=null">
+				 total_refunded = VALUES(total_refunded),
+			</if>
+			<if test="bean.discountCode!=null">
+				 discount_code = VALUES(discount_code),
+			</if>
+			<if test="bean.customerEmail!=null">
+				 customer_email = VALUES(customer_email),
+			</if>
+			<if test="bean.customerName!=null">
+				 customer_name = VALUES(customer_name),
+			</if>
+			<if test="bean.customerCountry!=null">
+				 customer_country = VALUES(customer_country),
+			</if>
+			<if test="bean.customerCountryCode!=null">
+				 customer_country_code = VALUES(customer_country_code),
+			</if>
+			<if test="bean.returnStatus!=null">
+				 return_status = VALUES(return_status),
+			</if>
+			<if test="bean.createdAt!=null">
+				 created_at = VALUES(created_at),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.vmp.entity.po.ShopifyOrder">
+		 INSERT INTO shopify_order(
+			 store_id,
+			 store_name,
+			 currency_code,
+			 order_id,
+			 order_name,
+			 source_name,
+			 display_financial_status,
+			 display_fulfillment_status,
+			 taxes_included,
+			 total_price,
+			 total_discount,
+			 total_refunded,
+			 discount_code,
+			 customer_email,
+			 customer_name,
+			 customer_country,
+			 customer_country_code,
+			 return_status,
+			 created_at
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.storeId},
+				 #{item.storeName},
+				 #{item.currencyCode},
+				 #{item.orderId},
+				 #{item.orderName},
+				 #{item.sourceName},
+				 #{item.displayFinancialStatus},
+				 #{item.displayFulfillmentStatus},
+				 #{item.taxesIncluded},
+				 #{item.totalPrice},
+				 #{item.totalDiscount},
+				 #{item.totalRefunded},
+				 #{item.discountCode},
+				 #{item.customerEmail},
+				 #{item.customerName},
+				 #{item.customerCountry},
+				 #{item.customerCountryCode},
+				 #{item.returnStatus},
+				 #{item.createdAt}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.vmp.entity.po.ShopifyOrder">
+		 INSERT INTO shopify_order(
+			 store_id,
+			 store_name,
+			 currency_code,
+			 order_id,
+			 order_name,
+			 source_name,
+			 display_financial_status,
+			 display_fulfillment_status,
+			 taxes_included,
+			 total_price,
+			 total_discount,
+			 total_refunded,
+			 discount_code,
+			 customer_email,
+			 customer_name,
+			 customer_country,
+			 customer_country_code,
+			 return_status,
+			 created_at
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.storeId},
+				 #{item.storeName},
+				 #{item.currencyCode},
+				 #{item.orderId},
+				 #{item.orderName},
+				 #{item.sourceName},
+				 #{item.displayFinancialStatus},
+				 #{item.displayFulfillmentStatus},
+				 #{item.taxesIncluded},
+				 #{item.totalPrice},
+				 #{item.totalDiscount},
+				 #{item.totalRefunded},
+				 #{item.discountCode},
+				 #{item.customerEmail},
+				 #{item.customerName},
+				 #{item.customerCountry},
+				 #{item.customerCountryCode},
+				 #{item.returnStatus},
+				 #{item.createdAt}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			store_id = VALUES(store_id),
+			store_name = VALUES(store_name),
+			currency_code = VALUES(currency_code),
+			order_id = VALUES(order_id),
+			order_name = VALUES(order_name),
+			source_name = VALUES(source_name),
+			display_financial_status = VALUES(display_financial_status),
+			display_fulfillment_status = VALUES(display_fulfillment_status),
+			taxes_included = VALUES(taxes_included),
+			total_price = VALUES(total_price),
+			total_discount = VALUES(total_discount),
+			total_refunded = VALUES(total_refunded),
+			discount_code = VALUES(discount_code),
+			customer_email = VALUES(customer_email),
+			customer_name = VALUES(customer_name),
+			customer_country = VALUES(customer_country),
+			customer_country_code = VALUES(customer_country_code),
+			return_status = VALUES(return_status),
+			created_at = VALUES(created_at)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.vmp.entity.query.ShopifyOrderQuery">
+		 UPDATE shopify_order
+ 		 <set> 
+			<if test="bean.storeId != null">
+				 store_id = #{bean.storeId},
+			</if>
+			<if test="bean.storeName != null">
+				 store_name = #{bean.storeName},
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code = #{bean.currencyCode},
+			</if>
+			<if test="bean.orderId != null">
+				 order_id = #{bean.orderId},
+			</if>
+			<if test="bean.orderName != null">
+				 order_name = #{bean.orderName},
+			</if>
+			<if test="bean.sourceName != null">
+				 source_name = #{bean.sourceName},
+			</if>
+			<if test="bean.displayFinancialStatus != null">
+				 display_financial_status = #{bean.displayFinancialStatus},
+			</if>
+			<if test="bean.displayFulfillmentStatus != null">
+				 display_fulfillment_status = #{bean.displayFulfillmentStatus},
+			</if>
+			<if test="bean.taxesIncluded != null">
+				 taxes_included = #{bean.taxesIncluded},
+			</if>
+			<if test="bean.totalPrice != null">
+				 total_price = #{bean.totalPrice},
+			</if>
+			<if test="bean.totalDiscount != null">
+				 total_discount = #{bean.totalDiscount},
+			</if>
+			<if test="bean.totalRefunded != null">
+				 total_refunded = #{bean.totalRefunded},
+			</if>
+			<if test="bean.discountCode != null">
+				 discount_code = #{bean.discountCode},
+			</if>
+			<if test="bean.customerEmail != null">
+				 customer_email = #{bean.customerEmail},
+			</if>
+			<if test="bean.customerName != null">
+				 customer_name = #{bean.customerName},
+			</if>
+			<if test="bean.customerCountry != null">
+				 customer_country = #{bean.customerCountry},
+			</if>
+			<if test="bean.customerCountryCode != null">
+				 customer_country_code = #{bean.customerCountryCode},
+			</if>
+			<if test="bean.returnStatus != null">
+				 return_status = #{bean.returnStatus},
+			</if>
+			<if test="bean.createdAt != null">
+				 created_at = #{bean.createdAt},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from shopify_order
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据StoreIdAndOrderId修改-->
+	<update id="updateByStoreIdAndOrderId" parameterType="com.vmp.entity.po.ShopifyOrder">
+		 UPDATE shopify_order
+ 		 <set> 
+			<if test="bean.storeName != null">
+				 store_name = #{bean.storeName},
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code = #{bean.currencyCode},
+			</if>
+			<if test="bean.orderName != null">
+				 order_name = #{bean.orderName},
+			</if>
+			<if test="bean.sourceName != null">
+				 source_name = #{bean.sourceName},
+			</if>
+			<if test="bean.displayFinancialStatus != null">
+				 display_financial_status = #{bean.displayFinancialStatus},
+			</if>
+			<if test="bean.displayFulfillmentStatus != null">
+				 display_fulfillment_status = #{bean.displayFulfillmentStatus},
+			</if>
+			<if test="bean.taxesIncluded != null">
+				 taxes_included = #{bean.taxesIncluded},
+			</if>
+			<if test="bean.totalPrice != null">
+				 total_price = #{bean.totalPrice},
+			</if>
+			<if test="bean.totalDiscount != null">
+				 total_discount = #{bean.totalDiscount},
+			</if>
+			<if test="bean.totalRefunded != null">
+				 total_refunded = #{bean.totalRefunded},
+			</if>
+			<if test="bean.discountCode != null">
+				 discount_code = #{bean.discountCode},
+			</if>
+			<if test="bean.customerEmail != null">
+				 customer_email = #{bean.customerEmail},
+			</if>
+			<if test="bean.customerName != null">
+				 customer_name = #{bean.customerName},
+			</if>
+			<if test="bean.customerCountry != null">
+				 customer_country = #{bean.customerCountry},
+			</if>
+			<if test="bean.customerCountryCode != null">
+				 customer_country_code = #{bean.customerCountryCode},
+			</if>
+			<if test="bean.returnStatus != null">
+				 return_status = #{bean.returnStatus},
+			</if>
+			<if test="bean.createdAt != null">
+				 created_at = #{bean.createdAt},
+			</if>
+ 		 </set>
+ 		 where store_id=#{storeId} and order_id=#{orderId}
+	</update>
+
+	<!-- 根据StoreIdAndOrderId删除-->
+	<delete id="deleteByStoreIdAndOrderId">
+		delete from shopify_order where store_id=#{storeId} and order_id=#{orderId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByStoreIdAndOrderId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from shopify_order where store_id=#{storeId} and order_id=#{orderId}
+	</select>
+
+</mapper>

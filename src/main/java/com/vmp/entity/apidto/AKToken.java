@@ -1,12 +1,8 @@
-package com.vmp.entity.po;
+package com.vmp.entity.apidto;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-import java.io.Serializable;
-
-public class AKToken implements Serializable {
-
-    private static final long serialVersionUID = 95959972238564995L;
+public class AKToken {
     @JSONField(name = "access_token")
     private String accessToken;
 

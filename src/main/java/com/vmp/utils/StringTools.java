@@ -98,6 +98,10 @@ public class StringTools {
         return Constants.SYS_NAME + getRandomNumber(Constants.LENGTH_5);
     }
 
+    public static final String createShopifyProductImgId(String storeId, String productId) {
+        return storeId + "_" + productId;
+    }
+
     public static final String createToken(String userId) {
         return encodeByMD5(userId + StringTools.getRandomString(Constants.LENGTH_20));
     }
@@ -130,5 +134,9 @@ public class StringTools {
             return false;
         }
         return true;
+    }
+
+    public static String extractShopifyLastId(String gid) {
+        return gid.substring(gid.lastIndexOf('/') + 1);
     }
 }

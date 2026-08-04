@@ -1,10 +1,6 @@
-package com.vmp.entity.po;
+package com.vmp.entity.apidto;
 
-import java.io.Serializable;
-
-public class AKResult<T> implements Serializable {
-
-    private static final long serialVersionUID = -2915203243206447824L;
+public class AKResult<T> {
     /**
      * 自定义业务码
      */

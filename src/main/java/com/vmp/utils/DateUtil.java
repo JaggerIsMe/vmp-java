@@ -1,12 +1,12 @@
 package com.vmp.utils;
 
 
+import com.vmp.entity.constants.Constants;
+import com.vmp.entity.enums.DateTimePatternEnum;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class DateUtil {
 
@@ -50,6 +50,41 @@ public class DateUtil {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, day);
         return calendar.getTime();
+    }
+
+    public static Date offsetDay(Date date, int offset) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, offset);
+        return calendar.getTime();
+    }
+
+    public static Date offsetDay(Date date, int offset, boolean clearTime) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        if (clearTime) {
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+        }
+        calendar.add(Calendar.DAY_OF_MONTH, offset);
+        return calendar.getTime();
+    }
+
+    // 根据起止日期获取日期列表
+    public static List<String> getDateList(String startDateStr, String endDateStr) {
+        Date startDate = parse(startDateStr, DateTimePatternEnum.YYYY_MM_DD.getPattern());
+        Date endDate = parse(endDateStr, DateTimePatternEnum.YYYY_MM_DD.getPattern());
+
+        List<String> dateList = new ArrayList<>();
+        Date currentDate = startDate;
+        while (currentDate.compareTo(endDate) <= 0) {
+            dateList.add(format(currentDate, DateTimePatternEnum.YYYY_MM_DD.getPattern()));
+            currentDate = offsetDay(currentDate, Constants.ONE);
+        }
+
+        return dateList;
     }
 
 }

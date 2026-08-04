@@ -25,11 +25,9 @@ public class Constants {
 
     public static final Integer LENGTH_50 = 50;
 
+    public static final Integer LENGTH_100 = 100;
+
     public static final Integer LENGTH_1000 = 1000;
-
-    public static final String TOKEN_KEY = "token";
-
-    public static final String SESSION_SHARE_KEY = "session_share_key_";
 
     public static final String FILE_FOLDER_FILE = "/files/";
 
@@ -47,13 +45,17 @@ public class Constants {
 
     public static final String FILE_FOLDER_AVATAR_NAME = "avatar/";
 
-    public static final String AVATAR_DEFUALT = "default_avatar.jpg";
+    public static final String FILE_FOLDER_PRODUCT_IMG = "product/";
+
+    public static final String FILE_FOLDER_PRODUCT_IMG_SHOPIFY = "shopify/";
+
+    public static final String AVATAR_DEFAULT = "default_avatar.jpg";
+
+    public static final String DEFAULT_IMG = "default_img.jpg";
 
     public static final String VIEW_OBJ_RESULT_KEY = "result";
 
     public static final String WEB_TOKEN_KEY = "token";
-
-    public static final String WEB_DDOPENUNIONID_KEY = "ddOpenUnionId";
 
     /**
      * redis key 相关
@@ -92,6 +94,11 @@ public class Constants {
 
     public static final String REDIS_KEY_ONLINE_USERID_LATEST_TOKEN = "vmp:online:userId:";
 
-    public static final String AK_ACCESS_TOKEN = "vmp:ak:token:";
+    public static final String AK_ACCESS_TOKEN = "vmp:api:ak:token:";
+
+    public static final String SHOPIFY_PARENT_PRODUCT = "Parent";
+    public static final String SHOPIFY_CHILD_PRODUCT = "Child";
+
+    public static final String SHOPIFY_SESSION_PRODUCT_TYPE = "Product";
 
 }

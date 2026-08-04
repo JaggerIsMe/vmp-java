@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vmp.mappers.ShopifyProductInventoryMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.vmp.entity.po.ShopifyProductInventory">
+		<!--变体id-->
+		<result column="variant_id" property="variantId"  />
+		<!--产品id-->
+		<result column="product_id" property="productId"  />
+		<!--仓库id-->
+		<result column="warehouse_id" property="warehouseId"  />
+		<!--店铺id-->
+		<result column="store_id" property="storeId"  />
+		<!--仓库名称-->
+		<result column="warehouse_name" property="warehouseName"  />
+		<!--可售库存数量-->
+		<result column="available_quantity" property="availableQuantity"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 variant_id,product_id,warehouse_id,store_id,warehouse_name,
+		 available_quantity
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.variantId != null and query.variantId!=''">
+			 and  variant_id = #{query.variantId}
+		</if>
+		<if test="query.productId != null and query.productId!=''">
+			 and  product_id = #{query.productId}
+		</if>
+		<if test="query.warehouseId != null and query.warehouseId!=''">
+			 and  warehouse_id = #{query.warehouseId}
+		</if>
+		<if test="query.storeId != null and query.storeId!=''">
+			 and  store_id = #{query.storeId}
+		</if>
+		<if test="query.warehouseName != null and query.warehouseName!=''">
+			 and  warehouse_name = #{query.warehouseName}
+		</if>
+		<if test="query.availableQuantity != null">
+			 and  available_quantity = #{query.availableQuantity}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.variantIdFuzzy!= null  and query.variantIdFuzzy!=''">
+				 and  variant_id like concat('%', #{query.variantIdFuzzy}, '%')
+			</if>
+			<if test="query.productIdFuzzy!= null  and query.productIdFuzzy!=''">
+				 and  product_id like concat('%', #{query.productIdFuzzy}, '%')
+			</if>
+			<if test="query.warehouseIdFuzzy!= null  and query.warehouseIdFuzzy!=''">
+				 and  warehouse_id like concat('%', #{query.warehouseIdFuzzy}, '%')
+			</if>
+			<if test="query.storeIdFuzzy!= null  and query.storeIdFuzzy!=''">
+				 and  store_id like concat('%', #{query.storeIdFuzzy}, '%')
+			</if>
+			<if test="query.warehouseNameFuzzy!= null  and query.warehouseNameFuzzy!=''">
+				 and  warehouse_name like concat('%', #{query.warehouseNameFuzzy}, '%')
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM shopify_product_inventory <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM shopify_product_inventory <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.vmp.entity.po.ShopifyProductInventory">
+		 INSERT INTO shopify_product_inventory
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.variantId != null">
+				 variant_id,
+			</if>
+			<if test="bean.productId != null">
+				 product_id,
+			</if>
+			<if test="bean.warehouseId != null">
+				 warehouse_id,
+			</if>
+			<if test="bean.storeId != null">
+				 store_id,
+			</if>
+			<if test="bean.warehouseName != null">
+				 warehouse_name,
+			</if>
+			<if test="bean.availableQuantity != null">
+				 available_quantity,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.variantId!=null">
+				 #{bean.variantId},
+			</if>
+			<if test="bean.productId!=null">
+				 #{bean.productId},
+			</if>
+			<if test="bean.warehouseId!=null">
+				 #{bean.warehouseId},
+			</if>
+			<if test="bean.storeId!=null">
+				 #{bean.storeId},
+			</if>
+			<if test="bean.warehouseName!=null">
+				 #{bean.warehouseName},
+			</if>
+			<if test="bean.availableQuantity!=null">
+				 #{bean.availableQuantity},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.vmp.entity.po.ShopifyProductInventory">
+		 INSERT INTO shopify_product_inventory
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.variantId != null">
+				 variant_id,
+			</if>
+			<if test="bean.productId != null">
+				 product_id,
+			</if>
+			<if test="bean.warehouseId != null">
+				 warehouse_id,
+			</if>
+			<if test="bean.storeId != null">
+				 store_id,
+			</if>
+			<if test="bean.warehouseName != null">
+				 warehouse_name,
+			</if>
+			<if test="bean.availableQuantity != null">
+				 available_quantity,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.variantId!=null">
+				 #{bean.variantId},
+			</if>
+			<if test="bean.productId!=null">
+				 #{bean.productId},
+			</if>
+			<if test="bean.warehouseId!=null">
+				 #{bean.warehouseId},
+			</if>
+			<if test="bean.storeId!=null">
+				 #{bean.storeId},
+			</if>
+			<if test="bean.warehouseName!=null">
+				 #{bean.warehouseName},
+			</if>
+			<if test="bean.availableQuantity!=null">
+				 #{bean.availableQuantity},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.variantId!=null">
+				 variant_id = VALUES(variant_id),
+			</if>
+			<if test="bean.productId!=null">
+				 product_id = VALUES(product_id),
+			</if>
+			<if test="bean.warehouseId!=null">
+				 warehouse_id = VALUES(warehouse_id),
+			</if>
+			<if test="bean.storeId!=null">
+				 store_id = VALUES(store_id),
+			</if>
+			<if test="bean.warehouseName!=null">
+				 warehouse_name = VALUES(warehouse_name),
+			</if>
+			<if test="bean.availableQuantity!=null">
+				 available_quantity = VALUES(available_quantity),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.vmp.entity.po.ShopifyProductInventory">
+		 INSERT INTO shopify_product_inventory(
+			 variant_id,
+			 product_id,
+			 warehouse_id,
+			 store_id,
+			 warehouse_name,
+			 available_quantity
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.variantId},
+				 #{item.productId},
+				 #{item.warehouseId},
+				 #{item.storeId},
+				 #{item.warehouseName},
+				 #{item.availableQuantity}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.vmp.entity.po.ShopifyProductInventory">
+		 INSERT INTO shopify_product_inventory(
+			 variant_id,
+			 product_id,
+			 warehouse_id,
+			 store_id,
+			 warehouse_name,
+			 available_quantity
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.variantId},
+				 #{item.productId},
+				 #{item.warehouseId},
+				 #{item.storeId},
+				 #{item.warehouseName},
+				 #{item.availableQuantity}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			variant_id = VALUES(variant_id),
+			product_id = VALUES(product_id),
+			warehouse_id = VALUES(warehouse_id),
+			store_id = VALUES(store_id),
+			warehouse_name = VALUES(warehouse_name),
+			available_quantity = VALUES(available_quantity)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.vmp.entity.query.ShopifyProductInventoryQuery">
+		 UPDATE shopify_product_inventory
+ 		 <set> 
+			<if test="bean.variantId != null">
+				 variant_id = #{bean.variantId},
+			</if>
+			<if test="bean.productId != null">
+				 product_id = #{bean.productId},
+			</if>
+			<if test="bean.warehouseId != null">
+				 warehouse_id = #{bean.warehouseId},
+			</if>
+			<if test="bean.storeId != null">
+				 store_id = #{bean.storeId},
+			</if>
+			<if test="bean.warehouseName != null">
+				 warehouse_name = #{bean.warehouseName},
+			</if>
+			<if test="bean.availableQuantity != null">
+				 available_quantity = #{bean.availableQuantity},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from shopify_product_inventory
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据VariantIdAndProductIdAndWarehouseIdAndStoreId修改-->
+	<update id="updateByVariantIdAndProductIdAndWarehouseIdAndStoreId" parameterType="com.vmp.entity.po.ShopifyProductInventory">
+		 UPDATE shopify_product_inventory
+ 		 <set> 
+			<if test="bean.warehouseName != null">
+				 warehouse_name = #{bean.warehouseName},
+			</if>
+			<if test="bean.availableQuantity != null">
+				 available_quantity = #{bean.availableQuantity},
+			</if>
+ 		 </set>
+ 		 where variant_id=#{variantId} and product_id=#{productId} and warehouse_id=#{warehouseId} and store_id=#{storeId}
+	</update>
+
+	<!-- 根据VariantIdAndProductIdAndWarehouseIdAndStoreId删除-->
+	<delete id="deleteByVariantIdAndProductIdAndWarehouseIdAndStoreId">
+		delete from shopify_product_inventory where variant_id=#{variantId} and product_id=#{productId} and warehouse_id=#{warehouseId} and store_id=#{storeId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByVariantIdAndProductIdAndWarehouseIdAndStoreId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from shopify_product_inventory where variant_id=#{variantId} and product_id=#{productId} and warehouse_id=#{warehouseId} and store_id=#{storeId}
+	</select>
+
+</mapper>

@@ -11,20 +11,21 @@ import com.vmp.utils.CopyTools;
 import com.vmp.utils.StringTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 
 
 public class ABaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(ABaseController.class);
+
+    private static final String CONTENT_TYPE = "Content-Type";
+    private static final String CONTENT_TYPE_VALUE = "application/json;charset=UTF-8";
 
     @Resource
     private RedisUtils redisUtils;
@@ -91,6 +92,21 @@ public class ABaseController {
         }
         TokenUserInfoDto tokenUserInfoDto = (TokenUserInfoDto) redisUtils.get(Constants.REDIS_KEY_ONLINE_TOKEN + token);
         return tokenUserInfoDto;
+    }
+
+    protected void printNoDefaultImage(HttpServletResponse response) {
+        response.setHeader(CONTENT_TYPE, CONTENT_TYPE_VALUE);
+        response.setStatus(HttpStatus.OK.value());
+        PrintWriter writer = null;
+        try {
+            writer = response.getWriter();
+            writer.print("请在项目目录下放置默认图片default_img.jpg");
+            writer.close();
+        } catch (Exception e) {
+            logger.error("输出无默认图失败", e);
+        } finally {
+            writer.close();
+        }
     }
 
     protected void readFile(HttpServletResponse response, String filePath) {

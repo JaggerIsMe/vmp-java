@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vmp.mappers.ShopifySessionReportMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.vmp.entity.po.ShopifySessionReport">
+		<!--报告日期-->
+		<result column="report_day" property="reportDay"  />
+		<!--店铺id-->
+		<result column="store_id" property="storeId"  />
+		<!--落地页类型-->
+		<result column="landing_page_type" property="landingPageType"  />
+		<!--落地页url-->
+		<result column="landing_page_path" property="landingPagePath"  />
+		<!--独立访客数-->
+		<result column="online_store_visitors" property="onlineStoreVisitors"  />
+		<!--总访客会话总数-->
+		<result column="sessions" property="sessions"  />
+		<!--加入购物车有效会话数-->
+		<result column="sessions_with_cart_additions" property="sessionsWithCartAdditions"  />
+		<!--结账有效会话数-->
+		<result column="sessions_that_reached_checkout" property="sessionsThatReachedCheckout"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 report_day,store_id,landing_page_type,landing_page_path,online_store_visitors,
+		 sessions,sessions_with_cart_additions,sessions_that_reached_checkout
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.reportDay != null and query.reportDay!=''">
+			 <![CDATA[ and  report_day=str_to_date(#{query.reportDay}, '%Y-%m-%d') ]]>
+		</if>
+		<if test="query.storeId != null and query.storeId!=''">
+			 and  store_id = #{query.storeId}
+		</if>
+		<if test="query.landingPageType != null and query.landingPageType!=''">
+			 and  landing_page_type = #{query.landingPageType}
+		</if>
+		<if test="query.landingPagePath != null and query.landingPagePath!=''">
+			 and  landing_page_path = #{query.landingPagePath}
+		</if>
+		<if test="query.onlineStoreVisitors != null">
+			 and  online_store_visitors = #{query.onlineStoreVisitors}
+		</if>
+		<if test="query.sessions != null">
+			 and  sessions = #{query.sessions}
+		</if>
+		<if test="query.sessionsWithCartAdditions != null">
+			 and  sessions_with_cart_additions = #{query.sessionsWithCartAdditions}
+		</if>
+		<if test="query.sessionsThatReachedCheckout != null">
+			 and  sessions_that_reached_checkout = #{query.sessionsThatReachedCheckout}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.reportDayStart!= null and query.reportDayStart!=''">
+				 <![CDATA[ and  report_day>=str_to_date(#{query.reportDayStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.reportDayEnd!= null and query.reportDayEnd!=''">
+				 <![CDATA[ and  report_day< date_sub(str_to_date(#{query.reportDayEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.storeIdFuzzy!= null  and query.storeIdFuzzy!=''">
+				 and  store_id like concat('%', #{query.storeIdFuzzy}, '%')
+			</if>
+			<if test="query.landingPageTypeFuzzy!= null  and query.landingPageTypeFuzzy!=''">
+				 and  landing_page_type like concat('%', #{query.landingPageTypeFuzzy}, '%')
+			</if>
+			<if test="query.landingPagePathFuzzy!= null  and query.landingPagePathFuzzy!=''">
+				 and  landing_page_path like concat('%', #{query.landingPagePathFuzzy}, '%')
+			</if>
+			<if test="query.storeIdList != null">
+				<choose>
+					<when test="query.storeIdList.size() > 0">
+						and store_id in
+						<foreach collection="query.storeIdList" item="storeId" open="(" separator="," close=")">
+							#{storeId}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+			<if test="query.landingPagePathList != null">
+				<choose>
+					<when test="query.landingPagePathList.size() > 0">
+						and landing_page_path in
+						<foreach collection="query.landingPagePathList" item="landingPagePath" open="(" separator="," close=")">
+							#{landingPagePath}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM shopify_session_report <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM shopify_session_report <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.vmp.entity.po.ShopifySessionReport">
+		 INSERT INTO shopify_session_report
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.reportDay != null">
+				 report_day,
+			</if>
+			<if test="bean.storeId != null">
+				 store_id,
+			</if>
+			<if test="bean.landingPageType != null">
+				 landing_page_type,
+			</if>
+			<if test="bean.landingPagePath != null">
+				 landing_page_path,
+			</if>
+			<if test="bean.onlineStoreVisitors != null">
+				 online_store_visitors,
+			</if>
+			<if test="bean.sessions != null">
+				 sessions,
+			</if>
+			<if test="bean.sessionsWithCartAdditions != null">
+				 sessions_with_cart_additions,
+			</if>
+			<if test="bean.sessionsThatReachedCheckout != null">
+				 sessions_that_reached_checkout,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.reportDay!=null">
+				 #{bean.reportDay},
+			</if>
+			<if test="bean.storeId!=null">
+				 #{bean.storeId},
+			</if>
+			<if test="bean.landingPageType!=null">
+				 #{bean.landingPageType},
+			</if>
+			<if test="bean.landingPagePath!=null">
+				 #{bean.landingPagePath},
+			</if>
+			<if test="bean.onlineStoreVisitors!=null">
+				 #{bean.onlineStoreVisitors},
+			</if>
+			<if test="bean.sessions!=null">
+				 #{bean.sessions},
+			</if>
+			<if test="bean.sessionsWithCartAdditions!=null">
+				 #{bean.sessionsWithCartAdditions},
+			</if>
+			<if test="bean.sessionsThatReachedCheckout!=null">
+				 #{bean.sessionsThatReachedCheckout},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.vmp.entity.po.ShopifySessionReport">
+		 INSERT INTO shopify_session_report
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.reportDay != null">
+				 report_day,
+			</if>
+			<if test="bean.storeId != null">
+				 store_id,
+			</if>
+			<if test="bean.landingPageType != null">
+				 landing_page_type,
+			</if>
+			<if test="bean.landingPagePath != null">
+				 landing_page_path,
+			</if>
+			<if test="bean.onlineStoreVisitors != null">
+				 online_store_visitors,
+			</if>
+			<if test="bean.sessions != null">
+				 sessions,
+			</if>
+			<if test="bean.sessionsWithCartAdditions != null">
+				 sessions_with_cart_additions,
+			</if>
+			<if test="bean.sessionsThatReachedCheckout != null">
+				 sessions_that_reached_checkout,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.reportDay!=null">
+				 #{bean.reportDay},
+			</if>
+			<if test="bean.storeId!=null">
+				 #{bean.storeId},
+			</if>
+			<if test="bean.landingPageType!=null">
+				 #{bean.landingPageType},
+			</if>
+			<if test="bean.landingPagePath!=null">
+				 #{bean.landingPagePath},
+			</if>
+			<if test="bean.onlineStoreVisitors!=null">
+				 #{bean.onlineStoreVisitors},
+			</if>
+			<if test="bean.sessions!=null">
+				 #{bean.sessions},
+			</if>
+			<if test="bean.sessionsWithCartAdditions!=null">
+				 #{bean.sessionsWithCartAdditions},
+			</if>
+			<if test="bean.sessionsThatReachedCheckout!=null">
+				 #{bean.sessionsThatReachedCheckout},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.reportDay!=null">
+				 report_day = VALUES(report_day),
+			</if>
+			<if test="bean.storeId!=null">
+				 store_id = VALUES(store_id),
+			</if>
+			<if test="bean.landingPageType!=null">
+				 landing_page_type = VALUES(landing_page_type),
+			</if>
+			<if test="bean.landingPagePath!=null">
+				 landing_page_path = VALUES(landing_page_path),
+			</if>
+			<if test="bean.onlineStoreVisitors!=null">
+				 online_store_visitors = VALUES(online_store_visitors),
+			</if>
+			<if test="bean.sessions!=null">
+				 sessions = VALUES(sessions),
+			</if>
+			<if test="bean.sessionsWithCartAdditions!=null">
+				 sessions_with_cart_additions = VALUES(sessions_with_cart_additions),
+			</if>
+			<if test="bean.sessionsThatReachedCheckout!=null">
+				 sessions_that_reached_checkout = VALUES(sessions_that_reached_checkout),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.vmp.entity.po.ShopifySessionReport">
+		 INSERT INTO shopify_session_report(
+			 report_day,
+			 store_id,
+			 landing_page_type,
+			 landing_page_path,
+			 online_store_visitors,
+			 sessions,
+			 sessions_with_cart_additions,
+			 sessions_that_reached_checkout
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.reportDay},
+				 #{item.storeId},
+				 #{item.landingPageType},
+				 #{item.landingPagePath},
+				 #{item.onlineStoreVisitors},
+				 #{item.sessions},
+				 #{item.sessionsWithCartAdditions},
+				 #{item.sessionsThatReachedCheckout}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.vmp.entity.po.ShopifySessionReport">
+		 INSERT INTO shopify_session_report(
+			 report_day,
+			 store_id,
+			 landing_page_type,
+			 landing_page_path,
+			 online_store_visitors,
+			 sessions,
+			 sessions_with_cart_additions,
+			 sessions_that_reached_checkout
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.reportDay},
+				 #{item.storeId},
+				 #{item.landingPageType},
+				 #{item.landingPagePath},
+				 #{item.onlineStoreVisitors},
+				 #{item.sessions},
+				 #{item.sessionsWithCartAdditions},
+				 #{item.sessionsThatReachedCheckout}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			report_day = VALUES(report_day),
+			store_id = VALUES(store_id),
+			landing_page_type = VALUES(landing_page_type),
+			landing_page_path = VALUES(landing_page_path),
+			online_store_visitors = VALUES(online_store_visitors),
+			sessions = VALUES(sessions),
+			sessions_with_cart_additions = VALUES(sessions_with_cart_additions),
+			sessions_that_reached_checkout = VALUES(sessions_that_reached_checkout)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.vmp.entity.query.ShopifySessionReportQuery">
+		 UPDATE shopify_session_report
+ 		 <set> 
+			<if test="bean.reportDay != null">
+				 report_day = #{bean.reportDay},
+			</if>
+			<if test="bean.storeId != null">
+				 store_id = #{bean.storeId},
+			</if>
+			<if test="bean.landingPageType != null">
+				 landing_page_type = #{bean.landingPageType},
+			</if>
+			<if test="bean.landingPagePath != null">
+				 landing_page_path = #{bean.landingPagePath},
+			</if>
+			<if test="bean.onlineStoreVisitors != null">
+				 online_store_visitors = #{bean.onlineStoreVisitors},
+			</if>
+			<if test="bean.sessions != null">
+				 sessions = #{bean.sessions},
+			</if>
+			<if test="bean.sessionsWithCartAdditions != null">
+				 sessions_with_cart_additions = #{bean.sessionsWithCartAdditions},
+			</if>
+			<if test="bean.sessionsThatReachedCheckout != null">
+				 sessions_that_reached_checkout = #{bean.sessionsThatReachedCheckout},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from shopify_session_report
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据ReportDayAndStoreIdAndLandingPageTypeAndLandingPagePath修改-->
+	<update id="updateByReportDayAndStoreIdAndLandingPageTypeAndLandingPagePath" parameterType="com.vmp.entity.po.ShopifySessionReport">
+		 UPDATE shopify_session_report
+ 		 <set> 
+			<if test="bean.onlineStoreVisitors != null">
+				 online_store_visitors = #{bean.onlineStoreVisitors},
+			</if>
+			<if test="bean.sessions != null">
+				 sessions = #{bean.sessions},
+			</if>
+			<if test="bean.sessionsWithCartAdditions != null">
+				 sessions_with_cart_additions = #{bean.sessionsWithCartAdditions},
+			</if>
+			<if test="bean.sessionsThatReachedCheckout != null">
+				 sessions_that_reached_checkout = #{bean.sessionsThatReachedCheckout},
+			</if>
+ 		 </set>
+ 		 where report_day=#{reportDay} and store_id=#{storeId} and landing_page_type=#{landingPageType} and landing_page_path=#{landingPagePath}
+	</update>
+
+	<!-- 根据ReportDayAndStoreIdAndLandingPageTypeAndLandingPagePath删除-->
+	<delete id="deleteByReportDayAndStoreIdAndLandingPageTypeAndLandingPagePath">
+		delete from shopify_session_report where report_day=#{reportDay} and store_id=#{storeId} and landing_page_type=#{landingPageType} and landing_page_path=#{landingPagePath}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByReportDayAndStoreIdAndLandingPageTypeAndLandingPagePath" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from shopify_session_report where report_day=#{reportDay} and store_id=#{storeId} and landing_page_type=#{landingPageType} and landing_page_path=#{landingPagePath}
+	</select>
+
+</mapper>
