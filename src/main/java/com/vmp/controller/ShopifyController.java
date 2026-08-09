@@ -27,19 +27,10 @@ public class ShopifyController extends ABaseController {
     private static final Logger logger = LoggerFactory.getLogger(ShopifyController.class);
 
     @Resource
-    private ShopifyConfig shopifyConfig;
-
-    @Resource
-    private ShopifyApiService shopifyApiService;
-
-    @Resource
     private ShopifyProductService shopifyProductService;
 
     @Resource
     private ShopifyOrderService shopifyOrderService;
-
-    @Resource
-    private ShopifySessionReportService shopifySessionReportService;
 
     @Resource
     private ShopifyProductInventoryService shopifyProductInventoryService;
@@ -48,63 +39,14 @@ public class ShopifyController extends ABaseController {
     private ProductImageService productImageService;
 
 
-    @RequestMapping("/getVantrueAccessToken")
-    public ResponseVO getVantrueAccessToken() {
-        return getSuccessResponseVO(shopifyApiService.getAccessToken(shopifyConfig.getVantrueHost()));
-    }
-
-    @RequestMapping("/getShopifyShopInfo")
-    public ResponseVO getShopifyShopInfo(String host) {
-        return getSuccessResponseVO(shopifyApiService.getShopifyShopInfo(host));
-    }
-
-    @RequestMapping("/getShopifyProducts")
-    public ResponseVO getShopifyProducts(@RequestParam("host") String host, @RequestParam("first") Integer first, @RequestParam("after") String after) {
-        return getSuccessResponseVO(shopifyApiService.getShopifyProducts(host, first, null));
-    }
-
-    @RequestMapping("/syncShopifyProducts")
-    public ResponseVO syncShopifyProducts(@RequestParam("host") String host, @RequestParam("first") Integer first, @RequestParam("after") String after) {
-        shopifyProductService.syncShopifyProducts(host, first, null);
-        return getSuccessResponseVO(null);
-    }
-
-    @RequestMapping("/getShopifyOrders")
-    public ResponseVO getShopifyOrders(@RequestParam("host") String host, @RequestParam("first") Integer first, @RequestParam("after") String after,
-                                       @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-                                       @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-        return getSuccessResponseVO(shopifyApiService.getShopifyOrders(host, first, null, startDate, endDate));
-    }
-
-    @RequestMapping("/syncShopifyOrders")
-    public ResponseVO syncShopifyOrders(@RequestParam("host") String host, @RequestParam("first") Integer first, @RequestParam("after") String after,
-                                        @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-                                        @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-        shopifyOrderService.syncShopifyOrders(host, first, null, startDate, endDate);
-        return getSuccessResponseVO(null);
-    }
-
-    @RequestMapping("/getShopifySessionsReport")
-    public ResponseVO getShopifySessionsReport(@RequestParam("host") String host, @RequestParam("type") String type,
-                                               @RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day) {
-        return getSuccessResponseVO(shopifyApiService.getShopifySessionsReport(host, type, day));
-    }
-
-    @RequestMapping("/writeShopifySessionsReport")
-    public ResponseVO writeShopifySessionsReport(@RequestParam("host") String host, @RequestParam("type") String type,
-                                                 @RequestParam("day") @DateTimeFormat(pattern = "yyyy-MM-dd") Date day) {
-        shopifySessionReportService.getShopifySessionsReport(host, type, day);
-        return getSuccessResponseVO(null);
-    }
-
     /**
      * 获取商品列表-父体
      *
      * @param query
      * @return
      */
-    @GlobalInterceptor(checkParams = true)
     @RequestMapping("/loadShopifyParentProductList")
+    @GlobalInterceptor(checkParams = true)
     public ResponseVO loadShopifyParentProductList(ShopifyProductQuery query) {
         PaginationResultVO resultVO = shopifyProductService.loadShopifyParentProductList(query);
         return getSuccessResponseVO(convert2PaginationVO(resultVO, ShopifyProductVO.class));
@@ -129,6 +71,7 @@ public class ShopifyController extends ABaseController {
      * @return
      */
     @RequestMapping("/getProductInventoryDetails/{storeId}/{productId}/{variantId}")
+    @GlobalInterceptor(checkParams = true)
     public ResponseVO getProductInventoryDetails(@VerifyParam(required = true) @PathVariable("storeId") String storeId,
                                                  @VerifyParam(required = true) @PathVariable("productId") String productId,
                                                  @VerifyParam(required = true) @PathVariable("variantId") String variantId) {
@@ -213,8 +156,8 @@ public class ShopifyController extends ABaseController {
      * @param query
      * @return
      */
-    @GlobalInterceptor(checkParams = true)
     @RequestMapping("/getShopifySalesDailyPerformance")
+    @GlobalInterceptor(checkParams = true)
     public ResponseVO getShopifySalesDailyPerformance(ShopifyOrderQuery query) {
         query.setOrderBy("created_at desc");
         return getSuccessResponseVO(shopifyOrderService.getShopifySalesDailyPerformance(query));

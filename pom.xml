@@ -13,8 +13,8 @@
 
   <groupId>com.vmp</groupId>
   <artifactId>vmp</artifactId>
-  <packaging>war</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <version>1.0</version>
   <name>vmp Maven Webapp</name>
 
   <properties>
@@ -35,6 +35,7 @@
     <commons.io.version>2.5</commons.io.version>
     <com.aliyun.dingtalk.version>2.2.40</com.aliyun.dingtalk.version>
     <com.squareup.okhttp3.okhttp.version>4.12.0</com.squareup.okhttp3.okhttp.version>
+    <com.xuxueli.xxljob.version>2.5.0</com.xuxueli.xxljob.version>
   </properties>
 
   <dependencies>
@@ -127,6 +128,13 @@
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
       <version>${com.squareup.okhttp3.okhttp.version}</version>
+    </dependency>
+
+    <!-- xxl-job -->
+    <dependency>
+      <groupId>com.xuxueli</groupId>
+      <artifactId>xxl-job-core</artifactId>
+      <version>${com.xuxueli.xxljob.version}</version>
     </dependency>
   </dependencies>
 
