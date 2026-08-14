@@ -1,0 +1,611 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vmp.mappers.AgentSkillInfoMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.vmp.entity.po.AgentSkillInfo">
+		<!--skill id-->
+		<result column="skill_id" property="skillId"  />
+		<!--skill名称-->
+		<result column="name" property="name"  />
+		<!--skill描述-->
+		<result column="description" property="description"  />
+		<!--激活版本id-->
+		<result column="active_version_id" property="activeVersionId"  />
+		<!--激活版本号-->
+		<result column="active_version_name" property="activeVersionName"  />
+		<!--可用skill文件名-->
+		<result column="active_file_name" property="activeFileName"  />
+		<!--备注-->
+		<result column="remark" property="remark"  />
+		<!--Agents平台-->
+		<result column="platform" property="platform"  />
+		<!--所属部门-->
+		<result column="dept" property="dept"  />
+		<!--skill状态 0可用 1下架 2创建中 3创建失败-->
+		<result column="status" property="status"  />
+		<!--创建人userId-->
+		<result column="create_by" property="createBy"  />
+		<!--创建时间-->
+		<result column="create_time" property="createTime"  />
+		<!--更新时间-->
+		<result column="update_time" property="updateTime"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 skill_id,name,description,active_version_id,active_version_name,
+		 active_file_name,remark,platform,dept,status,
+		 create_by,create_time,update_time
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.skillId != null and query.skillId!=''">
+			 and  skill_id = #{query.skillId}
+		</if>
+		<if test="query.name != null and query.name!=''">
+			 and  name = #{query.name}
+		</if>
+		<if test="query.description != null and query.description!=''">
+			 and  description = #{query.description}
+		</if>
+		<if test="query.activeVersionId != null and query.activeVersionId!=''">
+			 and  active_version_id = #{query.activeVersionId}
+		</if>
+		<if test="query.activeVersionName != null and query.activeVersionName!=''">
+			 and  active_version_name = #{query.activeVersionName}
+		</if>
+		<if test="query.activeFileName != null and query.activeFileName!=''">
+			 and  active_file_name = #{query.activeFileName}
+		</if>
+		<if test="query.remark != null and query.remark!=''">
+			 and  remark = #{query.remark}
+		</if>
+		<if test="query.platform != null and query.platform!=''">
+			 and  platform = #{query.platform}
+		</if>
+		<if test="query.dept != null and query.dept!=''">
+			 and  dept = #{query.dept}
+		</if>
+		<if test="query.status != null">
+			 and  status = #{query.status}
+		</if>
+		<if test="query.createBy != null and query.createBy!=''">
+			 and  create_by = #{query.createBy}
+		</if>
+		<if test="query.createTime != null and query.createTime!=''">
+			 <![CDATA[ and  create_time=str_to_date(#{query.createTime}, '%Y-%m-%d') ]]>
+		</if>
+		<if test="query.updateTime != null and query.updateTime!=''">
+			 <![CDATA[ and  update_time=str_to_date(#{query.updateTime}, '%Y-%m-%d') ]]>
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.skillIdFuzzy!= null  and query.skillIdFuzzy!=''">
+				 and  skill_id like concat('%', #{query.skillIdFuzzy}, '%')
+			</if>
+			<if test="query.nameFuzzy!= null  and query.nameFuzzy!=''">
+				 and  name like concat('%', #{query.nameFuzzy}, '%')
+			</if>
+			<if test="query.descriptionFuzzy!= null  and query.descriptionFuzzy!=''">
+				 and  description like concat('%', #{query.descriptionFuzzy}, '%')
+			</if>
+			<if test="query.activeVersionIdFuzzy!= null  and query.activeVersionIdFuzzy!=''">
+				 and  active_version_id like concat('%', #{query.activeVersionIdFuzzy}, '%')
+			</if>
+			<if test="query.activeVersionNameFuzzy!= null  and query.activeVersionNameFuzzy!=''">
+				 and  active_version_name like concat('%', #{query.activeVersionNameFuzzy}, '%')
+			</if>
+			<if test="query.activeFileNameFuzzy!= null  and query.activeFileNameFuzzy!=''">
+				 and  active_file_name like concat('%', #{query.activeFileNameFuzzy}, '%')
+			</if>
+			<if test="query.remarkFuzzy!= null  and query.remarkFuzzy!=''">
+				 and  remark like concat('%', #{query.remarkFuzzy}, '%')
+			</if>
+			<if test="query.platformFuzzy!= null  and query.platformFuzzy!=''">
+				 and  platform like concat('%', #{query.platformFuzzy}, '%')
+			</if>
+			<if test="query.deptFuzzy!= null  and query.deptFuzzy!=''">
+				 and  dept like concat('%', #{query.deptFuzzy}, '%')
+			</if>
+			<if test="query.createByFuzzy!= null  and query.createByFuzzy!=''">
+				 and  create_by like concat('%', #{query.createByFuzzy}, '%')
+			</if>
+			<if test="query.createTimeStart!= null and query.createTimeStart!=''">
+				 <![CDATA[ and  create_time>=str_to_date(#{query.createTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.createTimeEnd!= null and query.createTimeEnd!=''">
+				 <![CDATA[ and  create_time< date_sub(str_to_date(#{query.createTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.updateTimeStart!= null and query.updateTimeStart!=''">
+				 <![CDATA[ and  update_time>=str_to_date(#{query.updateTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.updateTimeEnd!= null and query.updateTimeEnd!=''">
+				 <![CDATA[ and  update_time< date_sub(str_to_date(#{query.updateTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM agent_skill_info <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM agent_skill_info <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.vmp.entity.po.AgentSkillInfo">
+		 INSERT INTO agent_skill_info
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.skillId != null">
+				 skill_id,
+			</if>
+			<if test="bean.name != null">
+				 name,
+			</if>
+			<if test="bean.description != null">
+				 description,
+			</if>
+			<if test="bean.activeVersionId != null">
+				 active_version_id,
+			</if>
+			<if test="bean.activeVersionName != null">
+				 active_version_name,
+			</if>
+			<if test="bean.activeFileName != null">
+				 active_file_name,
+			</if>
+			<if test="bean.remark != null">
+				 remark,
+			</if>
+			<if test="bean.platform != null">
+				 platform,
+			</if>
+			<if test="bean.dept != null">
+				 dept,
+			</if>
+			<if test="bean.status != null">
+				 status,
+			</if>
+			<if test="bean.createBy != null">
+				 create_by,
+			</if>
+			<if test="bean.createTime != null">
+				 create_time,
+			</if>
+			<if test="bean.updateTime != null">
+				 update_time,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.skillId!=null">
+				 #{bean.skillId},
+			</if>
+			<if test="bean.name!=null">
+				 #{bean.name},
+			</if>
+			<if test="bean.description!=null">
+				 #{bean.description},
+			</if>
+			<if test="bean.activeVersionId!=null">
+				 #{bean.activeVersionId},
+			</if>
+			<if test="bean.activeVersionName!=null">
+				 #{bean.activeVersionName},
+			</if>
+			<if test="bean.activeFileName!=null">
+				 #{bean.activeFileName},
+			</if>
+			<if test="bean.remark!=null">
+				 #{bean.remark},
+			</if>
+			<if test="bean.platform!=null">
+				 #{bean.platform},
+			</if>
+			<if test="bean.dept!=null">
+				 #{bean.dept},
+			</if>
+			<if test="bean.status!=null">
+				 #{bean.status},
+			</if>
+			<if test="bean.createBy!=null">
+				 #{bean.createBy},
+			</if>
+			<if test="bean.createTime!=null">
+				 #{bean.createTime},
+			</if>
+			<if test="bean.updateTime!=null">
+				 #{bean.updateTime},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.vmp.entity.po.AgentSkillInfo">
+		 INSERT INTO agent_skill_info
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.skillId != null">
+				 skill_id,
+			</if>
+			<if test="bean.name != null">
+				 name,
+			</if>
+			<if test="bean.description != null">
+				 description,
+			</if>
+			<if test="bean.activeVersionId != null">
+				 active_version_id,
+			</if>
+			<if test="bean.activeVersionName != null">
+				 active_version_name,
+			</if>
+			<if test="bean.activeFileName != null">
+				 active_file_name,
+			</if>
+			<if test="bean.remark != null">
+				 remark,
+			</if>
+			<if test="bean.platform != null">
+				 platform,
+			</if>
+			<if test="bean.dept != null">
+				 dept,
+			</if>
+			<if test="bean.status != null">
+				 status,
+			</if>
+			<if test="bean.createBy != null">
+				 create_by,
+			</if>
+			<if test="bean.createTime != null">
+				 create_time,
+			</if>
+			<if test="bean.updateTime != null">
+				 update_time,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.skillId!=null">
+				 #{bean.skillId},
+			</if>
+			<if test="bean.name!=null">
+				 #{bean.name},
+			</if>
+			<if test="bean.description!=null">
+				 #{bean.description},
+			</if>
+			<if test="bean.activeVersionId!=null">
+				 #{bean.activeVersionId},
+			</if>
+			<if test="bean.activeVersionName!=null">
+				 #{bean.activeVersionName},
+			</if>
+			<if test="bean.activeFileName!=null">
+				 #{bean.activeFileName},
+			</if>
+			<if test="bean.remark!=null">
+				 #{bean.remark},
+			</if>
+			<if test="bean.platform!=null">
+				 #{bean.platform},
+			</if>
+			<if test="bean.dept!=null">
+				 #{bean.dept},
+			</if>
+			<if test="bean.status!=null">
+				 #{bean.status},
+			</if>
+			<if test="bean.createBy!=null">
+				 #{bean.createBy},
+			</if>
+			<if test="bean.createTime!=null">
+				 #{bean.createTime},
+			</if>
+			<if test="bean.updateTime!=null">
+				 #{bean.updateTime},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.skillId!=null">
+				 skill_id = VALUES(skill_id),
+			</if>
+			<if test="bean.name!=null">
+				 name = VALUES(name),
+			</if>
+			<if test="bean.description!=null">
+				 description = VALUES(description),
+			</if>
+			<if test="bean.activeVersionId!=null">
+				 active_version_id = VALUES(active_version_id),
+			</if>
+			<if test="bean.activeVersionName!=null">
+				 active_version_name = VALUES(active_version_name),
+			</if>
+			<if test="bean.activeFileName!=null">
+				 active_file_name = VALUES(active_file_name),
+			</if>
+			<if test="bean.remark!=null">
+				 remark = VALUES(remark),
+			</if>
+			<if test="bean.platform!=null">
+				 platform = VALUES(platform),
+			</if>
+			<if test="bean.dept!=null">
+				 dept = VALUES(dept),
+			</if>
+			<if test="bean.status!=null">
+				 status = VALUES(status),
+			</if>
+			<if test="bean.createBy!=null">
+				 create_by = VALUES(create_by),
+			</if>
+			<if test="bean.createTime!=null">
+				 create_time = VALUES(create_time),
+			</if>
+			<if test="bean.updateTime!=null">
+				 update_time = VALUES(update_time),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.vmp.entity.po.AgentSkillInfo">
+		 INSERT INTO agent_skill_info(
+			 skill_id,
+			 name,
+			 description,
+			 active_version_id,
+			 active_version_name,
+			 active_file_name,
+			 remark,
+			 platform,
+			 dept,
+			 status,
+			 create_by,
+			 create_time,
+			 update_time
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.skillId},
+				 #{item.name},
+				 #{item.description},
+				 #{item.activeVersionId},
+				 #{item.activeVersionName},
+				 #{item.activeFileName},
+				 #{item.remark},
+				 #{item.platform},
+				 #{item.dept},
+				 #{item.status},
+				 #{item.createBy},
+				 #{item.createTime},
+				 #{item.updateTime}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.vmp.entity.po.AgentSkillInfo">
+		 INSERT INTO agent_skill_info(
+			 skill_id,
+			 name,
+			 description,
+			 active_version_id,
+			 active_version_name,
+			 active_file_name,
+			 remark,
+			 platform,
+			 dept,
+			 status,
+			 create_by,
+			 create_time,
+			 update_time
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.skillId},
+				 #{item.name},
+				 #{item.description},
+				 #{item.activeVersionId},
+				 #{item.activeVersionName},
+				 #{item.activeFileName},
+				 #{item.remark},
+				 #{item.platform},
+				 #{item.dept},
+				 #{item.status},
+				 #{item.createBy},
+				 #{item.createTime},
+				 #{item.updateTime}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			skill_id = VALUES(skill_id),
+			name = VALUES(name),
+			description = VALUES(description),
+			active_version_id = VALUES(active_version_id),
+			active_version_name = VALUES(active_version_name),
+			active_file_name = VALUES(active_file_name),
+			remark = VALUES(remark),
+			platform = VALUES(platform),
+			dept = VALUES(dept),
+			status = VALUES(status),
+			create_by = VALUES(create_by),
+			create_time = VALUES(create_time),
+			update_time = VALUES(update_time)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.vmp.entity.query.AgentSkillInfoQuery">
+		 UPDATE agent_skill_info
+ 		 <set> 
+			<if test="bean.skillId != null">
+				 skill_id = #{bean.skillId},
+			</if>
+			<if test="bean.name != null">
+				 name = #{bean.name},
+			</if>
+			<if test="bean.description != null">
+				 description = #{bean.description},
+			</if>
+			<if test="bean.activeVersionId != null">
+				 active_version_id = #{bean.activeVersionId},
+			</if>
+			<if test="bean.activeVersionName != null">
+				 active_version_name = #{bean.activeVersionName},
+			</if>
+			<if test="bean.activeFileName != null">
+				 active_file_name = #{bean.activeFileName},
+			</if>
+			<if test="bean.remark != null">
+				 remark = #{bean.remark},
+			</if>
+			<if test="bean.platform != null">
+				 platform = #{bean.platform},
+			</if>
+			<if test="bean.dept != null">
+				 dept = #{bean.dept},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+			<if test="bean.createBy != null">
+				 create_by = #{bean.createBy},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+			<if test="bean.updateTime != null">
+				 update_time = #{bean.updateTime},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from agent_skill_info
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据SkillId修改-->
+	<update id="updateBySkillId" parameterType="com.vmp.entity.po.AgentSkillInfo">
+		 UPDATE agent_skill_info
+ 		 <set> 
+			<if test="bean.name != null">
+				 name = #{bean.name},
+			</if>
+			<if test="bean.description != null">
+				 description = #{bean.description},
+			</if>
+			<if test="bean.activeVersionId != null">
+				 active_version_id = #{bean.activeVersionId},
+			</if>
+			<if test="bean.activeVersionName != null">
+				 active_version_name = #{bean.activeVersionName},
+			</if>
+			<if test="bean.activeFileName != null">
+				 active_file_name = #{bean.activeFileName},
+			</if>
+			<if test="bean.remark != null">
+				 remark = #{bean.remark},
+			</if>
+			<if test="bean.platform != null">
+				 platform = #{bean.platform},
+			</if>
+			<if test="bean.dept != null">
+				 dept = #{bean.dept},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+			<if test="bean.createBy != null">
+				 create_by = #{bean.createBy},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+			<if test="bean.updateTime != null">
+				 update_time = #{bean.updateTime},
+			</if>
+ 		 </set>
+ 		 where skill_id=#{skillId}
+	</update>
+
+	<!-- 根据SkillId删除-->
+	<delete id="deleteBySkillId">
+		delete from agent_skill_info where skill_id=#{skillId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectBySkillId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from agent_skill_info where skill_id=#{skillId}
+	</select>
+
+	<!-- 根据NameAndPlatform修改-->
+	<update id="updateByNameAndPlatform" parameterType="com.vmp.entity.po.AgentSkillInfo">
+		 UPDATE agent_skill_info
+ 		 <set> 
+			<if test="bean.skillId != null">
+				 skill_id = #{bean.skillId},
+			</if>
+			<if test="bean.description != null">
+				 description = #{bean.description},
+			</if>
+			<if test="bean.activeVersionId != null">
+				 active_version_id = #{bean.activeVersionId},
+			</if>
+			<if test="bean.activeVersionName != null">
+				 active_version_name = #{bean.activeVersionName},
+			</if>
+			<if test="bean.activeFileName != null">
+				 active_file_name = #{bean.activeFileName},
+			</if>
+			<if test="bean.remark != null">
+				 remark = #{bean.remark},
+			</if>
+			<if test="bean.dept != null">
+				 dept = #{bean.dept},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+			<if test="bean.createBy != null">
+				 create_by = #{bean.createBy},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+			<if test="bean.updateTime != null">
+				 update_time = #{bean.updateTime},
+			</if>
+ 		 </set>
+ 		 where name=#{name} and platform=#{platform}
+	</update>
+
+	<!-- 根据NameAndPlatform删除-->
+	<delete id="deleteByNameAndPlatform">
+		delete from agent_skill_info where name=#{name} and platform=#{platform}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByNameAndPlatform" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from agent_skill_info where name=#{name} and platform=#{platform}
+	</select>
+
+</mapper>

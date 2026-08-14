@@ -29,9 +29,11 @@ public class Constants {
 
     public static final Integer LENGTH_1000 = 1000;
 
-    public static final String FILE_FOLDER_FILE = "/files/";
+    public static final String FILE_FOLDER_FILE = "files/";
 
-    public static final String FILE_FOLDER_TEMP = "/temp/";
+    public static final String SKILL_FILE_FOLDER_FILE = "skills/";
+
+    public static final String FILE_FOLDER_TEMP = "temp/";
 
     public static final String IMAGE_PNG_SUFFIX = ".png";
 
@@ -94,11 +96,18 @@ public class Constants {
 
     public static final String REDIS_KEY_ONLINE_USERID_LATEST_TOKEN = "vmp:online:userId:";
 
+    public static final String REDIS_KEY_FILE_TEMP_SIZE = "vmp:file:temp:";
+
+    public static final String REDIS_KEY_FILE_DOWNLOAD = "vmp:file:download:";
+
     public static final String AK_ACCESS_TOKEN = "vmp:api:ak:token:";
 
     public static final String SHOPIFY_PARENT_PRODUCT = "Parent";
+
     public static final String SHOPIFY_CHILD_PRODUCT = "Child";
 
     public static final String SHOPIFY_SESSION_PRODUCT_TYPE = "Product";
+
+    public static final String SKILL_FILE_SUFFIX = ".zip";
 
 }

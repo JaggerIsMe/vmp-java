@@ -2,6 +2,7 @@ package com.vmp.utils;
 
 
 import com.vmp.entity.constants.Constants;
+import com.vmp.entity.enums.VerifyRegexEnum;
 import com.vmp.exception.BusinessException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -138,5 +139,34 @@ public class StringTools {
 
     public static String extractShopifyLastId(String gid) {
         return gid.substring(gid.lastIndexOf('/') + 1);
+    }
+
+    public static Boolean isValidVersionName(String v1, String v2) {
+        if (!VerifyUtils.verify(VerifyRegexEnum.SKILL_VERSION_NAME, v1) || isEmpty(v1)) {
+            throw new BusinessException("版本号不合法");
+        }
+        if (isEmpty(v2)) {
+            return true;
+        }
+        return compareVersion(v1, v2) > 0;
+    }
+
+    public static int compareVersion(String v1, String v2) {
+        // 去掉 v 前缀，按 . 分割
+        String[] parts1 = v1.substring(1).split("\\.");
+        String[] parts2 = v2.substring(1).split("\\.");
+
+        // 逐位比较（格式固定三位，直接比较）
+        for (int i = 0; i < 3; i++) {
+            int num1 = Integer.parseInt(parts1[i]);
+            int num2 = Integer.parseInt(parts2[i]);
+
+            if (num1 > num2) {
+                return 1;
+            } else if (num1 < num2) {
+                return -1;
+            }
+        }
+        return 0; // 完全相等
     }
 }
