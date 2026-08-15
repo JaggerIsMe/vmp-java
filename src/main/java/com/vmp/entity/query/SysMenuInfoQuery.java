@@ -14,6 +14,7 @@ public class SysMenuInfoQuery extends BaseParam {
 	 * 菜单id
 	 */
 	private String menuId;
+	private List<String> menuIdList;
 
 	private String menuIdFuzzy;
 
@@ -37,6 +38,11 @@ public class SysMenuInfoQuery extends BaseParam {
 	private String path;
 
 	private String pathFuzzy;
+
+	/**
+	 * 排序序号
+	 */
+	private Integer orderNum;
 
 	/**
 	 * 创建人id
@@ -69,11 +75,6 @@ public class SysMenuInfoQuery extends BaseParam {
 	private String updateTimeStart;
 
 	private String updateTimeEnd;
-
-	/**
-	 * 可提供menuId列表查询菜单
-	 */
-	private List<String> menuIdList;
 
 
 	public void setMenuId(String menuId){
@@ -138,6 +139,14 @@ public class SysMenuInfoQuery extends BaseParam {
 
 	public String getPathFuzzy(){
 		return this.pathFuzzy;
+	}
+
+	public void setOrderNum(Integer orderNum){
+		this.orderNum = orderNum;
+	}
+
+	public Integer getOrderNum(){
+		return this.orderNum;
 	}
 
 	public void setCreateBy(String createBy){

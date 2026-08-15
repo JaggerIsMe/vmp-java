@@ -3,6 +3,7 @@ package com.vmp.controller;
 import com.vmp.annotation.GlobalInterceptor;
 import com.vmp.annotation.VerifyParam;
 import com.vmp.entity.constants.Constants;
+import com.vmp.entity.dto.MenuSortDto;
 import com.vmp.entity.dto.TokenUserInfoDto;
 import com.vmp.entity.enums.RoleStatusEnum;
 import com.vmp.entity.po.RoleInfo;
@@ -20,10 +21,7 @@ import com.vmp.service.UserInfoService;
 import com.vmp.utils.CopyTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -190,7 +188,7 @@ public class AdminController extends ABaseController {
     @GlobalInterceptor(checkAdmin = true)
     public ResponseVO loadAllMenuList() {
         SysMenuInfoQuery query = new SysMenuInfoQuery();
-        query.setOrderBy("create_time asc");
+        query.setOrderBy("order_num asc");
         return getSuccessResponseVO(CopyTools.copyList(sysMenuInfoService.findListByParam(query), SysMenuInfoVO.class));
     }
 
@@ -218,9 +216,23 @@ public class AdminController extends ABaseController {
                                  @VerifyParam(required = true) @PathVariable("menuId") String menuId) {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
         menuInfo.setMenuId(menuId);
+        menuInfo.setOrderNum(null);
         menuInfo.setCreateBy(null);
         menuInfo.setCreateTime(null);
         sysMenuInfoService.updateMenu(tokenUserInfoDto.getUserId(), menuInfo);
+        return getSuccessResponseVO(null);
+    }
+
+    /**
+     * 重排序菜单
+     *
+     * @return
+     */
+    @RequestMapping("/dragSortMenu")
+    @GlobalInterceptor(checkAdmin = true, checkParams = true)
+    public ResponseVO dragSortMenu(HttpServletRequest request, MenuSortDto sortDto) {
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+        sysMenuInfoService.dragSortMenu(tokenUserInfoDto.getUserId(), sortDto);
         return getSuccessResponseVO(null);
     }
 

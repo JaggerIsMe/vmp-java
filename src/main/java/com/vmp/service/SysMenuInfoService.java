@@ -2,6 +2,7 @@ package com.vmp.service;
 
 import java.util.List;
 
+import com.vmp.entity.dto.MenuSortDto;
 import com.vmp.entity.query.SysMenuInfoQuery;
 import com.vmp.entity.po.SysMenuInfo;
 import com.vmp.entity.vo.PaginationResultVO;
@@ -100,4 +101,11 @@ public interface SysMenuInfoService {
 	 * @param menuInfo
 	 */
 	void updateMenu(String userId, SysMenuInfo menuInfo);
+
+	/**
+	 * 重排序菜单
+	 * @param userId
+	 * @param sortDto
+	 */
+    void dragSortMenu(String userId, MenuSortDto sortDto);
 }

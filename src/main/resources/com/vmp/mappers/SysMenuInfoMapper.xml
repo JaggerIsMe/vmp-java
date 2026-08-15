@@ -13,6 +13,8 @@
 		<result column="title" property="title"  />
 		<!--url路径-->
 		<result column="path" property="path"  />
+		<!--排序序号-->
+		<result column="order_num" property="orderNum"  />
 		<!--创建人id-->
 		<result column="create_by" property="createBy"  />
 		<!--修改人id-->
@@ -26,8 +28,8 @@
 
 	<!-- 通用查询结果列-->
 	<sql id="base_column_list">
-		 menu_id,pid,title,path,create_by,
-		 update_by,create_time,update_time
+		 menu_id,pid,title,path,order_num,
+		 create_by,update_by,create_time,update_time
 	</sql>
 
 	<sql id="base_condition_filed">
@@ -42,6 +44,9 @@
 		</if>
 		<if test="query.path != null and query.path!=''">
 			 and  path = #{query.path}
+		</if>
+		<if test="query.orderNum != null">
+			 and  order_num = #{query.orderNum}
 		</if>
 		<if test="query.createBy != null and query.createBy!=''">
 			 and  create_by = #{query.createBy}
@@ -139,6 +144,9 @@
 			<if test="bean.path != null">
 				 path,
 			</if>
+			<if test="bean.orderNum != null">
+				 order_num,
+			</if>
 			<if test="bean.createBy != null">
 				 create_by,
 			</if>
@@ -164,6 +172,9 @@
 			</if>
 			<if test="bean.path!=null">
 				 #{bean.path},
+			</if>
+			<if test="bean.orderNum!=null">
+				 #{bean.orderNum},
 			</if>
 			<if test="bean.createBy!=null">
 				 #{bean.createBy},
@@ -196,6 +207,9 @@
 			<if test="bean.path != null">
 				 path,
 			</if>
+			<if test="bean.orderNum != null">
+				 order_num,
+			</if>
 			<if test="bean.createBy != null">
 				 create_by,
 			</if>
@@ -221,6 +235,9 @@
 			</if>
 			<if test="bean.path!=null">
 				 #{bean.path},
+			</if>
+			<if test="bean.orderNum!=null">
+				 #{bean.orderNum},
 			</if>
 			<if test="bean.createBy!=null">
 				 #{bean.createBy},
@@ -249,6 +266,9 @@
 			<if test="bean.path!=null">
 				 path = VALUES(path),
 			</if>
+			<if test="bean.orderNum!=null">
+				 order_num = VALUES(order_num),
+			</if>
 			<if test="bean.createBy!=null">
 				 create_by = VALUES(create_by),
 			</if>
@@ -271,6 +291,7 @@
 			 pid,
 			 title,
 			 path,
+			 order_num,
 			 create_by,
 			 update_by,
 			 create_time,
@@ -282,6 +303,7 @@
 				 #{item.pid},
 				 #{item.title},
 				 #{item.path},
+				 #{item.orderNum},
 				 #{item.createBy},
 				 #{item.updateBy},
 				 #{item.createTime},
@@ -297,6 +319,7 @@
 			 pid,
 			 title,
 			 path,
+			 order_num,
 			 create_by,
 			 update_by,
 			 create_time,
@@ -308,6 +331,7 @@
 				 #{item.pid},
 				 #{item.title},
 				 #{item.path},
+				 #{item.orderNum},
 				 #{item.createBy},
 				 #{item.updateBy},
 				 #{item.createTime},
@@ -319,6 +343,7 @@
 			pid = VALUES(pid),
 			title = VALUES(title),
 			path = VALUES(path),
+			order_num = VALUES(order_num),
 			create_by = VALUES(create_by),
 			update_by = VALUES(update_by),
 			create_time = VALUES(create_time),
@@ -340,6 +365,9 @@
 			</if>
 			<if test="bean.path != null">
 				 path = #{bean.path},
+			</if>
+			<if test="bean.orderNum != null">
+				 order_num = #{bean.orderNum},
 			</if>
 			<if test="bean.createBy != null">
 				 create_by = #{bean.createBy},
@@ -375,6 +403,9 @@
 			</if>
 			<if test="bean.path != null">
 				 path = #{bean.path},
+			</if>
+			<if test="bean.orderNum != null">
+				 order_num = #{bean.orderNum},
 			</if>
 			<if test="bean.createBy != null">
 				 create_by = #{bean.createBy},
@@ -414,6 +445,9 @@
 			</if>
 			<if test="bean.path != null">
 				 path = #{bean.path},
+			</if>
+			<if test="bean.orderNum != null">
+				 order_num = #{bean.orderNum},
 			</if>
 			<if test="bean.createBy != null">
 				 create_by = #{bean.createBy},

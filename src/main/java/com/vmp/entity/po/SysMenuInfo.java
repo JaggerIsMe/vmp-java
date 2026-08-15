@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 
 /**
@@ -16,7 +17,7 @@ import java.io.Serializable;
 public class SysMenuInfo implements Serializable {
 
 
-	private static final long serialVersionUID = 6632569700985882390L;
+	private static final long serialVersionUID = -1555863228318641150L;
 	/**
 	 * 菜单id
 	 */
@@ -36,6 +37,11 @@ public class SysMenuInfo implements Serializable {
 	 * url路径
 	 */
 	private String path;
+
+	/**
+	 * 排序序号
+	 */
+	private Integer orderNum;
 
 	/**
 	 * 创建人id
@@ -94,6 +100,14 @@ public class SysMenuInfo implements Serializable {
 		return this.path;
 	}
 
+	public void setOrderNum(Integer orderNum){
+		this.orderNum = orderNum;
+	}
+
+	public Integer getOrderNum(){
+		return this.orderNum;
+	}
+
 	public void setCreateBy(String createBy){
 		this.createBy = createBy;
 	}
@@ -128,6 +142,19 @@ public class SysMenuInfo implements Serializable {
 
 	@Override
 	public String toString (){
-		return "菜单id:"+(menuId == null ? "空" : menuId)+"，父级菜单id:"+(pid == null ? "空" : pid)+"，菜单标题:"+(title == null ? "空" : title)+"，url路径:"+(path == null ? "空" : path)+"，创建人id:"+(createBy == null ? "空" : createBy)+"，修改人id:"+(updateBy == null ? "空" : updateBy)+"，创建时间:"+(createTime == null ? "空" : DateUtil.format(createTime, DateTimePatternEnum.YYYY_MM_DD_HH_MM_SS.getPattern()))+"，修改时间:"+(updateTime == null ? "空" : DateUtil.format(updateTime, DateTimePatternEnum.YYYY_MM_DD_HH_MM_SS.getPattern()));
+		return "菜单id:"+(menuId == null ? "空" : menuId)+"，父级菜单id:"+(pid == null ? "空" : pid)+"，菜单标题:"+(title == null ? "空" : title)+"，url路径:"+(path == null ? "空" : path)+"，排序序号:"+(orderNum == null ? "空" : orderNum)+"，创建人id:"+(createBy == null ? "空" : createBy)+"，修改人id:"+(updateBy == null ? "空" : updateBy)+"，创建时间:"+(createTime == null ? "空" : DateUtil.format(createTime, DateTimePatternEnum.YYYY_MM_DD_HH_MM_SS.getPattern()))+"，修改时间:"+(updateTime == null ? "空" : DateUtil.format(updateTime, DateTimePatternEnum.YYYY_MM_DD_HH_MM_SS.getPattern()));
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		SysMenuInfo that = (SysMenuInfo) o;
+		return Objects.equals(menuId, that.menuId);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(menuId);
 	}
 }

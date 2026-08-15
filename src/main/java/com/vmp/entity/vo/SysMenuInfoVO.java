@@ -28,6 +28,11 @@ public class SysMenuInfoVO {
     private String path;
 
     /**
+     * 排序序号
+     */
+    private Integer orderNum;
+
+    /**
      * 创建时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
@@ -64,6 +69,14 @@ public class SysMenuInfoVO {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public Integer getOrderNum() {
+        return orderNum;
+    }
+
+    public void setOrderNum(Integer orderNum) {
+        this.orderNum = orderNum;
     }
 
     public Date getCreateTime() {
