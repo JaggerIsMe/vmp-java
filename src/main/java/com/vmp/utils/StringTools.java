@@ -99,7 +99,7 @@ public class StringTools {
         return Constants.SYS_NAME + getRandomNumber(Constants.LENGTH_5);
     }
 
-    public static final String createShopifyProductImgId(String storeId, String productId) {
+    public static final String createProductImgId(String storeId, String productId) {
         return storeId + "_" + productId;
     }
 

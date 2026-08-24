@@ -2,7 +2,7 @@ package com.vmp.entity.dashboardVo;
 
 import java.math.BigDecimal;
 
-public class ShopifySalesDailyPerformanceVo {
+public class ShopifySalesDailyPerformanceVO {
 
     private String reportDate;
 

@@ -7,16 +7,17 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import com.vmp.controller.ShopifyController;
 import com.vmp.entity.apidto.ShopifyProductApiDto;
 import com.vmp.entity.apidto.ShopifyProductPageInfo;
 import com.vmp.entity.apidto.ShopifyShopInfo;
 import com.vmp.entity.constants.Constants;
+import com.vmp.entity.enums.SalesPlatformEnum;
+import com.vmp.entity.po.CrossPlatformProductCommonInfo;
 import com.vmp.entity.po.ShopifyProductInventory;
+import com.vmp.service.CrossPlatformProductCommonInfoService;
 import com.vmp.service.ShopifyApiService;
 import com.vmp.service.ShopifyProductInventoryService;
 import com.vmp.utils.CopyTools;
-import com.vmp.utils.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,9 @@ public class ShopifyProductServiceImpl implements ShopifyProductService {
 
     @Resource
     private ShopifyProductInventoryService shopifyProductInventoryService;
+
+    @Resource
+    private CrossPlatformProductCommonInfoService crossPlatformProductCommonInfoService;
 
     /**
      * 根据条件查询列表
@@ -170,6 +174,8 @@ public class ShopifyProductServiceImpl implements ShopifyProductService {
         List<ShopifyProduct> parentProducts = new ArrayList<>();
         Set<String> seenKeys = new HashSet<>();
 
+        List<CrossPlatformProductCommonInfo> productCommonInfoList = new ArrayList<>();
+
         List<ShopifyProductInventory> inventoryList = new ArrayList<>();
         nodes.forEach(node -> {
             node.setStoreId(shopInfo.getId());
@@ -219,6 +225,18 @@ public class ShopifyProductServiceImpl implements ShopifyProductService {
                 parentProduct.setVariantId(Constants.SHOPIFY_PARENT_PRODUCT);
                 parentProduct.setParentStatus(Constants.SHOPIFY_PARENT_PRODUCT);
                 parentProducts.add(parentProduct);
+
+                // 同步父产品到productCommon表
+                CrossPlatformProductCommonInfo productCommonInfo = new CrossPlatformProductCommonInfo();
+                CrossPlatformProductCommonInfo dbCommonInfo = this.crossPlatformProductCommonInfoService.getCrossPlatformProductCommonInfoBySalesPlatformAndStoreIdAndProductId(SalesPlatformEnum.SHOPIFY.getPlatform(), node.getStoreId(), node.getProductId());
+                productCommonInfo.setUid(null == dbCommonInfo ? SalesPlatformEnum.SHOPIFY.getPlatform() + StringTools.getRandomString(Constants.LENGTH_20) : dbCommonInfo.getUid());
+                productCommonInfo.setSalesPlatform(SalesPlatformEnum.SHOPIFY.getPlatform());
+                productCommonInfo.setStoreId(node.getStoreId());
+                productCommonInfo.setStoreName(node.getStoreName());
+                productCommonInfo.setProductId(node.getProductId());
+                productCommonInfo.setProductTitle(node.getProductTitle());
+                productCommonInfo.setProductImgPath(Constants.SHOPIFY_IMAGE_FOLDER + StringTools.createProductImgId(node.getStoreId(), node.getProductId()) + Constants.JPG_SUFFIX);
+                productCommonInfoList.add(productCommonInfo);
             }
         });
 
@@ -227,6 +245,8 @@ public class ShopifyProductServiceImpl implements ShopifyProductService {
         addOrUpdateBatch(childProducts);
         addOrUpdateBatch(parentProducts);
         this.shopifyProductInventoryService.addOrUpdateBatch(inventoryList);
+
+        this.crossPlatformProductCommonInfoService.addOrUpdateBatch(productCommonInfoList);
 
         if (productPageInfo.getPageInfo().getHasNextPage()) {
             return productPageInfo.getPageInfo().getEndCursor();
@@ -301,10 +321,10 @@ public class ShopifyProductServiceImpl implements ShopifyProductService {
     @Override
     public void updateBrandOrPerson4ShopifySpecificProduct(String brand, String personInCharge, ShopifyProductQuery param) {
         ShopifyProduct updateInfo = new ShopifyProduct();
-        if (!StringTools.isEmpty(brand)){
+        if (!StringTools.isEmpty(brand)) {
             updateInfo.setBrand(brand);
         }
-        if (!StringTools.isEmpty(personInCharge)){
+        if (!StringTools.isEmpty(personInCharge)) {
             updateInfo.setPersonInCharge(personInCharge);
         }
         updateByParam(updateInfo, param);

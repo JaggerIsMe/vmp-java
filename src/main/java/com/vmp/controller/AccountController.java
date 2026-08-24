@@ -11,9 +11,7 @@ import com.vmp.entity.enums.ResponseCodeEnum;
 import com.vmp.entity.enums.VerifyRegexEnum;
 import com.vmp.entity.po.UserInfo;
 import com.vmp.entity.query.SysDictDataQuery;
-import com.vmp.entity.vo.PaginationResultVO;
 import com.vmp.entity.vo.ResponseVO;
-import com.vmp.entity.vo.SysDictDataVO;
 import com.vmp.entity.vo.UserInfoVO;
 import com.vmp.exception.BusinessException;
 import com.vmp.service.RoleInfoService;
@@ -24,7 +22,6 @@ import com.vmp.utils.CopyTools;
 import com.vmp.utils.StringTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * 用户信息 Controller
@@ -181,7 +177,7 @@ public class AccountController extends ABaseController {
             folder.mkdirs();
         }
 
-        String avatarPath = appConfig.getProjectFolder() + avatarFolderName + userId + Constants.AVATAR_SUFFIX;
+        String avatarPath = appConfig.getProjectFolder() + avatarFolderName + userId + Constants.JPG_SUFFIX;
         File file = new File(avatarPath);
         if (!file.exists()) {
             if (!new File(appConfig.getProjectFolder() + avatarFolderName + Constants.AVATAR_DEFAULT).exists()) {
@@ -193,21 +189,6 @@ public class AccountController extends ABaseController {
         response.setContentType("image/jpg");
         readFile(response, avatarPath);
     }
-
-//    private void printNoDefaultImage(HttpServletResponse response) {
-//        response.setHeader(CONTENT_TYPE, CONTENT_TYPE_VALUE);
-//        response.setStatus(HttpStatus.OK.value());
-//        PrintWriter writer = null;
-//        try {
-//            writer = response.getWriter();
-//            writer.print("请在头像目录下放置默认头像default_avatar.jpg");
-//            writer.close();
-//        } catch (Exception e) {
-//            logger.error("输出无默认图失败", e);
-//        } finally {
-//            writer.close();
-//        }
-//    }
 
     /**
      * 初始化用户信息(账号、密码、昵称)，初次钉钉扫码登录后

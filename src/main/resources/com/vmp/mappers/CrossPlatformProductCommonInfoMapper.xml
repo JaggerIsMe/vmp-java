@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vmp.mappers.CrossPlatformProductCommonInfoMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.vmp.entity.po.CrossPlatformProductCommonInfo">
+		<!--全局唯一id-->
+		<result column="uid" property="uid"  />
+		<!--销售平台-->
+		<result column="sales_platform" property="salesPlatform"  />
+		<!--店铺id-->
+		<result column="store_id" property="storeId"  />
+		<!--店铺名称-->
+		<result column="store_name" property="storeName"  />
+		<!--产品id-->
+		<result column="product_id" property="productId"  />
+		<!--产品标题-->
+		<result column="product_title" property="productTitle"  />
+		<!--产品图片文件路径-->
+		<result column="product_img_path" property="productImgPath"  />
+		<!--国家代码-->
+		<result column="country_code" property="countryCode"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 uid,sales_platform,store_id,store_name,product_id,
+		 product_title,product_img_path,country_code
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.uid != null and query.uid!=''">
+			 and  uid = #{query.uid}
+		</if>
+		<if test="query.salesPlatform != null and query.salesPlatform!=''">
+			 and  sales_platform = #{query.salesPlatform}
+		</if>
+		<if test="query.storeId != null and query.storeId!=''">
+			 and  store_id = #{query.storeId}
+		</if>
+		<if test="query.storeName != null and query.storeName!=''">
+			 and  store_name = #{query.storeName}
+		</if>
+		<if test="query.productId != null and query.productId!=''">
+			 and  product_id = #{query.productId}
+		</if>
+		<if test="query.productTitle != null and query.productTitle!=''">
+			 and  product_title = #{query.productTitle}
+		</if>
+		<if test="query.productImgPath != null and query.productImgPath!=''">
+			 and  product_img_path = #{query.productImgPath}
+		</if>
+		<if test="query.countryCode != null and query.countryCode!=''">
+			 and  country_code = #{query.countryCode}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.uidFuzzy!= null  and query.uidFuzzy!=''">
+				 and  uid like concat('%', #{query.uidFuzzy}, '%')
+			</if>
+			<if test="query.salesPlatformFuzzy!= null  and query.salesPlatformFuzzy!=''">
+				 and  sales_platform like concat('%', #{query.salesPlatformFuzzy}, '%')
+			</if>
+			<if test="query.storeIdFuzzy!= null  and query.storeIdFuzzy!=''">
+				 and  store_id like concat('%', #{query.storeIdFuzzy}, '%')
+			</if>
+			<if test="query.storeNameFuzzy!= null  and query.storeNameFuzzy!=''">
+				 and  store_name like concat('%', #{query.storeNameFuzzy}, '%')
+			</if>
+			<if test="query.productIdFuzzy!= null  and query.productIdFuzzy!=''">
+				 and  product_id like concat('%', #{query.productIdFuzzy}, '%')
+			</if>
+			<if test="query.productTitleFuzzy!= null  and query.productTitleFuzzy!=''">
+				 and  product_title like concat('%', #{query.productTitleFuzzy}, '%')
+			</if>
+			<if test="query.productImgPathFuzzy!= null  and query.productImgPathFuzzy!=''">
+				 and  product_img_path like concat('%', #{query.productImgPathFuzzy}, '%')
+			</if>
+			<if test="query.countryCodeFuzzy!= null  and query.countryCodeFuzzy!=''">
+				 and  country_code like concat('%', #{query.countryCodeFuzzy}, '%')
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM cross_platform_product_common_info <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM cross_platform_product_common_info <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.vmp.entity.po.CrossPlatformProductCommonInfo">
+		 INSERT INTO cross_platform_product_common_info
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.uid != null">
+				 uid,
+			</if>
+			<if test="bean.salesPlatform != null">
+				 sales_platform,
+			</if>
+			<if test="bean.storeId != null">
+				 store_id,
+			</if>
+			<if test="bean.storeName != null">
+				 store_name,
+			</if>
+			<if test="bean.productId != null">
+				 product_id,
+			</if>
+			<if test="bean.productTitle != null">
+				 product_title,
+			</if>
+			<if test="bean.productImgPath != null">
+				 product_img_path,
+			</if>
+			<if test="bean.countryCode != null">
+				 country_code,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.uid!=null">
+				 #{bean.uid},
+			</if>
+			<if test="bean.salesPlatform!=null">
+				 #{bean.salesPlatform},
+			</if>
+			<if test="bean.storeId!=null">
+				 #{bean.storeId},
+			</if>
+			<if test="bean.storeName!=null">
+				 #{bean.storeName},
+			</if>
+			<if test="bean.productId!=null">
+				 #{bean.productId},
+			</if>
+			<if test="bean.productTitle!=null">
+				 #{bean.productTitle},
+			</if>
+			<if test="bean.productImgPath!=null">
+				 #{bean.productImgPath},
+			</if>
+			<if test="bean.countryCode!=null">
+				 #{bean.countryCode},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.vmp.entity.po.CrossPlatformProductCommonInfo">
+		 INSERT INTO cross_platform_product_common_info
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.uid != null">
+				 uid,
+			</if>
+			<if test="bean.salesPlatform != null">
+				 sales_platform,
+			</if>
+			<if test="bean.storeId != null">
+				 store_id,
+			</if>
+			<if test="bean.storeName != null">
+				 store_name,
+			</if>
+			<if test="bean.productId != null">
+				 product_id,
+			</if>
+			<if test="bean.productTitle != null">
+				 product_title,
+			</if>
+			<if test="bean.productImgPath != null">
+				 product_img_path,
+			</if>
+			<if test="bean.countryCode != null">
+				 country_code,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.uid!=null">
+				 #{bean.uid},
+			</if>
+			<if test="bean.salesPlatform!=null">
+				 #{bean.salesPlatform},
+			</if>
+			<if test="bean.storeId!=null">
+				 #{bean.storeId},
+			</if>
+			<if test="bean.storeName!=null">
+				 #{bean.storeName},
+			</if>
+			<if test="bean.productId!=null">
+				 #{bean.productId},
+			</if>
+			<if test="bean.productTitle!=null">
+				 #{bean.productTitle},
+			</if>
+			<if test="bean.productImgPath!=null">
+				 #{bean.productImgPath},
+			</if>
+			<if test="bean.countryCode!=null">
+				 #{bean.countryCode},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.uid!=null">
+				 uid = VALUES(uid),
+			</if>
+			<if test="bean.salesPlatform!=null">
+				 sales_platform = VALUES(sales_platform),
+			</if>
+			<if test="bean.storeId!=null">
+				 store_id = VALUES(store_id),
+			</if>
+			<if test="bean.storeName!=null">
+				 store_name = VALUES(store_name),
+			</if>
+			<if test="bean.productId!=null">
+				 product_id = VALUES(product_id),
+			</if>
+			<if test="bean.productTitle!=null">
+				 product_title = VALUES(product_title),
+			</if>
+			<if test="bean.productImgPath!=null">
+				 product_img_path = VALUES(product_img_path),
+			</if>
+			<if test="bean.countryCode!=null">
+				 country_code = VALUES(country_code),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.vmp.entity.po.CrossPlatformProductCommonInfo">
+		 INSERT INTO cross_platform_product_common_info(
+			 uid,
+			 sales_platform,
+			 store_id,
+			 store_name,
+			 product_id,
+			 product_title,
+			 product_img_path,
+			 country_code
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.uid},
+				 #{item.salesPlatform},
+				 #{item.storeId},
+				 #{item.storeName},
+				 #{item.productId},
+				 #{item.productTitle},
+				 #{item.productImgPath},
+				 #{item.countryCode}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.vmp.entity.po.CrossPlatformProductCommonInfo">
+		 INSERT INTO cross_platform_product_common_info(
+			 uid,
+			 sales_platform,
+			 store_id,
+			 store_name,
+			 product_id,
+			 product_title,
+			 product_img_path,
+			 country_code
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.uid},
+				 #{item.salesPlatform},
+				 #{item.storeId},
+				 #{item.storeName},
+				 #{item.productId},
+				 #{item.productTitle},
+				 #{item.productImgPath},
+				 #{item.countryCode}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			uid = VALUES(uid),
+			sales_platform = VALUES(sales_platform),
+			store_id = VALUES(store_id),
+			store_name = VALUES(store_name),
+			product_id = VALUES(product_id),
+			product_title = VALUES(product_title),
+			product_img_path = VALUES(product_img_path),
+			country_code = VALUES(country_code)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.vmp.entity.query.CrossPlatformProductCommonInfoQuery">
+		 UPDATE cross_platform_product_common_info
+ 		 <set> 
+			<if test="bean.uid != null">
+				 uid = #{bean.uid},
+			</if>
+			<if test="bean.salesPlatform != null">
+				 sales_platform = #{bean.salesPlatform},
+			</if>
+			<if test="bean.storeId != null">
+				 store_id = #{bean.storeId},
+			</if>
+			<if test="bean.storeName != null">
+				 store_name = #{bean.storeName},
+			</if>
+			<if test="bean.productId != null">
+				 product_id = #{bean.productId},
+			</if>
+			<if test="bean.productTitle != null">
+				 product_title = #{bean.productTitle},
+			</if>
+			<if test="bean.productImgPath != null">
+				 product_img_path = #{bean.productImgPath},
+			</if>
+			<if test="bean.countryCode != null">
+				 country_code = #{bean.countryCode},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from cross_platform_product_common_info
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据Uid修改-->
+	<update id="updateByUid" parameterType="com.vmp.entity.po.CrossPlatformProductCommonInfo">
+		 UPDATE cross_platform_product_common_info
+ 		 <set> 
+			<if test="bean.salesPlatform != null">
+				 sales_platform = #{bean.salesPlatform},
+			</if>
+			<if test="bean.storeId != null">
+				 store_id = #{bean.storeId},
+			</if>
+			<if test="bean.storeName != null">
+				 store_name = #{bean.storeName},
+			</if>
+			<if test="bean.productId != null">
+				 product_id = #{bean.productId},
+			</if>
+			<if test="bean.productTitle != null">
+				 product_title = #{bean.productTitle},
+			</if>
+			<if test="bean.productImgPath != null">
+				 product_img_path = #{bean.productImgPath},
+			</if>
+			<if test="bean.countryCode != null">
+				 country_code = #{bean.countryCode},
+			</if>
+ 		 </set>
+ 		 where uid=#{uid}
+	</update>
+
+	<!-- 根据Uid删除-->
+	<delete id="deleteByUid">
+		delete from cross_platform_product_common_info where uid=#{uid}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByUid" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from cross_platform_product_common_info where uid=#{uid}
+	</select>
+
+	<!-- 根据SalesPlatformAndStoreIdAndProductId修改-->
+	<update id="updateBySalesPlatformAndStoreIdAndProductId" parameterType="com.vmp.entity.po.CrossPlatformProductCommonInfo">
+		 UPDATE cross_platform_product_common_info
+ 		 <set> 
+			<if test="bean.uid != null">
+				 uid = #{bean.uid},
+			</if>
+			<if test="bean.storeName != null">
+				 store_name = #{bean.storeName},
+			</if>
+			<if test="bean.productTitle != null">
+				 product_title = #{bean.productTitle},
+			</if>
+			<if test="bean.productImgPath != null">
+				 product_img_path = #{bean.productImgPath},
+			</if>
+			<if test="bean.countryCode != null">
+				 country_code = #{bean.countryCode},
+			</if>
+ 		 </set>
+ 		 where sales_platform=#{salesPlatform} and store_id=#{storeId} and product_id=#{productId}
+	</update>
+
+	<!-- 根据SalesPlatformAndStoreIdAndProductId删除-->
+	<delete id="deleteBySalesPlatformAndStoreIdAndProductId">
+		delete from cross_platform_product_common_info where sales_platform=#{salesPlatform} and store_id=#{storeId} and product_id=#{productId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectBySalesPlatformAndStoreIdAndProductId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from cross_platform_product_common_info where sales_platform=#{salesPlatform} and store_id=#{storeId} and product_id=#{productId}
+	</select>
+
+</mapper>

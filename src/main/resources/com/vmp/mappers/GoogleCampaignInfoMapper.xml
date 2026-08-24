@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vmp.mappers.GoogleCampaignInfoMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.vmp.entity.po.GoogleCampaignInfo">
+		<!--广告系列id-->
+		<result column="campaign_id" property="campaignId"  />
+		<!--广告系列名称-->
+		<result column="campaign_name" property="campaignName"  />
+		<!--使用货币代码-->
+		<result column="currency_code" property="currencyCode"  />
+		<!--每日预算(美元)-->
+		<result column="budget_amount" property="budgetAmount"  />
+		<!--状态 ENABLED已启用 PAUSED已暂停 REMOVED已移除 UNKNOWN未知 UNSPECIFIED未指定-->
+		<result column="status" property="status"  />
+		<!--广告系列类型  DEMAND_GEN需求开发 DISPLAY展示 HOTEL酒店 LOCAL本地 LOCAL_SERVICES本地服务 MULTI_CHANNEL多渠道 PERFORMANCE_MAX效果最大化 SEARCH搜索 SHOPPING购物 SMART智能 TRAVEL旅游 UNKNOWN未知 UNSPECIFIED未指定 VIDEO视频-->
+		<result column="advertising_channel_type" property="advertisingChannelType"  />
+		<!--投放开始时间-->
+		<result column="start_date_time" property="startDateTime"  />
+		<!--投放结束时间-->
+		<result column="end_date_time" property="endDateTime"  />
+		<!--负责人-->
+		<result column="person_in_charge" property="personInCharge"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 campaign_id,campaign_name,currency_code,budget_amount,status,
+		 advertising_channel_type,start_date_time,end_date_time,person_in_charge
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.campaignId != null and query.campaignId!=''">
+			 and  campaign_id = #{query.campaignId}
+		</if>
+		<if test="query.campaignName != null and query.campaignName!=''">
+			 and  campaign_name = #{query.campaignName}
+		</if>
+		<if test="query.currencyCode != null and query.currencyCode!=''">
+			 and  currency_code = #{query.currencyCode}
+		</if>
+		<if test="query.budgetAmount != null">
+			 and  budget_amount = #{query.budgetAmount}
+		</if>
+		<if test="query.status != null and query.status!=''">
+			 and  status = #{query.status}
+		</if>
+		<if test="query.advertisingChannelType != null and query.advertisingChannelType!=''">
+			 and  advertising_channel_type = #{query.advertisingChannelType}
+		</if>
+		<if test="query.startDateTime != null and query.startDateTime!=''">
+			 <![CDATA[ and  start_date_time=str_to_date(#{query.startDateTime}, '%Y-%m-%d') ]]>
+		</if>
+		<if test="query.endDateTime != null and query.endDateTime!=''">
+			 <![CDATA[ and  end_date_time=str_to_date(#{query.endDateTime}, '%Y-%m-%d') ]]>
+		</if>
+		<if test="query.personInCharge != null and query.personInCharge!=''">
+			 and  person_in_charge = #{query.personInCharge}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.campaignIdFuzzy!= null  and query.campaignIdFuzzy!=''">
+				 and  campaign_id like concat('%', #{query.campaignIdFuzzy}, '%')
+			</if>
+			<if test="query.campaignNameFuzzy!= null  and query.campaignNameFuzzy!=''">
+				 and  campaign_name like concat('%', #{query.campaignNameFuzzy}, '%')
+			</if>
+			<if test="query.currencyCodeFuzzy!= null  and query.currencyCodeFuzzy!=''">
+				 and  currency_code like concat('%', #{query.currencyCodeFuzzy}, '%')
+			</if>
+			<if test="query.statusFuzzy!= null  and query.statusFuzzy!=''">
+				 and  status like concat('%', #{query.statusFuzzy}, '%')
+			</if>
+			<if test="query.advertisingChannelTypeFuzzy!= null  and query.advertisingChannelTypeFuzzy!=''">
+				 and  advertising_channel_type like concat('%', #{query.advertisingChannelTypeFuzzy}, '%')
+			</if>
+			<if test="query.startDateTimeStart!= null and query.startDateTimeStart!=''">
+				 <![CDATA[ and  start_date_time>=str_to_date(#{query.startDateTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.startDateTimeEnd!= null and query.startDateTimeEnd!=''">
+				 <![CDATA[ and  start_date_time< date_sub(str_to_date(#{query.startDateTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.endDateTimeStart!= null and query.endDateTimeStart!=''">
+				 <![CDATA[ and  end_date_time>=str_to_date(#{query.endDateTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.endDateTimeEnd!= null and query.endDateTimeEnd!=''">
+				 <![CDATA[ and  end_date_time< date_sub(str_to_date(#{query.endDateTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.personInChargeFuzzy!= null  and query.personInChargeFuzzy!=''">
+				 and  person_in_charge like concat('%', #{query.personInChargeFuzzy}, '%')
+			</if>
+			<if test="query.campaignIdList != null">
+				<choose>
+					<when test="query.campaignIdList.size() > 0">
+						and campaign_id in
+						<foreach collection="query.campaignIdList" item="campaignId" open="(" separator="," close=")">
+							#{campaignId}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM google_campaign_info <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM google_campaign_info <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.vmp.entity.po.GoogleCampaignInfo">
+		 INSERT INTO google_campaign_info
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.campaignId != null">
+				 campaign_id,
+			</if>
+			<if test="bean.campaignName != null">
+				 campaign_name,
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code,
+			</if>
+			<if test="bean.budgetAmount != null">
+				 budget_amount,
+			</if>
+			<if test="bean.status != null">
+				 status,
+			</if>
+			<if test="bean.advertisingChannelType != null">
+				 advertising_channel_type,
+			</if>
+			<if test="bean.startDateTime != null">
+				 start_date_time,
+			</if>
+			<if test="bean.endDateTime != null">
+				 end_date_time,
+			</if>
+			<if test="bean.personInCharge != null">
+				 person_in_charge,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.campaignId!=null">
+				 #{bean.campaignId},
+			</if>
+			<if test="bean.campaignName!=null">
+				 #{bean.campaignName},
+			</if>
+			<if test="bean.currencyCode!=null">
+				 #{bean.currencyCode},
+			</if>
+			<if test="bean.budgetAmount!=null">
+				 #{bean.budgetAmount},
+			</if>
+			<if test="bean.status!=null">
+				 #{bean.status},
+			</if>
+			<if test="bean.advertisingChannelType!=null">
+				 #{bean.advertisingChannelType},
+			</if>
+			<if test="bean.startDateTime!=null">
+				 #{bean.startDateTime},
+			</if>
+			<if test="bean.endDateTime!=null">
+				 #{bean.endDateTime},
+			</if>
+			<if test="bean.personInCharge!=null">
+				 #{bean.personInCharge},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.vmp.entity.po.GoogleCampaignInfo">
+		 INSERT INTO google_campaign_info
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.campaignId != null">
+				 campaign_id,
+			</if>
+			<if test="bean.campaignName != null">
+				 campaign_name,
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code,
+			</if>
+			<if test="bean.budgetAmount != null">
+				 budget_amount,
+			</if>
+			<if test="bean.status != null">
+				 status,
+			</if>
+			<if test="bean.advertisingChannelType != null">
+				 advertising_channel_type,
+			</if>
+			<if test="bean.startDateTime != null">
+				 start_date_time,
+			</if>
+			<if test="bean.endDateTime != null">
+				 end_date_time,
+			</if>
+			<if test="bean.personInCharge != null">
+				 person_in_charge,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.campaignId!=null">
+				 #{bean.campaignId},
+			</if>
+			<if test="bean.campaignName!=null">
+				 #{bean.campaignName},
+			</if>
+			<if test="bean.currencyCode!=null">
+				 #{bean.currencyCode},
+			</if>
+			<if test="bean.budgetAmount!=null">
+				 #{bean.budgetAmount},
+			</if>
+			<if test="bean.status!=null">
+				 #{bean.status},
+			</if>
+			<if test="bean.advertisingChannelType!=null">
+				 #{bean.advertisingChannelType},
+			</if>
+			<if test="bean.startDateTime!=null">
+				 #{bean.startDateTime},
+			</if>
+			<if test="bean.endDateTime!=null">
+				 #{bean.endDateTime},
+			</if>
+			<if test="bean.personInCharge!=null">
+				 #{bean.personInCharge},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.campaignId!=null">
+				 campaign_id = VALUES(campaign_id),
+			</if>
+			<if test="bean.campaignName!=null">
+				 campaign_name = VALUES(campaign_name),
+			</if>
+			<if test="bean.currencyCode!=null">
+				 currency_code = VALUES(currency_code),
+			</if>
+			<if test="bean.budgetAmount!=null">
+				 budget_amount = VALUES(budget_amount),
+			</if>
+			<if test="bean.status!=null">
+				 status = VALUES(status),
+			</if>
+			<if test="bean.advertisingChannelType!=null">
+				 advertising_channel_type = VALUES(advertising_channel_type),
+			</if>
+			<if test="bean.startDateTime!=null">
+				 start_date_time = VALUES(start_date_time),
+			</if>
+			<if test="bean.endDateTime!=null">
+				 end_date_time = VALUES(end_date_time),
+			</if>
+			<if test="bean.personInCharge!=null">
+				 person_in_charge = VALUES(person_in_charge),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.vmp.entity.po.GoogleCampaignInfo">
+		 INSERT INTO google_campaign_info(
+			 campaign_id,
+			 campaign_name,
+			 currency_code,
+			 budget_amount,
+			 status,
+			 advertising_channel_type,
+			 start_date_time,
+			 end_date_time,
+			 person_in_charge
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.campaignId},
+				 #{item.campaignName},
+				 #{item.currencyCode},
+				 #{item.budgetAmount},
+				 #{item.status},
+				 #{item.advertisingChannelType},
+				 #{item.startDateTime},
+				 #{item.endDateTime},
+				 #{item.personInCharge}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.vmp.entity.po.GoogleCampaignInfo">
+		 INSERT INTO google_campaign_info(
+			 campaign_id,
+			 campaign_name,
+			 currency_code,
+			 budget_amount,
+			 status,
+			 advertising_channel_type,
+			 start_date_time,
+			 end_date_time,
+			 person_in_charge
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.campaignId},
+				 #{item.campaignName},
+				 #{item.currencyCode},
+				 #{item.budgetAmount},
+				 #{item.status},
+				 #{item.advertisingChannelType},
+				 #{item.startDateTime},
+				 #{item.endDateTime},
+				 #{item.personInCharge}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			campaign_id = VALUES(campaign_id),
+			campaign_name = VALUES(campaign_name),
+			currency_code = VALUES(currency_code),
+			budget_amount = VALUES(budget_amount),
+			status = VALUES(status),
+			advertising_channel_type = VALUES(advertising_channel_type),
+			start_date_time = VALUES(start_date_time),
+			end_date_time = VALUES(end_date_time),
+			person_in_charge = VALUES(person_in_charge)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.vmp.entity.query.GoogleCampaignInfoQuery">
+		 UPDATE google_campaign_info
+ 		 <set> 
+			<if test="bean.campaignId != null">
+				 campaign_id = #{bean.campaignId},
+			</if>
+			<if test="bean.campaignName != null">
+				 campaign_name = #{bean.campaignName},
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code = #{bean.currencyCode},
+			</if>
+			<if test="bean.budgetAmount != null">
+				 budget_amount = #{bean.budgetAmount},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+			<if test="bean.advertisingChannelType != null">
+				 advertising_channel_type = #{bean.advertisingChannelType},
+			</if>
+			<if test="bean.startDateTime != null">
+				 start_date_time = #{bean.startDateTime},
+			</if>
+			<if test="bean.endDateTime != null">
+				 end_date_time = #{bean.endDateTime},
+			</if>
+			<if test="bean.personInCharge != null">
+				 person_in_charge = #{bean.personInCharge},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from google_campaign_info
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据CampaignId修改-->
+	<update id="updateByCampaignId" parameterType="com.vmp.entity.po.GoogleCampaignInfo">
+		 UPDATE google_campaign_info
+ 		 <set> 
+			<if test="bean.campaignName != null">
+				 campaign_name = #{bean.campaignName},
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code = #{bean.currencyCode},
+			</if>
+			<if test="bean.budgetAmount != null">
+				 budget_amount = #{bean.budgetAmount},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+			<if test="bean.advertisingChannelType != null">
+				 advertising_channel_type = #{bean.advertisingChannelType},
+			</if>
+			<if test="bean.startDateTime != null">
+				 start_date_time = #{bean.startDateTime},
+			</if>
+			<if test="bean.endDateTime != null">
+				 end_date_time = #{bean.endDateTime},
+			</if>
+			<if test="bean.personInCharge != null">
+				 person_in_charge = #{bean.personInCharge},
+			</if>
+ 		 </set>
+ 		 where campaign_id=#{campaignId}
+	</update>
+
+	<!-- 根据CampaignId删除-->
+	<delete id="deleteByCampaignId">
+		delete from google_campaign_info where campaign_id=#{campaignId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByCampaignId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from google_campaign_info where campaign_id=#{campaignId}
+	</select>
+
+</mapper>

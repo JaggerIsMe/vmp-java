@@ -6,7 +6,7 @@ import java.util.List;
 import com.vmp.entity.query.ShopifyOrderQuery;
 import com.vmp.entity.po.ShopifyOrder;
 import com.vmp.entity.vo.PaginationResultVO;
-import com.vmp.entity.dashboardVo.ShopifySalesDailyPerformanceVo;
+import com.vmp.entity.dashboardVo.ShopifySalesDailyPerformanceVO;
 
 
 /**
@@ -93,5 +93,5 @@ public interface ShopifyOrderService {
 	 * @param query
 	 * @return
 	 */
-	List<ShopifySalesDailyPerformanceVo> getShopifySalesDailyPerformance(ShopifyOrderQuery query);
+	List<ShopifySalesDailyPerformanceVO> getShopifySalesDailyPerformance(ShopifyOrderQuery query);
 }

@@ -3,22 +3,16 @@ package com.vmp.service.impl;
 import com.vmp.entity.config.AppConfig;
 import com.vmp.entity.constants.Constants;
 import com.vmp.entity.dto.TokenUserInfoDto;
-import com.vmp.entity.enums.AdminStatusEnum;
 import com.vmp.entity.enums.PageSize;
 import com.vmp.entity.enums.ResponseCodeEnum;
 import com.vmp.entity.enums.UserStatusEnum;
-import com.vmp.entity.po.SysRolesMenus;
-import com.vmp.entity.po.SysUsersRoles;
 import com.vmp.entity.po.UserInfo;
 import com.vmp.entity.query.*;
 import com.vmp.entity.vo.PaginationResultVO;
-import com.vmp.entity.vo.RoleInfoVO;
-import com.vmp.entity.vo.SysMenuInfoVO;
 import com.vmp.exception.BusinessException;
 import com.vmp.mappers.UserInfoMapper;
 import com.vmp.redis.RedisComponent;
 import com.vmp.service.*;
-import com.vmp.utils.CopyTools;
 import com.vmp.utils.StringTools;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,11 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 
 /**
@@ -304,9 +295,9 @@ public class UserInfoServiceImpl implements UserInfoService {
             if (!targetFileFolder.exists()) {
                 targetFileFolder.mkdirs();
             }
-            String filePath = targetFileFolder.getPath() + "/" + userInfo.getUserId() + Constants.AVATAR_SUFFIX;
+            String filePath = targetFileFolder.getPath() + "/" + userInfo.getUserId() + Constants.JPG_SUFFIX;
             avatarFile.transferTo(new File(filePath));
-            userInfo.setAvatar(userInfo.getUserId() + Constants.AVATAR_SUFFIX);
+            userInfo.setAvatar(userInfo.getUserId() + Constants.JPG_SUFFIX);
         }
         //查询获取更新前的用户信息，保存下来
         UserInfo dbInfo = this.userInfoMapper.selectByUserId(userInfo.getUserId());

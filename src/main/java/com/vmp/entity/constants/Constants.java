@@ -43,13 +43,15 @@ public class Constants {
 
     public static final String M3U8_NAME = "index.m3u8";
 
-    public static final String AVATAR_SUFFIX = ".jpg";
+    public static final String JPG_SUFFIX = ".jpg";
 
     public static final String FILE_FOLDER_AVATAR_NAME = "avatar/";
 
     public static final String FILE_FOLDER_PRODUCT_IMG = "product/";
 
     public static final String FILE_FOLDER_PRODUCT_IMG_SHOPIFY = "shopify/";
+
+    public static final String SHOPIFY_IMAGE_FOLDER = FILE_FOLDER_FILE + FILE_FOLDER_PRODUCT_IMG + FILE_FOLDER_PRODUCT_IMG_SHOPIFY;
 
     public static final String AVATAR_DEFAULT = "default_avatar.jpg";
 
@@ -109,5 +111,7 @@ public class Constants {
     public static final String SHOPIFY_SESSION_PRODUCT_TYPE = "Product";
 
     public static final String SKILL_FILE_SUFFIX = ".zip";
+
+    public static final String CANCEL_MARK = "cancel_mark";
 
 }

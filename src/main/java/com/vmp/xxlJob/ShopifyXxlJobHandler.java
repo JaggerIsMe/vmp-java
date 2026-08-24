@@ -31,7 +31,7 @@ import java.util.Date;
 @Component
 public class ShopifyXxlJobHandler {
 
-    private static Logger logger = LoggerFactory.getLogger(ShopifyXxlJobHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ShopifyXxlJobHandler.class);
 
     @Resource
     private ShopifyProductService shopifyProductService;
@@ -45,6 +45,9 @@ public class ShopifyXxlJobHandler {
 
     /**
      * 同步Shopify商品数据-子体
+     * <p>
+     * jobParams示例:
+     * {"host":"vantruedashcam", "first":100}
      */
     @XxlJob("syncShopifyProducts")
     public void syncShopifyProducts() {
@@ -89,6 +92,10 @@ public class ShopifyXxlJobHandler {
 
     /**
      * 同步官网订单数据
+     * <p>
+     * jobParams示例:
+     * {"host":"vantruedashcam", "first":100}
+     * {"host":"vantruedashcam", "first":100, "startDate":"2026-10-01", "endDate":"2026-10-01"}
      */
     @XxlJob("syncShopifyOrders")
     public void syncShopifyOrders() {
@@ -142,6 +149,10 @@ public class ShopifyXxlJobHandler {
 
     /**
      * 分析官网流量Sessions
+     *
+     * jobParams示例:
+     * {"host":"vantruedashcam", "type":"Product"}
+     * {"host":"vantruedashcam", "type":"Product", "day":"2026-10-01"}
      */
     @XxlJob("writeShopifySessionsReport")
     public void writeShopifySessionsReport() {

@@ -152,7 +152,7 @@ public class DingTalkServiceImpl implements DingTalkService {
             }
             nickName = nickName.length() > Constants.LENGTH_20 ? nickName.substring(0, Constants.LENGTH_20) : nickName;
             String avatarUrl = dingTalkUserInfoDto.getAvatarUrl();
-            String avatar = userId + Constants.AVATAR_SUFFIX;
+            String avatar = userId + Constants.JPG_SUFFIX;
             Date curDate = new Date();
 
             userInfo.setUserId(userId);

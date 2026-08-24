@@ -24,8 +24,6 @@ public class ProductImageServiceImpl implements ProductImageService {
 
     private static final Logger logger = LoggerFactory.getLogger(ProductImageServiceImpl.class);
 
-    private static final String SHOPIFY_IMAGE_FOLDER = Constants.FILE_FOLDER_FILE + Constants.FILE_FOLDER_PRODUCT_IMG + Constants.FILE_FOLDER_PRODUCT_IMG_SHOPIFY;
-
     @Resource
     private AppConfig appConfig;
 
@@ -47,11 +45,11 @@ public class ProductImageServiceImpl implements ProductImageService {
      */
     @Override
     public ProductImageVO resolveShopifyProductImage(String storeId, String productId) {
-        String productImgId = StringTools.createShopifyProductImgId(storeId, productId);
+        String productImgId = StringTools.createProductImgId(storeId, productId);
 
-        Path imageFolder = getImageFolder(SHOPIFY_IMAGE_FOLDER);
+        Path imageFolder = getImageFolder(Constants.SHOPIFY_IMAGE_FOLDER);
 
-        Path targetPath = imageFolder.resolve(productImgId + Constants.AVATAR_SUFFIX).toAbsolutePath().normalize();
+        Path targetPath = imageFolder.resolve(productImgId + Constants.JPG_SUFFIX).toAbsolutePath().normalize();
 
         /*
          * 防止storeId、productId被构造成路径穿越参数。

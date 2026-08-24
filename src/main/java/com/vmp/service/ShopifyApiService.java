@@ -15,14 +15,14 @@ public interface ShopifyApiService {
      * @param host
      * @return
      */
-    public String getAccessToken(String host);
+    String getAccessToken(String host);
 
     /**
      * 获取店铺信息
      * @param host
      * @return
      */
-    public ShopifyShopInfo getShopifyShopInfo(String host);
+    ShopifyShopInfo getShopifyShopInfo(String host);
 
     /**
      * 获取店铺产品-变体
@@ -31,7 +31,7 @@ public interface ShopifyApiService {
      * @param after
      * @return
      */
-    public ShopifyProductPageInfo getShopifyProducts(String host, Integer first, String after);
+    ShopifyProductPageInfo getShopifyProducts(String host, Integer first, String after);
 
     /**
      * 获取店铺订单
@@ -42,7 +42,7 @@ public interface ShopifyApiService {
      * @param endDate
      * @return
      */
-    public ShopifyOrderPageInfo getShopifyOrders(String host, Integer first, String after, Date startDate, Date endDate);
+    ShopifyOrderPageInfo getShopifyOrders(String host, Integer first, String after, Date startDate, Date endDate);
 
     /**
      * 分析官网流量Sessions
@@ -51,6 +51,6 @@ public interface ShopifyApiService {
      * @param day
      * @return
      */
-    public ShopifyqlQueryResponse getShopifySessionsReport(String host, String type, Date day);
+    ShopifyqlQueryResponse getShopifySessionsReport(String host, String type, Date day);
 
 }

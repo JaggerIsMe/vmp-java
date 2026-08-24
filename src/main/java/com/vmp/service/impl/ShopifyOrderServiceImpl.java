@@ -13,14 +13,13 @@ import com.vmp.entity.apidto.ShopifyOrderApiDto;
 import com.vmp.entity.apidto.ShopifyOrderPageInfo;
 import com.vmp.entity.apidto.ShopifyShopInfo;
 import com.vmp.entity.constants.Constants;
-import com.vmp.entity.enums.DateTimePatternEnum;
 import com.vmp.entity.enums.ResponseCodeEnum;
 import com.vmp.entity.po.ShopifyOrderItem;
 import com.vmp.entity.po.ShopifyProduct;
 import com.vmp.entity.po.ShopifySessionReport;
 import com.vmp.entity.query.*;
 import com.vmp.entity.vo.ShopifyOrderItemVO;
-import com.vmp.entity.dashboardVo.ShopifySalesDailyPerformanceVo;
+import com.vmp.entity.dashboardVo.ShopifySalesDailyPerformanceVO;
 import com.vmp.exception.BusinessException;
 import com.vmp.service.*;
 import com.vmp.utils.CopyTools;
@@ -441,7 +440,7 @@ public class ShopifyOrderServiceImpl implements ShopifyOrderService {
      * @return
      */
     @Override
-    public List<ShopifySalesDailyPerformanceVo> getShopifySalesDailyPerformance(ShopifyOrderQuery query) {
+    public List<ShopifySalesDailyPerformanceVO> getShopifySalesDailyPerformance(ShopifyOrderQuery query) {
         String createdAtStart = query.getCreatedAtStart();
         String createdAtEnd = query.getCreatedAtEnd();
         if (StringTools.isEmpty(createdAtStart) || StringTools.isEmpty(createdAtEnd)) {
@@ -449,12 +448,12 @@ public class ShopifyOrderServiceImpl implements ShopifyOrderService {
         }
 
         List<String> reportDateList = DateUtil.getDateList(createdAtStart, createdAtEnd);
-        List<ShopifySalesDailyPerformanceVo> salesDailyPerformanceList = new ArrayList<>();
+        List<ShopifySalesDailyPerformanceVO> salesDailyPerformanceList = new ArrayList<>();
         // 根据多条件组装ShopifySessionReportQuery(storeIdList 和 landingPagePathList)
         ShopifySessionReportQuery commonSessionsQuery = buildShopifyProductLandingPagePathList(query);
 
         reportDateList.forEach(reportDate -> {
-            ShopifySalesDailyPerformanceVo salesDailyPerformance = new ShopifySalesDailyPerformanceVo();
+            ShopifySalesDailyPerformanceVO salesDailyPerformance = new ShopifySalesDailyPerformanceVO();
             salesDailyPerformance.setReportDate(reportDate);
             salesDailyPerformance.setTotalSalesPrice(BigDecimal.valueOf(0));
             salesDailyPerformance.setTotalSalesUnit(0L);

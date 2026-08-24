@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vmp.mappers.ProductsAdsMappingInfoMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.vmp.entity.po.ProductsAdsMappingInfo">
+		<!--广告平台 amazon、google、meta-->
+		<result column="ads_platform" property="adsPlatform"  />
+		<!--广告标识id-->
+		<result column="ads_campaign_id" property="adsCampaignId"  />
+		<!--绑定产品uid-->
+		<result column="mapping_product_uid" property="mappingProductUid"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 ads_platform,ads_campaign_id,mapping_product_uid
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.adsPlatform != null and query.adsPlatform!=''">
+			 and  ads_platform = #{query.adsPlatform}
+		</if>
+		<if test="query.adsCampaignId != null and query.adsCampaignId!=''">
+			 and  ads_campaign_id = #{query.adsCampaignId}
+		</if>
+		<if test="query.mappingProductUid != null and query.mappingProductUid!=''">
+			 and  mapping_product_uid = #{query.mappingProductUid}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.adsPlatformFuzzy!= null  and query.adsPlatformFuzzy!=''">
+				 and  ads_platform like concat('%', #{query.adsPlatformFuzzy}, '%')
+			</if>
+			<if test="query.adsCampaignIdFuzzy!= null  and query.adsCampaignIdFuzzy!=''">
+				 and  ads_campaign_id like concat('%', #{query.adsCampaignIdFuzzy}, '%')
+			</if>
+			<if test="query.mappingProductUidFuzzy!= null  and query.mappingProductUidFuzzy!=''">
+				 and  mapping_product_uid like concat('%', #{query.mappingProductUidFuzzy}, '%')
+			</if>
+			<if test="query.adsCampaignIdList != null">
+				<choose>
+					<when test="query.adsCampaignIdList.size() > 0">
+						and ads_campaign_id in
+						<foreach collection="query.adsCampaignIdList" item="adsCampaignId" open="(" separator="," close=")">
+							#{adsCampaignId}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM products_ads_mapping_info <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM products_ads_mapping_info <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.vmp.entity.po.ProductsAdsMappingInfo">
+		 INSERT INTO products_ads_mapping_info
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.adsPlatform != null">
+				 ads_platform,
+			</if>
+			<if test="bean.adsCampaignId != null">
+				 ads_campaign_id,
+			</if>
+			<if test="bean.mappingProductUid != null">
+				 mapping_product_uid,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.adsPlatform!=null">
+				 #{bean.adsPlatform},
+			</if>
+			<if test="bean.adsCampaignId!=null">
+				 #{bean.adsCampaignId},
+			</if>
+			<if test="bean.mappingProductUid!=null">
+				 #{bean.mappingProductUid},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.vmp.entity.po.ProductsAdsMappingInfo">
+		 INSERT INTO products_ads_mapping_info
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.adsPlatform != null">
+				 ads_platform,
+			</if>
+			<if test="bean.adsCampaignId != null">
+				 ads_campaign_id,
+			</if>
+			<if test="bean.mappingProductUid != null">
+				 mapping_product_uid,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.adsPlatform!=null">
+				 #{bean.adsPlatform},
+			</if>
+			<if test="bean.adsCampaignId!=null">
+				 #{bean.adsCampaignId},
+			</if>
+			<if test="bean.mappingProductUid!=null">
+				 #{bean.mappingProductUid},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.adsPlatform!=null">
+				 ads_platform = VALUES(ads_platform),
+			</if>
+			<if test="bean.adsCampaignId!=null">
+				 ads_campaign_id = VALUES(ads_campaign_id),
+			</if>
+			<if test="bean.mappingProductUid!=null">
+				 mapping_product_uid = VALUES(mapping_product_uid),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.vmp.entity.po.ProductsAdsMappingInfo">
+		 INSERT INTO products_ads_mapping_info(
+			 ads_platform,
+			 ads_campaign_id,
+			 mapping_product_uid
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.adsPlatform},
+				 #{item.adsCampaignId},
+				 #{item.mappingProductUid}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.vmp.entity.po.ProductsAdsMappingInfo">
+		 INSERT INTO products_ads_mapping_info(
+			 ads_platform,
+			 ads_campaign_id,
+			 mapping_product_uid
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.adsPlatform},
+				 #{item.adsCampaignId},
+				 #{item.mappingProductUid}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			ads_platform = VALUES(ads_platform),
+			ads_campaign_id = VALUES(ads_campaign_id),
+			mapping_product_uid = VALUES(mapping_product_uid)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.vmp.entity.query.ProductsAdsMappingInfoQuery">
+		 UPDATE products_ads_mapping_info
+ 		 <set> 
+			<if test="bean.adsPlatform != null">
+				 ads_platform = #{bean.adsPlatform},
+			</if>
+			<if test="bean.adsCampaignId != null">
+				 ads_campaign_id = #{bean.adsCampaignId},
+			</if>
+			<if test="bean.mappingProductUid != null">
+				 mapping_product_uid = #{bean.mappingProductUid},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from products_ads_mapping_info
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据AdsPlatformAndAdsCampaignId修改-->
+	<update id="updateByAdsPlatformAndAdsCampaignId" parameterType="com.vmp.entity.po.ProductsAdsMappingInfo">
+		 UPDATE products_ads_mapping_info
+ 		 <set> 
+			<if test="bean.mappingProductUid != null">
+				 mapping_product_uid = #{bean.mappingProductUid},
+			</if>
+ 		 </set>
+ 		 where ads_platform=#{adsPlatform} and ads_campaign_id=#{adsCampaignId}
+	</update>
+
+	<!-- 根据AdsPlatformAndAdsCampaignId删除-->
+	<delete id="deleteByAdsPlatformAndAdsCampaignId">
+		delete from products_ads_mapping_info where ads_platform=#{adsPlatform} and ads_campaign_id=#{adsCampaignId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByAdsPlatformAndAdsCampaignId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from products_ads_mapping_info where ads_platform=#{adsPlatform} and ads_campaign_id=#{adsCampaignId}
+	</select>
+
+</mapper>
