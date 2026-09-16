@@ -31,8 +31,6 @@ public class Constants {
 
     public static final String FILE_FOLDER_FILE = "files/";
 
-    public static final String SKILL_FILE_FOLDER_FILE = "skills/";
-
     public static final String FILE_FOLDER_TEMP = "temp/";
 
     public static final String IMAGE_PNG_SUFFIX = ".png";
@@ -109,8 +107,6 @@ public class Constants {
     public static final String SHOPIFY_CHILD_PRODUCT = "Child";
 
     public static final String SHOPIFY_SESSION_PRODUCT_TYPE = "Product";
-
-    public static final String SKILL_FILE_SUFFIX = ".zip";
 
     public static final String CANCEL_MARK = "cancel_mark";
 
