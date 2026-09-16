@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vmp.mappers.MetaCampaignInsightMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.vmp.entity.po.MetaCampaignInsight">
+		<!--细分报告日期-->
+		<result column="segment_date" property="segmentDate"  />
+		<!--campaign唯一标识id-->
+		<result column="campaign_uid" property="campaignUid"  />
+		<!--货币代码-->
+		<result column="currency_code" property="currencyCode"  />
+		<!--广告花费-->
+		<result column="cost_amount" property="costAmount"  />
+		<!--展示-->
+		<result column="impressions" property="impressions"  />
+		<!--点击-->
+		<result column="clicks" property="clicks"  />
+		<!--转化次数-->
+		<result column="conversions" property="conversions"  />
+		<!--转化价值-->
+		<result column="conversions_value" property="conversionsValue"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 segment_date,campaign_uid,currency_code,cost_amount,impressions,
+		 clicks,conversions,conversions_value
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.segmentDate != null and query.segmentDate!=''">
+			 <![CDATA[ and  segment_date=str_to_date(#{query.segmentDate}, '%Y-%m-%d') ]]>
+		</if>
+		<if test="query.campaignUid != null and query.campaignUid!=''">
+			 and  campaign_uid = #{query.campaignUid}
+		</if>
+		<if test="query.currencyCode != null and query.currencyCode!=''">
+			 and  currency_code = #{query.currencyCode}
+		</if>
+		<if test="query.costAmount != null">
+			 and  cost_amount = #{query.costAmount}
+		</if>
+		<if test="query.impressions != null">
+			 and  impressions = #{query.impressions}
+		</if>
+		<if test="query.clicks != null">
+			 and  clicks = #{query.clicks}
+		</if>
+		<if test="query.conversions != null">
+			 and  conversions = #{query.conversions}
+		</if>
+		<if test="query.conversionsValue != null">
+			 and  conversions_value = #{query.conversionsValue}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.segmentDateStart!= null and query.segmentDateStart!=''">
+				 <![CDATA[ and  segment_date>=str_to_date(#{query.segmentDateStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.segmentDateEnd!= null and query.segmentDateEnd!=''">
+				 <![CDATA[ and  segment_date< date_sub(str_to_date(#{query.segmentDateEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.campaignUidFuzzy!= null  and query.campaignUidFuzzy!=''">
+				 and  campaign_uid like concat('%', #{query.campaignUidFuzzy}, '%')
+			</if>
+			<if test="query.currencyCodeFuzzy!= null  and query.currencyCodeFuzzy!=''">
+				 and  currency_code like concat('%', #{query.currencyCodeFuzzy}, '%')
+			</if>
+			<if test="query.campaignUidList != null">
+				<choose>
+					<when test="query.campaignUidList.size() > 0">
+						and campaign_uid in
+						<foreach collection="query.campaignUidList" item="campaignUid" open="(" separator="," close=")">
+							#{campaignUid}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM meta_campaign_insight <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM meta_campaign_insight <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.vmp.entity.po.MetaCampaignInsight">
+		 INSERT INTO meta_campaign_insight
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.segmentDate != null">
+				 segment_date,
+			</if>
+			<if test="bean.campaignUid != null">
+				 campaign_uid,
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code,
+			</if>
+			<if test="bean.costAmount != null">
+				 cost_amount,
+			</if>
+			<if test="bean.impressions != null">
+				 impressions,
+			</if>
+			<if test="bean.clicks != null">
+				 clicks,
+			</if>
+			<if test="bean.conversions != null">
+				 conversions,
+			</if>
+			<if test="bean.conversionsValue != null">
+				 conversions_value,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.segmentDate!=null">
+				 #{bean.segmentDate},
+			</if>
+			<if test="bean.campaignUid!=null">
+				 #{bean.campaignUid},
+			</if>
+			<if test="bean.currencyCode!=null">
+				 #{bean.currencyCode},
+			</if>
+			<if test="bean.costAmount!=null">
+				 #{bean.costAmount},
+			</if>
+			<if test="bean.impressions!=null">
+				 #{bean.impressions},
+			</if>
+			<if test="bean.clicks!=null">
+				 #{bean.clicks},
+			</if>
+			<if test="bean.conversions!=null">
+				 #{bean.conversions},
+			</if>
+			<if test="bean.conversionsValue!=null">
+				 #{bean.conversionsValue},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.vmp.entity.po.MetaCampaignInsight">
+		 INSERT INTO meta_campaign_insight
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.segmentDate != null">
+				 segment_date,
+			</if>
+			<if test="bean.campaignUid != null">
+				 campaign_uid,
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code,
+			</if>
+			<if test="bean.costAmount != null">
+				 cost_amount,
+			</if>
+			<if test="bean.impressions != null">
+				 impressions,
+			</if>
+			<if test="bean.clicks != null">
+				 clicks,
+			</if>
+			<if test="bean.conversions != null">
+				 conversions,
+			</if>
+			<if test="bean.conversionsValue != null">
+				 conversions_value,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.segmentDate!=null">
+				 #{bean.segmentDate},
+			</if>
+			<if test="bean.campaignUid!=null">
+				 #{bean.campaignUid},
+			</if>
+			<if test="bean.currencyCode!=null">
+				 #{bean.currencyCode},
+			</if>
+			<if test="bean.costAmount!=null">
+				 #{bean.costAmount},
+			</if>
+			<if test="bean.impressions!=null">
+				 #{bean.impressions},
+			</if>
+			<if test="bean.clicks!=null">
+				 #{bean.clicks},
+			</if>
+			<if test="bean.conversions!=null">
+				 #{bean.conversions},
+			</if>
+			<if test="bean.conversionsValue!=null">
+				 #{bean.conversionsValue},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.segmentDate!=null">
+				 segment_date = VALUES(segment_date),
+			</if>
+			<if test="bean.campaignUid!=null">
+				 campaign_uid = VALUES(campaign_uid),
+			</if>
+			<if test="bean.currencyCode!=null">
+				 currency_code = VALUES(currency_code),
+			</if>
+			<if test="bean.costAmount!=null">
+				 cost_amount = VALUES(cost_amount),
+			</if>
+			<if test="bean.impressions!=null">
+				 impressions = VALUES(impressions),
+			</if>
+			<if test="bean.clicks!=null">
+				 clicks = VALUES(clicks),
+			</if>
+			<if test="bean.conversions!=null">
+				 conversions = VALUES(conversions),
+			</if>
+			<if test="bean.conversionsValue!=null">
+				 conversions_value = VALUES(conversions_value),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.vmp.entity.po.MetaCampaignInsight">
+		 INSERT INTO meta_campaign_insight(
+			 segment_date,
+			 campaign_uid,
+			 currency_code,
+			 cost_amount,
+			 impressions,
+			 clicks,
+			 conversions,
+			 conversions_value
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.segmentDate},
+				 #{item.campaignUid},
+				 #{item.currencyCode},
+				 #{item.costAmount},
+				 #{item.impressions},
+				 #{item.clicks},
+				 #{item.conversions},
+				 #{item.conversionsValue}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.vmp.entity.po.MetaCampaignInsight">
+		 INSERT INTO meta_campaign_insight(
+			 segment_date,
+			 campaign_uid,
+			 currency_code,
+			 cost_amount,
+			 impressions,
+			 clicks,
+			 conversions,
+			 conversions_value
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.segmentDate},
+				 #{item.campaignUid},
+				 #{item.currencyCode},
+				 #{item.costAmount},
+				 #{item.impressions},
+				 #{item.clicks},
+				 #{item.conversions},
+				 #{item.conversionsValue}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			segment_date = VALUES(segment_date),
+			campaign_uid = VALUES(campaign_uid),
+			currency_code = VALUES(currency_code),
+			cost_amount = VALUES(cost_amount),
+			impressions = VALUES(impressions),
+			clicks = VALUES(clicks),
+			conversions = VALUES(conversions),
+			conversions_value = VALUES(conversions_value)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.vmp.entity.query.MetaCampaignInsightQuery">
+		 UPDATE meta_campaign_insight
+ 		 <set> 
+			<if test="bean.segmentDate != null">
+				 segment_date = #{bean.segmentDate},
+			</if>
+			<if test="bean.campaignUid != null">
+				 campaign_uid = #{bean.campaignUid},
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code = #{bean.currencyCode},
+			</if>
+			<if test="bean.costAmount != null">
+				 cost_amount = #{bean.costAmount},
+			</if>
+			<if test="bean.impressions != null">
+				 impressions = #{bean.impressions},
+			</if>
+			<if test="bean.clicks != null">
+				 clicks = #{bean.clicks},
+			</if>
+			<if test="bean.conversions != null">
+				 conversions = #{bean.conversions},
+			</if>
+			<if test="bean.conversionsValue != null">
+				 conversions_value = #{bean.conversionsValue},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from meta_campaign_insight
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据SegmentDateAndCampaignUid修改-->
+	<update id="updateBySegmentDateAndCampaignUid" parameterType="com.vmp.entity.po.MetaCampaignInsight">
+		 UPDATE meta_campaign_insight
+ 		 <set> 
+			<if test="bean.currencyCode != null">
+				 currency_code = #{bean.currencyCode},
+			</if>
+			<if test="bean.costAmount != null">
+				 cost_amount = #{bean.costAmount},
+			</if>
+			<if test="bean.impressions != null">
+				 impressions = #{bean.impressions},
+			</if>
+			<if test="bean.clicks != null">
+				 clicks = #{bean.clicks},
+			</if>
+			<if test="bean.conversions != null">
+				 conversions = #{bean.conversions},
+			</if>
+			<if test="bean.conversionsValue != null">
+				 conversions_value = #{bean.conversionsValue},
+			</if>
+ 		 </set>
+ 		 where segment_date=#{segmentDate} and campaign_uid=#{campaignUid}
+	</update>
+
+	<!-- 根据SegmentDateAndCampaignUid删除-->
+	<delete id="deleteBySegmentDateAndCampaignUid">
+		delete from meta_campaign_insight where segment_date=#{segmentDate} and campaign_uid=#{campaignUid}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectBySegmentDateAndCampaignUid" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from meta_campaign_insight where segment_date=#{segmentDate} and campaign_uid=#{campaignUid}
+	</select>
+
+</mapper>

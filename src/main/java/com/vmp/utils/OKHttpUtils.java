@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 public class OKHttpUtils {
     /**
-     * 请求超时时间5秒
+     * 请求超时时间
      */
     private static final int TIME_OUT_SECONDS = 60;
 

@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vmp.mappers.MetaAdsCampaignInfoMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.vmp.entity.po.MetaAdsCampaignInfo">
+		<!--campaign唯一id-->
+		<result column="uid" property="uid"  />
+		<!--广告系列id-->
+		<result column="campaign_id" property="campaignId"  />
+		<!--广告系列名称-->
+		<result column="campaign_name" property="campaignName"  />
+		<!--广告账户id-->
+		<result column="ads_account_id" property="adsAccountId"  />
+		<!--广告账户名称-->
+		<result column="ads_account_name" property="adsAccountName"  />
+		<!--广告账户状态-->
+		<result column="ads_account_status" property="adsAccountStatus"  />
+		<!--货币代码-->
+		<result column="currency_code" property="currencyCode"  />
+		<!--广告系列状态-->
+		<result column="effective_status" property="effectiveStatus"  />
+		<!--投放开始时间-->
+		<result column="start_time" property="startTime"  />
+		<!--投放结束时间-->
+		<result column="stop_time" property="stopTime"  />
+		<!--负责人-->
+		<result column="person_in_charge" property="personInCharge"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 uid,campaign_id,campaign_name,ads_account_id,ads_account_name,
+		 ads_account_status,currency_code,effective_status,start_time,stop_time,
+		 person_in_charge
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.uid != null and query.uid!=''">
+			 and  uid = #{query.uid}
+		</if>
+		<if test="query.campaignId != null and query.campaignId!=''">
+			 and  campaign_id = #{query.campaignId}
+		</if>
+		<if test="query.campaignName != null and query.campaignName!=''">
+			 and  campaign_name = #{query.campaignName}
+		</if>
+		<if test="query.adsAccountId != null and query.adsAccountId!=''">
+			 and  ads_account_id = #{query.adsAccountId}
+		</if>
+		<if test="query.adsAccountName != null and query.adsAccountName!=''">
+			 and  ads_account_name = #{query.adsAccountName}
+		</if>
+		<if test="query.adsAccountStatus != null">
+			 and  ads_account_status = #{query.adsAccountStatus}
+		</if>
+		<if test="query.currencyCode != null and query.currencyCode!=''">
+			 and  currency_code = #{query.currencyCode}
+		</if>
+		<if test="query.effectiveStatus != null and query.effectiveStatus!=''">
+			 and  effective_status = #{query.effectiveStatus}
+		</if>
+		<if test="query.startTime != null and query.startTime!=''">
+			 <![CDATA[ and  start_time=str_to_date(#{query.startTime}, '%Y-%m-%d') ]]>
+		</if>
+		<if test="query.stopTime != null and query.stopTime!=''">
+			 <![CDATA[ and  stop_time=str_to_date(#{query.stopTime}, '%Y-%m-%d') ]]>
+		</if>
+		<if test="query.personInCharge != null and query.personInCharge!=''">
+			 and  person_in_charge = #{query.personInCharge}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.uidFuzzy!= null  and query.uidFuzzy!=''">
+				 and  uid like concat('%', #{query.uidFuzzy}, '%')
+			</if>
+			<if test="query.campaignIdFuzzy!= null  and query.campaignIdFuzzy!=''">
+				 and  campaign_id like concat('%', #{query.campaignIdFuzzy}, '%')
+			</if>
+			<if test="query.campaignNameFuzzy!= null  and query.campaignNameFuzzy!=''">
+				 and  campaign_name like concat('%', #{query.campaignNameFuzzy}, '%')
+			</if>
+			<if test="query.adsAccountIdFuzzy!= null  and query.adsAccountIdFuzzy!=''">
+				 and  ads_account_id like concat('%', #{query.adsAccountIdFuzzy}, '%')
+			</if>
+			<if test="query.adsAccountNameFuzzy!= null  and query.adsAccountNameFuzzy!=''">
+				 and  ads_account_name like concat('%', #{query.adsAccountNameFuzzy}, '%')
+			</if>
+			<if test="query.currencyCodeFuzzy!= null  and query.currencyCodeFuzzy!=''">
+				 and  currency_code like concat('%', #{query.currencyCodeFuzzy}, '%')
+			</if>
+			<if test="query.effectiveStatusFuzzy!= null  and query.effectiveStatusFuzzy!=''">
+				 and  effective_status like concat('%', #{query.effectiveStatusFuzzy}, '%')
+			</if>
+			<if test="query.startTimeStart!= null and query.startTimeStart!=''">
+				 <![CDATA[ and  start_time>=str_to_date(#{query.startTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.startTimeEnd!= null and query.startTimeEnd!=''">
+				 <![CDATA[ and  start_time< date_sub(str_to_date(#{query.startTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.stopTimeStart!= null and query.stopTimeStart!=''">
+				 <![CDATA[ and  stop_time>=str_to_date(#{query.stopTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.stopTimeEnd!= null and query.stopTimeEnd!=''">
+				 <![CDATA[ and  stop_time< date_sub(str_to_date(#{query.stopTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.personInChargeFuzzy!= null  and query.personInChargeFuzzy!=''">
+				 and  person_in_charge like concat('%', #{query.personInChargeFuzzy}, '%')
+			</if>
+			<if test="query.uidList != null">
+				<choose>
+					<when test="query.uidList.size() > 0">
+						and uid in
+						<foreach collection="query.uidList" item="uid" open="(" separator="," close=")">
+							#{uid}
+						</foreach>
+					</when>
+					<otherwise>
+						and 1 = 0
+					</otherwise>
+				</choose>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM meta_ads_campaign_info <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM meta_ads_campaign_info <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.vmp.entity.po.MetaAdsCampaignInfo">
+		 INSERT INTO meta_ads_campaign_info
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.uid != null">
+				 uid,
+			</if>
+			<if test="bean.campaignId != null">
+				 campaign_id,
+			</if>
+			<if test="bean.campaignName != null">
+				 campaign_name,
+			</if>
+			<if test="bean.adsAccountId != null">
+				 ads_account_id,
+			</if>
+			<if test="bean.adsAccountName != null">
+				 ads_account_name,
+			</if>
+			<if test="bean.adsAccountStatus != null">
+				 ads_account_status,
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code,
+			</if>
+			<if test="bean.effectiveStatus != null">
+				 effective_status,
+			</if>
+			<if test="bean.startTime != null">
+				 start_time,
+			</if>
+			<if test="bean.stopTime != null">
+				 stop_time,
+			</if>
+			<if test="bean.personInCharge != null">
+				 person_in_charge,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.uid!=null">
+				 #{bean.uid},
+			</if>
+			<if test="bean.campaignId!=null">
+				 #{bean.campaignId},
+			</if>
+			<if test="bean.campaignName!=null">
+				 #{bean.campaignName},
+			</if>
+			<if test="bean.adsAccountId!=null">
+				 #{bean.adsAccountId},
+			</if>
+			<if test="bean.adsAccountName!=null">
+				 #{bean.adsAccountName},
+			</if>
+			<if test="bean.adsAccountStatus!=null">
+				 #{bean.adsAccountStatus},
+			</if>
+			<if test="bean.currencyCode!=null">
+				 #{bean.currencyCode},
+			</if>
+			<if test="bean.effectiveStatus!=null">
+				 #{bean.effectiveStatus},
+			</if>
+			<if test="bean.startTime!=null">
+				 #{bean.startTime},
+			</if>
+			<if test="bean.stopTime!=null">
+				 #{bean.stopTime},
+			</if>
+			<if test="bean.personInCharge!=null">
+				 #{bean.personInCharge},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.vmp.entity.po.MetaAdsCampaignInfo">
+		 INSERT INTO meta_ads_campaign_info
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.uid != null">
+				 uid,
+			</if>
+			<if test="bean.campaignId != null">
+				 campaign_id,
+			</if>
+			<if test="bean.campaignName != null">
+				 campaign_name,
+			</if>
+			<if test="bean.adsAccountId != null">
+				 ads_account_id,
+			</if>
+			<if test="bean.adsAccountName != null">
+				 ads_account_name,
+			</if>
+			<if test="bean.adsAccountStatus != null">
+				 ads_account_status,
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code,
+			</if>
+			<if test="bean.effectiveStatus != null">
+				 effective_status,
+			</if>
+			<if test="bean.startTime != null">
+				 start_time,
+			</if>
+			<if test="bean.stopTime != null">
+				 stop_time,
+			</if>
+			<if test="bean.personInCharge != null">
+				 person_in_charge,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.uid!=null">
+				 #{bean.uid},
+			</if>
+			<if test="bean.campaignId!=null">
+				 #{bean.campaignId},
+			</if>
+			<if test="bean.campaignName!=null">
+				 #{bean.campaignName},
+			</if>
+			<if test="bean.adsAccountId!=null">
+				 #{bean.adsAccountId},
+			</if>
+			<if test="bean.adsAccountName!=null">
+				 #{bean.adsAccountName},
+			</if>
+			<if test="bean.adsAccountStatus!=null">
+				 #{bean.adsAccountStatus},
+			</if>
+			<if test="bean.currencyCode!=null">
+				 #{bean.currencyCode},
+			</if>
+			<if test="bean.effectiveStatus!=null">
+				 #{bean.effectiveStatus},
+			</if>
+			<if test="bean.startTime!=null">
+				 #{bean.startTime},
+			</if>
+			<if test="bean.stopTime!=null">
+				 #{bean.stopTime},
+			</if>
+			<if test="bean.personInCharge!=null">
+				 #{bean.personInCharge},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.uid!=null">
+				 uid = VALUES(uid),
+			</if>
+			<if test="bean.campaignId!=null">
+				 campaign_id = VALUES(campaign_id),
+			</if>
+			<if test="bean.campaignName!=null">
+				 campaign_name = VALUES(campaign_name),
+			</if>
+			<if test="bean.adsAccountId!=null">
+				 ads_account_id = VALUES(ads_account_id),
+			</if>
+			<if test="bean.adsAccountName!=null">
+				 ads_account_name = VALUES(ads_account_name),
+			</if>
+			<if test="bean.adsAccountStatus!=null">
+				 ads_account_status = VALUES(ads_account_status),
+			</if>
+			<if test="bean.currencyCode!=null">
+				 currency_code = VALUES(currency_code),
+			</if>
+			<if test="bean.effectiveStatus!=null">
+				 effective_status = VALUES(effective_status),
+			</if>
+			<if test="bean.startTime!=null">
+				 start_time = VALUES(start_time),
+			</if>
+			<if test="bean.stopTime!=null">
+				 stop_time = VALUES(stop_time),
+			</if>
+			<if test="bean.personInCharge!=null">
+				 person_in_charge = VALUES(person_in_charge),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.vmp.entity.po.MetaAdsCampaignInfo">
+		 INSERT INTO meta_ads_campaign_info(
+			 uid,
+			 campaign_id,
+			 campaign_name,
+			 ads_account_id,
+			 ads_account_name,
+			 ads_account_status,
+			 currency_code,
+			 effective_status,
+			 start_time,
+			 stop_time,
+			 person_in_charge
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.uid},
+				 #{item.campaignId},
+				 #{item.campaignName},
+				 #{item.adsAccountId},
+				 #{item.adsAccountName},
+				 #{item.adsAccountStatus},
+				 #{item.currencyCode},
+				 #{item.effectiveStatus},
+				 #{item.startTime},
+				 #{item.stopTime},
+				 #{item.personInCharge}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.vmp.entity.po.MetaAdsCampaignInfo">
+		 INSERT INTO meta_ads_campaign_info(
+			 uid,
+			 campaign_id,
+			 campaign_name,
+			 ads_account_id,
+			 ads_account_name,
+			 ads_account_status,
+			 currency_code,
+			 effective_status,
+			 start_time,
+			 stop_time,
+			 person_in_charge
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.uid},
+				 #{item.campaignId},
+				 #{item.campaignName},
+				 #{item.adsAccountId},
+				 #{item.adsAccountName},
+				 #{item.adsAccountStatus},
+				 #{item.currencyCode},
+				 #{item.effectiveStatus},
+				 #{item.startTime},
+				 #{item.stopTime},
+				 #{item.personInCharge}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			uid = VALUES(uid),
+			campaign_id = VALUES(campaign_id),
+			campaign_name = VALUES(campaign_name),
+			ads_account_id = VALUES(ads_account_id),
+			ads_account_name = VALUES(ads_account_name),
+			ads_account_status = VALUES(ads_account_status),
+			currency_code = VALUES(currency_code),
+			effective_status = VALUES(effective_status),
+			start_time = VALUES(start_time),
+			stop_time = VALUES(stop_time),
+			person_in_charge = VALUES(person_in_charge)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.vmp.entity.query.MetaAdsCampaignInfoQuery">
+		 UPDATE meta_ads_campaign_info
+ 		 <set> 
+			<if test="bean.uid != null">
+				 uid = #{bean.uid},
+			</if>
+			<if test="bean.campaignId != null">
+				 campaign_id = #{bean.campaignId},
+			</if>
+			<if test="bean.campaignName != null">
+				 campaign_name = #{bean.campaignName},
+			</if>
+			<if test="bean.adsAccountId != null">
+				 ads_account_id = #{bean.adsAccountId},
+			</if>
+			<if test="bean.adsAccountName != null">
+				 ads_account_name = #{bean.adsAccountName},
+			</if>
+			<if test="bean.adsAccountStatus != null">
+				 ads_account_status = #{bean.adsAccountStatus},
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code = #{bean.currencyCode},
+			</if>
+			<if test="bean.effectiveStatus != null">
+				 effective_status = #{bean.effectiveStatus},
+			</if>
+			<if test="bean.startTime != null">
+				 start_time = #{bean.startTime},
+			</if>
+			<if test="bean.stopTime != null">
+				 stop_time = #{bean.stopTime},
+			</if>
+			<if test="bean.personInCharge != null">
+				 person_in_charge = #{bean.personInCharge},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from meta_ads_campaign_info
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据Uid修改-->
+	<update id="updateByUid" parameterType="com.vmp.entity.po.MetaAdsCampaignInfo">
+		 UPDATE meta_ads_campaign_info
+ 		 <set> 
+			<if test="bean.campaignId != null">
+				 campaign_id = #{bean.campaignId},
+			</if>
+			<if test="bean.campaignName != null">
+				 campaign_name = #{bean.campaignName},
+			</if>
+			<if test="bean.adsAccountId != null">
+				 ads_account_id = #{bean.adsAccountId},
+			</if>
+			<if test="bean.adsAccountName != null">
+				 ads_account_name = #{bean.adsAccountName},
+			</if>
+			<if test="bean.adsAccountStatus != null">
+				 ads_account_status = #{bean.adsAccountStatus},
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code = #{bean.currencyCode},
+			</if>
+			<if test="bean.effectiveStatus != null">
+				 effective_status = #{bean.effectiveStatus},
+			</if>
+			<if test="bean.startTime != null">
+				 start_time = #{bean.startTime},
+			</if>
+			<if test="bean.stopTime != null">
+				 stop_time = #{bean.stopTime},
+			</if>
+			<if test="bean.personInCharge != null">
+				 person_in_charge = #{bean.personInCharge},
+			</if>
+ 		 </set>
+ 		 where uid=#{uid}
+	</update>
+
+	<!-- 根据Uid删除-->
+	<delete id="deleteByUid">
+		delete from meta_ads_campaign_info where uid=#{uid}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByUid" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from meta_ads_campaign_info where uid=#{uid}
+	</select>
+
+	<!-- 根据CampaignIdAndAdsAccountId修改-->
+	<update id="updateByCampaignIdAndAdsAccountId" parameterType="com.vmp.entity.po.MetaAdsCampaignInfo">
+		 UPDATE meta_ads_campaign_info
+ 		 <set> 
+			<if test="bean.uid != null">
+				 uid = #{bean.uid},
+			</if>
+			<if test="bean.campaignName != null">
+				 campaign_name = #{bean.campaignName},
+			</if>
+			<if test="bean.adsAccountName != null">
+				 ads_account_name = #{bean.adsAccountName},
+			</if>
+			<if test="bean.adsAccountStatus != null">
+				 ads_account_status = #{bean.adsAccountStatus},
+			</if>
+			<if test="bean.currencyCode != null">
+				 currency_code = #{bean.currencyCode},
+			</if>
+			<if test="bean.effectiveStatus != null">
+				 effective_status = #{bean.effectiveStatus},
+			</if>
+			<if test="bean.startTime != null">
+				 start_time = #{bean.startTime},
+			</if>
+			<if test="bean.stopTime != null">
+				 stop_time = #{bean.stopTime},
+			</if>
+			<if test="bean.personInCharge != null">
+				 person_in_charge = #{bean.personInCharge},
+			</if>
+ 		 </set>
+ 		 where campaign_id=#{campaignId} and ads_account_id=#{adsAccountId}
+	</update>
+
+	<!-- 根据CampaignIdAndAdsAccountId删除-->
+	<delete id="deleteByCampaignIdAndAdsAccountId">
+		delete from meta_ads_campaign_info where campaign_id=#{campaignId} and ads_account_id=#{adsAccountId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByCampaignIdAndAdsAccountId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from meta_ads_campaign_info where campaign_id=#{campaignId} and ads_account_id=#{adsAccountId}
+	</select>
+
+</mapper>
